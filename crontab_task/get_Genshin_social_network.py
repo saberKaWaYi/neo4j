@@ -48,7 +48,27 @@ class GenshinSocialNetwork:
         logger.info(f"【原神角色名称】：{self.characters}")
 
     def step2(self):
-        pass
+        for character in self.characters:
+            logger.info(f"开始获取角色 {character} 的社交网络数据")
+            if "旅行者" in character:
+                continue
+            self.scrpayer(character)
+            logger.info(f"获取角色 {character} 的社交网络数据完成")
+
+    def scrpayer(self, character):
+        url = f"https://wiki.biligame.com/ys/{character}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
+        }
+        try:
+            response = requests.get(url, headers=headers)
+            response.encoding = "utf-8"
+            logger.debug(f"请求URL: {url}, 状态码: {response.status_code}")
+            soup = BeautifulSoup(response.text, "html.parser")
+            # 在这里添加解析社交网络数据的逻辑
+        except Exception as e:
+            logger.error(f"获取角色 {character} 的社交网络数据失败: {e}")
+            raise
 
 if __name__ == "__main__":
     logger.info("原神拓扑爬取程序开始运行")

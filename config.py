@@ -33,7 +33,7 @@ LOGGING_CONFIG = {
     'loggers': {
         'cron_task': {
             'handlers': ['crontab_task', 'console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': False,
         },
     }
