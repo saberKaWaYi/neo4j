@@ -55,7 +55,7 @@ class GenshinSocialNetwork:
     def step3(self):
         for character in self.characters:
             logger.info(f"开始获取角色 {character} 的社交网络数据")
-            self.scrpayer(character)
+            self.scrpayer(character['name_zn'])
             logger.info(f"获取角色 {character} 的社交网络数据完成")
 
     def scrpayer(self, character):
