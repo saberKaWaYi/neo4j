@@ -73,6 +73,8 @@ class GenshinSocialNetwork:
     def step3(self):
         logger.info("开始执行步骤3：获取角色社交网络数据")
         for character in self.characters:
+            import time
+            time.sleep(1)
             name_zn = character["name_zn"]
             logger.info(f"开始获取角色 {name_zn} 的社交网络数据")
             self.scrpayer_step3(name_zn)
