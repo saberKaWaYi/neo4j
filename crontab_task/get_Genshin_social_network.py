@@ -15,16 +15,16 @@ class GenshinSocialNetwork:
     def __init__(self):
         self.characters = []
         self.social_network = {}
-        logger.info("GenshinSocialNetwork 初始化完成")
 
     def get_social_network(self):
         logger.info("开始获取社交网络数据")
         self.step1()
         self.step2()
+        self.step3()
         logger.info("社交网络数据获取完成")
 
     def step1(self):
-        logger.info("开始执行步骤1：获取角色列表")
+        logger.info("开始执行步骤1：获取角色名称中文列表")
         url = "https://wiki.biligame.com/ys/%E8%A7%92%E8%89%B2"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
@@ -35,24 +35,25 @@ class GenshinSocialNetwork:
             logger.debug(f"请求URL: {url}, 状态码: {response.status_code}")
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select("div.divsort.g")
-            logger.debug(f"找到 {len(items)} 个角色项")
             for item in items:
                 name_tag = item.find("div", class_="L")
                 if name_tag:
                     name = name_tag.text.strip()
-                    self.characters.append(name)
-                    logger.debug(f"添加角色: {name}")
-            logger.info(f"步骤1完成，共获取 {len(self.characters)} 个角色")
+                    if "旅行者" in name:
+                        continue
+                    self.characters.append({"name_zn":name})
+            logger.info(f"步骤1执行完成，共获取 {len(self.characters)} 个角色中文名称")
         except Exception as e:
             logger.error(f"步骤1执行失败: {e}")
             raise
-        logger.info(f"【原神角色名称】：{self.characters}")
+        logger.info(f"【原神角色中文名称】：{",".join([character['name_zn'] for character in self.characters])}")
 
     def step2(self):
+        logger.info("开始执行步骤1：获取角色名称英文列表")
+
+    def step3(self):
         for character in self.characters:
             logger.info(f"开始获取角色 {character} 的社交网络数据")
-            if "旅行者" in character:
-                continue
             self.scrpayer(character)
             logger.info(f"获取角色 {character} 的社交网络数据完成")
 
