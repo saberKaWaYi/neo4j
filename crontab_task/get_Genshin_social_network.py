@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import quote
 import logging
 import sys
 import os
@@ -56,7 +57,8 @@ class GenshinSocialNetwork:
             logger.info(f"获取角色 {character} 的社交网络数据完成")
 
     def scrpayer(self, character):
-        url = f"https://wiki.biligame.com/ys/{character}"
+        path = quote(f"{character}语音", encoding="utf-8")
+        url = f"https://wiki.biligame.com/ys/{path}"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36 Edg/146.0.0.0"
         }
@@ -65,7 +67,6 @@ class GenshinSocialNetwork:
             response.encoding = "utf-8"
             logger.debug(f"请求URL: {url}, 状态码: {response.status_code}")
             soup = BeautifulSoup(response.text, "html.parser")
-            # 在这里添加解析社交网络数据的逻辑
         except Exception as e:
             logger.error(f"获取角色 {character} 的社交网络数据失败: {e}")
             raise
