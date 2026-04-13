@@ -56,10 +56,10 @@ class GenshinSocialNetwork:
         for character in self.characters:
             name_zn = character["name_zn"]
             logger.info(f"开始获取角色 {name_zn} 的社交网络数据")
-            self.scrpayer(name_zn)
+            self.scrpayer_step3(name_zn)
             logger.info(f"获取角色 {name_zn} 的社交网络数据完成")
 
-    def scrpayer(self, character):
+    def scrpayer_step3(self, character):
         path = quote(f"{character}语音", encoding="utf-8")
         url = f"https://wiki.biligame.com/ys/{path}"
         headers = {
