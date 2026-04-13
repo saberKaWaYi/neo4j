@@ -46,7 +46,8 @@ class GenshinSocialNetwork:
         except Exception as e:
             logger.error(f"步骤1执行失败: {e}")
             raise
-        logger.info(f"【原神角色中文名称】：{",".join([character['name_zn'] for character in self.characters])}")
+        s=",".join([character['name_zn'] for character in self.characters])
+        logger.info(f"【原神角色中文名称】：{s}")
 
     def step2(self):
         logger.info("开始执行步骤1：获取角色名称英文列表")
