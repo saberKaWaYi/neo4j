@@ -159,7 +159,7 @@ class GenshinSocialNetwork:
 
     def step4(self):
         logger.info("开始执行步骤4：保存结果到 JSON 文件")
-        output_path = Path(__file__).resolve().parent / 'social_network.json'
+        output_path = Path(__file__).resolve().parent / 'social_network_demo.json'
         payload = {
             "characters": self.characters,
             "social_network": self.social_network
