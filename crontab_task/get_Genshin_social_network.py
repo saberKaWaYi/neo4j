@@ -23,6 +23,7 @@ class GenshinSocialNetwork:
         self.cookies = settings['crontab_task']['website_cookies']['wiki_biligame_com']["cookie_name"]
         self.headers = settings['crontab_task']['headers']
         self.time_sleep = settings['crontab_task']['time_sleep']
+        self.max_retries = settings['crontab_task']['max_retries']
 
     def get_social_network(self):
         self.step1()
@@ -34,11 +35,18 @@ class GenshinSocialNetwork:
         logger.info("开始执行步骤1：获取角色名称中文列表")
         url = "https://wiki.biligame.com/ys/%E8%A7%92%E8%89%B2"
         try:
-            response = requests.get(url, headers=self.headers, cookies=self.cookies)
-            response.encoding = "utf-8"
-            if response.status_code != 200:
-                logger.error(f"请求URL: {url}, 状态码: {response.status_code}")
-                raise Exception(f"请求URL: {url}, 状态码: {response.status_code}")
+            times = 0
+            while times < self.max_retries:
+                response = requests.get(url, headers=self.headers, cookies=self.cookies)
+                response.encoding = "utf-8"
+                if response.status_code != 200:
+                    logger.error(f"步骤1请求URL: {url}, 状态码: {response.status_code}, 重试次数: {times + 1}")
+                    times += 1
+                    time.sleep(self.time_sleep*30)
+                else:
+                    break
+            else:
+                raise Exception(f"步骤1请求URL: {url}失败，已达到最大重试次数: {self.max_retries}")
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select("div.divsort.g")
             for item in items:
@@ -59,9 +67,9 @@ class GenshinSocialNetwork:
         logger.info("开始执行步骤2：获取角色名称英文列表")
         count = 0
         for _ in range(len(self.characters)):
-            time.sleep(self.time_sleep)
             self.characters[_]["name_en"] = self.scrpayer_step2(self.characters[_]["name_zh"])
             count += 1
+            time.sleep(self.time_sleep)
         logger.info(f"步骤2执行完成，共获取 {count} 个角色英文名称")
         s=",".join([character['name_en'] for character in self.characters])
         logger.info(f"【原神角色英文名称】：{s}")
@@ -70,39 +78,51 @@ class GenshinSocialNetwork:
         path = quote(f"{character}", encoding="utf-8")
         url = f"https://wiki.biligame.com/ys/{path}"
         try:
-            response = requests.get(url, headers=self.headers, cookies=self.cookies)
-            response.encoding = "utf-8"
-            if response.status_code != 200:
-                logger.error(f"请求URL: {url}, 状态码: {response.status_code}")
-                raise Exception(f"请求URL: {url}, 状态码: {response.status_code}")
+            times = 0
+            while times < self.max_retries:
+                response = requests.get(url, headers=self.headers, cookies=self.cookies)
+                response.encoding = "utf-8"
+                if response.status_code != 200:
+                    logger.error(f"步骤2获取角色 {character} 请求URL: {url}, 状态码: {response.status_code}, 重试次数: {times + 1}")
+                    times += 1
+                    time.sleep(self.time_sleep*30)
+                else:
+                    break
+            else:
+                raise Exception(f"步骤2获取角色 {character} 请求URL: {url}失败，已达到最大重试次数: {self.max_retries}")
             soup = BeautifulSoup(response.text, "html.parser")
             name_en = soup.select_one('th:-soup-contains("全名/本名") + td span[lang="en"]').get_text(strip=True)[:-1]
             return name_en
         except Exception as e:
-            logger.error(f"获取角色 {character} 的英文名称失败: {e}")
+            logger.error(f"步骤2获取角色 {character} 的英文名称失败: {e}")
             raise
 
     def step3(self):
         logger.info("开始执行步骤3：获取角色社交网络数据")
         count = 0
         for character in self.characters:
-            time.sleep(self.time_sleep)
-            name_zh = character["name_zh"]
-            logger.info(f"开始获取角色 {name_zh} 的社交网络数据")
-            self.scrpayer_step3(name_zh)
-            logger.info(f"获取角色 {name_zh} 的社交网络数据完成")
+            self.scrpayer_step3(character["name_zh"])
             count += 1
+            time.sleep(self.time_sleep)
         logger.info(f"步骤3执行完成，共获取 {count} 个角色社交网络数据")
 
     def scrpayer_step3(self, character):
+        logger.info(f"开始获取角色 {character} 的社交网络数据")
         path = quote(f"{character}语音", encoding="utf-8")
         url = f"https://wiki.biligame.com/ys/{path}"
         try:
-            response = requests.get(url, headers=self.headers, cookies=self.cookies)
-            response.encoding = "utf-8"
-            if response.status_code != 200:
-                logger.error(f"请求URL: {url}, 状态码: {response.status_code}")
-                raise Exception(f"请求URL: {url}, 状态码: {response.status_code}")
+            times = 0
+            while times < self.max_retries:
+                response = requests.get(url, headers=self.headers, cookies=self.cookies)
+                response.encoding = "utf-8"
+                if response.status_code != 200:
+                    logger.error(f"步骤3获取角色 {character} 请求URL: {url}, 状态码: {response.status_code}, 重试次数: {times + 1}")
+                    times += 1
+                    time.sleep(self.time_sleep*30)
+                else:
+                    break
+            else:
+                raise Exception(f"步骤3获取角色 {character} 请求URL: {url}失败，已达到最大重试次数: {self.max_retries}")
             soup = BeautifulSoup(response.text, "html.parser")
             item_divs = soup.find_all("div",style="margin:2px 0px;width:100%;display: table;overflow: hidden;padding:1px;")
             for item_div in item_divs:
@@ -131,8 +151,9 @@ class GenshinSocialNetwork:
                             "title_en": title_en,
                             "content_en": content_en
                         })
+            logger.info(f"步骤3获取角色 {character} 的社交网络数据完成")
         except Exception as e:
-            logger.error(f"获取角色 {character} 的社交网络数据失败: {e}")
+            logger.error(f"步骤3获取角色 {character} 的社交网络数据失败: {e}")
             raise
 
     def step4(self):
