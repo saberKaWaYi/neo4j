@@ -1,0 +1,25 @@
+version: "1.0"
+services:
+  web:
+    build: .
+    command: python main.py web --host 0.0.0.0 --port 8000 --no-reload
+    ports:
+      - "8000:8000"
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USERNAME=${NEO4J_USERNAME}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      - NEO4J_DATABASE=${NEO4J_DATABASE}
+      - RABBITMQ_HOST=${RABBITMQ_HOST}
+      - RABBITMQ_PORT=${RABBITMQ_PORT}
+      - RABBITMQ_USERNAME=${RABBITMQ_USERNAME}
+      - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD}
+      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+    restart: unless-stopped
+
+  cron:
+    build: .
+    command: /app/crontab_list.sh
+    depends_on:
+      - web
+    restart: unless-stopped

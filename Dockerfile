@@ -11,5 +11,3 @@ RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 COPY . .
 
 RUN chmod +x /app/crontab_list.sh
-
-CMD ["/app/crontab_list.sh"]

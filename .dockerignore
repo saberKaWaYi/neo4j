@@ -1,9 +1,13 @@
 __pycache__
+*.pyc
+
+crawler/data
+
+logs
+*.log
+
 myvenv
 
-*.pyc
-*.log
-*.json
-
+.env
 .gitignore
 *.md
