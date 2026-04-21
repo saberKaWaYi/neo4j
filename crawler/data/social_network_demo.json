@@ -210,7 +210,7 @@
     },
     {
       "name_zh": "流浪者",
-      "name_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿"
+      "name_en": "Kunikuzushi"
     },
     {
       "name_zh": "珐露珊",
@@ -397,14 +397,6 @@
       "name_en": "Sucrose"
     },
     {
-      "name_zh": "菲谢尔",
-      "name_en": "Fischl von Luftschloss Narfidort/Amy"
-    },
-    {
-      "name_zh": "丽莎",
-      "name_en": "Lisa Minci"
-    },
-    {
       "name_zh": "北斗",
       "name_en": "Beidou"
     },
@@ -413,8 +405,12 @@
       "name_en": "Razor"
     },
     {
-      "name_zh": "安柏",
-      "name_en": "Amber"
+      "name_zh": "菲谢尔",
+      "name_en": "Fischl von Luftschloss Narfidort/Amy"
+    },
+    {
+      "name_zh": "丽莎",
+      "name_en": "Lisa Minci"
     },
     {
       "name_zh": "班尼特",
@@ -425,6 +421,10 @@
       "name_en": "Mao Xiangling"
     },
     {
+      "name_zh": "安柏",
+      "name_en": "Amber"
+    },
+    {
       "name_zh": "芭芭拉",
       "name_en": "Barbara Pegg"
     },
@@ -433,12 +433,12 @@
       "name_en": "Xingqiu"
     },
     {
-      "name_zh": "凝光",
-      "name_en": "Ningguang"
-    },
-    {
       "name_zh": "诺艾尔",
       "name_en": "Noelle"
+    },
+    {
+      "name_zh": "凝光",
+      "name_en": "Ningguang"
     },
     {
       "name_zh": "凯亚",
@@ -831,7 +831,7 @@
       "title_zh": "杜林关于流浪者",
       "content_zh": "刚离开希穆兰卡的时候，我跟着阿帽去过须弥，教令院很大很漂亮，书也很多，现在我开始学习写字看书了，才意识到在那里当学者很不轻松。不过也有闲暇的时候。有许多人会主动找阿帽打牌，聊天，还有送好吃的。比如那个长了大耳朵的人，和帽子上长着更大耳朵的人，还有像小狼犬的人…我私底下问过阿帽，他们都是你的好朋友吗？虽然阿帽嘴上总是不耐烦地点评他们有多聒噪，却没有否认过他们是朋友这件事。",
       "name_en": "Durin",
-      "title_en": "Durin about Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
+      "title_en": "Durin about Kunikuzushi",
       "content_en": "Shortly after leaving Simulanka, I followed Hat Guy to Sumeru. The Akademiya was so big and so beautiful — and there were so many books. It's only now that I'm learning to read and write that I suddenly understand how stressful it must be studying there.Not that there weren't times when people had time off and came to Hat Guy to play cards, chat, or even share delicious food. Like the one with the large ears, or the one with the hat that had even larger ears, or the one who looked like a small wolfhound... I've asked Hat Guy if they're his friends. He always complains about how noisy they are, but he's never denied their friendship."
     },
     {
@@ -839,7 +839,7 @@
       "title_zh": "杜林关于流浪者",
       "content_zh": "我们身上有一些很相似的地方，他似乎每次都能看穿我的想法，以「过来人」的口气引导我。当我说「请不要靠近我」时，其实很希望有人能坚定地陪在我身边…阿帽就是这么做的。所以轮到阿帽说让他一个人时，就算他故意泼我冷水，我也会坚定地跟上去。",
       "name_en": "Durin",
-      "title_en": "Durin about Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
+      "title_en": "Durin about Kunikuzushi",
       "content_en": "We share some similarities, he and I — he always seems to know what I'm thinking, and then guides me as someone who's \"already seen it all.\" Whenever I tell people, \"Don't get too close,\" I really want them to resolutely refuse... That's what Hat Guy does. So even when he says he wants to be alone, even if he deliberately tries to discourage me, I always stick by his side."
     },
     {
@@ -2655,7 +2655,7 @@
       "title_zh": "赛索斯关于流浪者",
       "content_zh": "这位小哥，是不是外国来的留学生啊？帽子挺别致的。有次我想凑近了仔细看看，但眨眼的功夫他就咻地一下消失了。可惜，下次不会再让他跑了。而且听人说那哥们很有想法，我要和他多聊聊！",
       "name_en": "Sethos",
-      "title_en": "Sethos about Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
+      "title_en": "Sethos about Kunikuzushi",
       "content_en": "Who is that guy, anyway? A foreign exchange student, or something? He has a pretty incredible hat, never seen anything like it. I tried to get a closer look once, but then I blinked and he was gone. Shame. I won't let him get away next time, though. I also hear he has some pretty interesting ideas... Gotta have a chat with him sometime!"
     },
     {
@@ -4158,24 +4158,24 @@
       "name_zh": "流浪者",
       "title_zh": "流浪者关于雷电将军",
       "content_zh": "对自己的造物视若不见，却又美其名曰不忍心干预…",
-      "name_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
-      "title_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿 about Beelzebul/Raiden Ei",
+      "name_en": "Kunikuzushi",
+      "title_en": "Kunikuzushi about Beelzebul/Raiden Ei",
       "content_en": "She completely neglected her own creation, and to add insult to injury, she said it was because she \"couldn't bring herself to intervene\" in my fate..."
     },
     {
       "name_zh": "流浪者",
       "title_zh": "流浪者关于八重神子",
       "content_zh": "油腔滑调的妖怪，为博神明的青睐，将自己伪装成关心人类的样子。其实，只是为了找乐子吧？",
-      "name_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
-      "title_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿 about Yae Miko",
+      "name_en": "Kunikuzushi",
+      "title_en": "Kunikuzushi about Yae Miko",
       "content_en": "A smooth-talking youkai. Though she pretends to care about humans to gain the favor of her god, all she seeks are entertaining ways to pass her time."
     },
     {
       "name_zh": "流浪者",
       "title_zh": "流浪者关于枫原万叶",
       "content_zh": "你说枫原家的后人？那岂不是…哦？他也有风元素的「神之眼」，还扛下过雷电将军的一刀？呵呵…哈哈哈哈哈哈哈哈！",
-      "name_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿",
-      "title_en": "Kunikuzushi；后由玩家自行取名，关联道具：新名撰聿 about Kaedehara Kazuha",
+      "name_en": "Kunikuzushi",
+      "title_en": "Kunikuzushi about Kaedehara Kazuha",
       "content_en": "You speak of the descendant of the Kaedehara clan? Then isn't he... Wait, he also possesses an Anemo Vision? ...And even managed to take on the Raiden Shogun's Musou no Hitotachi? Hehe... Ahahahaha!"
     },
     {
@@ -7587,6 +7587,150 @@
       "content_en": "The role of a scout is a hazardous one, and Ms. Eula throws herself into danger all too easily. So, I made a reconnaissance device for her, so that she wouldn't have to infiltrate enemy camps herself. But Ms. Eula has such an imposing manner, she really puts me on edge, and... I was so nervous that I accidentally left out a few important details while explaining how to use it... As a result, there was an accident...Ah, what should I do... I hope she won't hold a grudge against me..."
     },
     {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于凝光",
+      "content_zh": "凝光啊，从「璃月七星」的角度上来说已经做得很好了吧。只是，我要负责的对象从来就是我的船和兄弟们，不是什么「璃月七星」啊。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Ningguang",
+      "content_en": "Ningguang, eh? As far as Liyue Qixing is concerned, she seems to be doing a good job. But for me, my responsibility lies with my ship and my men, and not with Liyue Qixing."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于凝光",
+      "content_zh": "凝光一向不怎么坦率，但她曾经很直接地表露过对我的不满。哈哈，不过啊，喜欢和讨厌都是她自己的事情，我是不可能动摇的。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Ningguang",
+      "content_en": "Ningguang is never really one to speak frankly, but she has been very direct with her criticism of me in the past. Haha... But hey, whether she likes me or hates me is her choice, nothing I can do to sway her."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于香菱",
+      "content_zh": "香菱的一手好菜，可是我们一众人在远航时的念想。没力气的时候，要是想想干煸绝云椒椒那满嘴留香的滋味，都能精神几分。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Mao Xiangling",
+      "content_en": "When we're out on the open ocean, the one thing we do all miss is Xiangling's cooking. When spirits are low, just thinking of her fried jueyun chili, bursting with flavor... It gives everyone just that little extra kick."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于香菱",
+      "content_zh": "香菱啊，她偶尔也会用一些说不上好滋味的食材，做出一些很是了不得的味道。不过嘛，没有尝试就不会有进步，我倒是挺乐意帮她试吃的。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Mao Xiangling",
+      "content_en": "Xiangling huh? She sometimes uses some... interesting ingredients in her dishes to bring about some, ah... intriguing flavors. Though... there's no way she can improve without having someone to taste-test — a role that I am more than happy to fill."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于钟离",
+      "content_zh": "你说「往生堂」的那位先生吗？兄弟们有时会聊起他的传言，听上去是个很有意思的人啊。嗯，有机会去结交一下吧。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Morax",
+      "content_en": "You mean the gentleman from Wangsheng Funeral Parlor? My men sometimes speak of the rumors surrounding him — he sounds interesting. Yes, if I get the chance I'd like to meet him someday."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于魈",
+      "content_zh": "有一年海灯节前夕，船队在归航时遭遇了风暴，紧赶慢赶才在入夜时分回到了璃月港。那时候海灯早就散了。我却在孤云阁的方向，看到了空中悬着一个少年模样的仙人。想必就如传闻一样，在人们看不见的地方，也有人在守护这个璃月港吧。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Xiao",
+      "content_en": "One year on the eve of the Lantern Rite, we ran into a storm as we were returning to port. Try as we did, we only made it back to Liyue Harbor in the dead of night, long after the lanterns had all been released. As I looked towards Guyun Stone Forest, I saw an adeptus, floating in the air, in the form of what appeared to be a young boy. I guess it is like the legends say — there really must be those that watch over Liyue, even if they cannot be seen."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于甘雨",
+      "content_zh": "我和甘雨那丫头私交不错！但你也知道，她是「璃月七星」的秘书，「七星」不待见我那可不是一天两天了。哈，我倒是无所谓，要连累了那丫头可不行。嗯，对外还是保密得好。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Ganyu",
+      "content_en": "Privately, Ganyu and I get on like a house on fire! But as you know, she's the secretary to the Liyue Qixing... and I'm not exactly in their good books right now! Doesn't bother me, but I wouldn't want to put Ganyu in a difficult position. So just keep what I said between us, yeah?"
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于辛焱",
+      "content_zh": "哈，很有意思的丫头！船上的兄弟们也有喜欢听她「摇滚」的。嗯…我本人？怎么说呢，虽然在某些方面跟辛焱有共同话题，但我的音乐品味却是另一方面的…",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Xinyan",
+      "content_en": "She's got a great personality, that one! The guys in the crew love that rock and roll of hers. Me? We have common ground, just... not when it comes to taste in music."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于瑶瑶",
+      "content_zh": "瑶瑶这个小家伙啊，总是爱到船上来玩。但她那副扑闪着眼睛，见什么都新奇的样子，让谁都狠不下心来赶她走。唉，差点要打乱出航的计划。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Yaoyao",
+      "content_en": "Yaoyao always comes on board to play when we're in the harbor. Trouble is, when it's time for her to go she gives you the puppy eyes, and no one has the heart to send her away... Means we're always cutting it quite close by the time we manage to set sail."
+    },
+    {
+      "name_zh": "北斗",
+      "title_zh": "北斗关于枫原万叶",
+      "content_zh": "听说万叶那小子在天守阁外挡了雷电将军的一刀，不简单嘛！嗯…战争结束后，他回了我们南十字船队，说是继续和我们同行一段时间。我当然是非常欢迎了，如果哪天他决定要独自踏上下一段旅程，我再打一壶好酒为他送行，哈哈。",
+      "name_en": "Beidou",
+      "title_en": "Beidou about Kaedehara Kazuha",
+      "content_en": "Kazuha? That scallywag actually blocked a strike from the Raiden Shogun outside Tenshukaku! Easier said than done... After the battle he came to the Crux Fleet — said he'd voyage with us a while longer. I was more than happy to oblige. If the day comes when he decides to set off again by himself on the next stage of his journey, I'll send him off with a drink, haha..."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于丽莎",
+      "content_zh": "师父的雷，天空会变黑。很可怕，很强。",
+      "name_en": "Razor",
+      "title_en": "Razor about Lisa Minci",
+      "content_en": "Lisa lightning makes the sky black. She is strong. She is scary."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于芭芭拉",
+      "content_zh": "芭芭拉，亮晶晶的女孩子。很善良。",
+      "name_en": "Razor",
+      "title_en": "Razor about Barbara Pegg",
+      "content_en": "Shining Barbara is a good child. Very good child."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于迪卢克",
+      "content_zh": "迪卢克，红红的、黑黑的。又冷又热。",
+      "name_en": "Razor",
+      "title_en": "Razor about Diluc Ragnvindr",
+      "content_en": "Diluc is red and black. Hot and cold."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于温迪",
+      "content_zh": "诗歌…唔，不明白。虽然不明白，「卢皮卡」喜欢。",
+      "name_en": "Razor",
+      "title_en": "Razor about Barbatos",
+      "content_en": "Razor doesn't know poems, but... Lupical likes them."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于班尼特",
+      "content_zh": "班尼特，话很多，和他一起，吃不饱。",
+      "name_en": "Razor",
+      "title_en": "Razor about Bennett",
+      "content_en": "Bennett... Much talking. Eat with him, never full."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于可莉",
+      "content_zh": "可莉，朋友！朋友，但是，头疼。",
+      "name_en": "Razor",
+      "title_en": "Razor about Klee",
+      "content_en": "Klee, friend! Friend, but... big hassle."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于法尔伽",
+      "content_zh": "法尔伽？不认识…",
+      "name_en": "Razor",
+      "title_en": "Razor about Varka",
+      "content_en": "Varka? Razor doesn't know..."
+    },
+    {
+      "name_zh": "雷泽",
+      "title_zh": "雷泽关于法尔伽",
+      "content_zh": "哦…法尔伽，是名字。那个男人，高大。雷泽名字，铁的爪子，他给的。唔…想见他。",
+      "name_en": "Razor",
+      "title_en": "Razor about Varka",
+      "content_en": "Oh, Varka is... a name. That man big. Big steelclaw, Razor's name — Varka gave him. Oh... want to see him."
+    },
+    {
       "name_zh": "菲谢尔",
       "title_zh": "菲谢尔关于班尼特",
       "content_zh": "菲谢尔：那位厄运的少年吗…错不了的，我这只「断罪之眼」见证过，他那被世界唾弃的悲哀——奥兹：那个倒霉蛋，置之不理可不行。",
@@ -7737,254 +7881,6 @@
       "name_en": "Lisa Minci",
       "title_en": "Lisa Minci about Mika Schmidt",
       "content_en": "I do rather envy Huffman for having such a caring little brother. Mika takes care of everything around the house and even looks after him when he's drunk... Ah, how nice it must be to lounge around all day without a care in the world... Hmm? What do you mean, I already do that? You're getting quite bold these days, aren't you, cutie?"
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于凝光",
-      "content_zh": "凝光啊，从「璃月七星」的角度上来说已经做得很好了吧。只是，我要负责的对象从来就是我的船和兄弟们，不是什么「璃月七星」啊。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Ningguang",
-      "content_en": "Ningguang, eh? As far as Liyue Qixing is concerned, she seems to be doing a good job. But for me, my responsibility lies with my ship and my men, and not with Liyue Qixing."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于凝光",
-      "content_zh": "凝光一向不怎么坦率，但她曾经很直接地表露过对我的不满。哈哈，不过啊，喜欢和讨厌都是她自己的事情，我是不可能动摇的。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Ningguang",
-      "content_en": "Ningguang is never really one to speak frankly, but she has been very direct with her criticism of me in the past. Haha... But hey, whether she likes me or hates me is her choice, nothing I can do to sway her."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于香菱",
-      "content_zh": "香菱的一手好菜，可是我们一众人在远航时的念想。没力气的时候，要是想想干煸绝云椒椒那满嘴留香的滋味，都能精神几分。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Mao Xiangling",
-      "content_en": "When we're out on the open ocean, the one thing we do all miss is Xiangling's cooking. When spirits are low, just thinking of her fried jueyun chili, bursting with flavor... It gives everyone just that little extra kick."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于香菱",
-      "content_zh": "香菱啊，她偶尔也会用一些说不上好滋味的食材，做出一些很是了不得的味道。不过嘛，没有尝试就不会有进步，我倒是挺乐意帮她试吃的。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Mao Xiangling",
-      "content_en": "Xiangling huh? She sometimes uses some... interesting ingredients in her dishes to bring about some, ah... intriguing flavors. Though... there's no way she can improve without having someone to taste-test — a role that I am more than happy to fill."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于钟离",
-      "content_zh": "你说「往生堂」的那位先生吗？兄弟们有时会聊起他的传言，听上去是个很有意思的人啊。嗯，有机会去结交一下吧。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Morax",
-      "content_en": "You mean the gentleman from Wangsheng Funeral Parlor? My men sometimes speak of the rumors surrounding him — he sounds interesting. Yes, if I get the chance I'd like to meet him someday."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于魈",
-      "content_zh": "有一年海灯节前夕，船队在归航时遭遇了风暴，紧赶慢赶才在入夜时分回到了璃月港。那时候海灯早就散了。我却在孤云阁的方向，看到了空中悬着一个少年模样的仙人。想必就如传闻一样，在人们看不见的地方，也有人在守护这个璃月港吧。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Xiao",
-      "content_en": "One year on the eve of the Lantern Rite, we ran into a storm as we were returning to port. Try as we did, we only made it back to Liyue Harbor in the dead of night, long after the lanterns had all been released. As I looked towards Guyun Stone Forest, I saw an adeptus, floating in the air, in the form of what appeared to be a young boy. I guess it is like the legends say — there really must be those that watch over Liyue, even if they cannot be seen."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于甘雨",
-      "content_zh": "我和甘雨那丫头私交不错！但你也知道，她是「璃月七星」的秘书，「七星」不待见我那可不是一天两天了。哈，我倒是无所谓，要连累了那丫头可不行。嗯，对外还是保密得好。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Ganyu",
-      "content_en": "Privately, Ganyu and I get on like a house on fire! But as you know, she's the secretary to the Liyue Qixing... and I'm not exactly in their good books right now! Doesn't bother me, but I wouldn't want to put Ganyu in a difficult position. So just keep what I said between us, yeah?"
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于辛焱",
-      "content_zh": "哈，很有意思的丫头！船上的兄弟们也有喜欢听她「摇滚」的。嗯…我本人？怎么说呢，虽然在某些方面跟辛焱有共同话题，但我的音乐品味却是另一方面的…",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Xinyan",
-      "content_en": "She's got a great personality, that one! The guys in the crew love that rock and roll of hers. Me? We have common ground, just... not when it comes to taste in music."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于瑶瑶",
-      "content_zh": "瑶瑶这个小家伙啊，总是爱到船上来玩。但她那副扑闪着眼睛，见什么都新奇的样子，让谁都狠不下心来赶她走。唉，差点要打乱出航的计划。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Yaoyao",
-      "content_en": "Yaoyao always comes on board to play when we're in the harbor. Trouble is, when it's time for her to go she gives you the puppy eyes, and no one has the heart to send her away... Means we're always cutting it quite close by the time we manage to set sail."
-    },
-    {
-      "name_zh": "北斗",
-      "title_zh": "北斗关于枫原万叶",
-      "content_zh": "听说万叶那小子在天守阁外挡了雷电将军的一刀，不简单嘛！嗯…战争结束后，他回了我们南十字船队，说是继续和我们同行一段时间。我当然是非常欢迎了，如果哪天他决定要独自踏上下一段旅程，我再打一壶好酒为他送行，哈哈。",
-      "name_en": "Beidou",
-      "title_en": "Beidou about Kaedehara Kazuha",
-      "content_en": "Kazuha? That scallywag actually blocked a strike from the Raiden Shogun outside Tenshukaku! Easier said than done... After the battle he came to the Crux Fleet — said he'd voyage with us a while longer. I was more than happy to oblige. If the day comes when he decides to set off again by himself on the next stage of his journey, I'll send him off with a drink, haha..."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于丽莎",
-      "content_zh": "师父的雷，天空会变黑。很可怕，很强。",
-      "name_en": "Razor",
-      "title_en": "Razor about Lisa Minci",
-      "content_en": "Lisa lightning makes the sky black. She is strong. She is scary."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于芭芭拉",
-      "content_zh": "芭芭拉，亮晶晶的女孩子。很善良。",
-      "name_en": "Razor",
-      "title_en": "Razor about Barbara Pegg",
-      "content_en": "Shining Barbara is a good child. Very good child."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于迪卢克",
-      "content_zh": "迪卢克，红红的、黑黑的。又冷又热。",
-      "name_en": "Razor",
-      "title_en": "Razor about Diluc Ragnvindr",
-      "content_en": "Diluc is red and black. Hot and cold."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于温迪",
-      "content_zh": "诗歌…唔，不明白。虽然不明白，「卢皮卡」喜欢。",
-      "name_en": "Razor",
-      "title_en": "Razor about Barbatos",
-      "content_en": "Razor doesn't know poems, but... Lupical likes them."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于班尼特",
-      "content_zh": "班尼特，话很多，和他一起，吃不饱。",
-      "name_en": "Razor",
-      "title_en": "Razor about Bennett",
-      "content_en": "Bennett... Much talking. Eat with him, never full."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于可莉",
-      "content_zh": "可莉，朋友！朋友，但是，头疼。",
-      "name_en": "Razor",
-      "title_en": "Razor about Klee",
-      "content_en": "Klee, friend! Friend, but... big hassle."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于法尔伽",
-      "content_zh": "法尔伽？不认识…",
-      "name_en": "Razor",
-      "title_en": "Razor about Varka",
-      "content_en": "Varka? Razor doesn't know..."
-    },
-    {
-      "name_zh": "雷泽",
-      "title_zh": "雷泽关于法尔伽",
-      "content_zh": "哦…法尔伽，是名字。那个男人，高大。雷泽名字，铁的爪子，他给的。唔…想见他。",
-      "name_en": "Razor",
-      "title_en": "Razor about Varka",
-      "content_en": "Oh, Varka is... a name. That man big. Big steelclaw, Razor's name — Varka gave him. Oh... want to see him."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于琴",
-      "content_zh": "大团长出征之后，大大小小的事务都压在了琴的身上。如果我也能多帮到她一点就好了…",
-      "name_en": "Amber",
-      "title_en": "Amber about Jean Gunnhildr",
-      "content_en": "After the Grand Master left on his expedition, all the affairs of the Knights of Favonius, both big and small, have been left up to Jean. If only there was more I could do to help her..."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于琴",
-      "content_zh": "琴可能还在工作？…走，一起请她喝杯咖啡吧。",
-      "name_en": "Amber",
-      "title_en": "Amber about Jean Gunnhildr",
-      "content_en": "Jean might still be working? We should invite her for coffee... Let's go."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于丽莎",
-      "content_zh": "等你有空，我们一起去找丽莎吧！她上次和我讲了一个龙脊雪山宝藏的故事，只讲到一半。唔，我还想知道后续！",
-      "name_en": "Amber",
-      "title_en": "Amber about Lisa Minci",
-      "content_en": "When you have time, we should go see Lisa! Last time I saw her, she was telling me about a story involving a treasure in the Dragonspine area. But, we got cut off before she could finish. I can't wait to hear the rest of her story!"
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于丽莎",
-      "content_zh": "丽莎好像除了睡觉的时间之外都在看书！真厉害啊，我就坐不住那么长时间。",
-      "name_en": "Amber",
-      "title_en": "Amber about Lisa Minci",
-      "content_en": "If Lisa's not sleeping, she'll be reading! I don't know how she does it, I wouldn't be able to sit still for that long."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于凯亚",
-      "content_zh": "…有种不安的感觉！刚才是凯亚陪着你吧？他没给你添麻烦吧？",
-      "name_en": "Amber",
-      "title_en": "Amber about Kaeya Alberich",
-      "content_en": "...I'm feeling uneasy all of a sudden! Was that Kaeya with you earlier? Did he give you any trouble?"
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于凯亚",
-      "content_zh": "花圃里的蒲公英看上去蔫蔫的，哼…一定又是凯亚捣的鬼！",
-      "name_en": "Amber",
-      "title_en": "Amber about Kaeya Alberich",
-      "content_en": "There's something weird-looking about the dandelions in the garden... Hmm, I bet Kaeya had something to do with this!"
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于班尼特",
-      "content_zh": "嗯？班尼特…好像在哪里听过…哦！你说的是冒险家协会那个热血的男孩子啊！嗯，我有时会在秘境附近见到他，好像对寻宝很有热情呢。",
-      "name_en": "Amber",
-      "title_en": "Amber about Bennett",
-      "content_en": "Hmm? Bennett... I feel like I've heard that name before... Oh! Yes, he's that hot-blooded guy from the Adventurers' Guild, right! I tend to come across him way out in the wild from time to time, he seems to really love treasure hunting."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于可莉",
-      "content_zh": "可莉呀，偶尔会有点调皮，但骑士团的大家都很喜欢她！唔…为了不让她又被琴抓去关禁闭，还是看紧她一点吧。",
-      "name_en": "Amber",
-      "title_en": "Amber about Klee",
-      "content_en": "Klee? She can be a bit cheeky sometimes, but everyone in the Knights of Favonius likes her. Although... I really ought to keep a closer eye on her if I wanna keep her from getting put in confinement by Jean again."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于阿贝多",
-      "content_zh": "阿贝多，大多数时候都呆在自己的工坊里，捣鼓一些很厉害的东西。但是，见到他的时候，会有种猜不透他在想些什么的感觉。嗯，猜不透呢…",
-      "name_en": "Amber",
-      "title_en": "Amber about Albedo",
-      "content_en": "Albedo spends most of his time in his workshop, tinkering away with all of his awesome stuff. But, when you see him in person, you never can quite tell what he's thinking... Who knows what goes on in that mind of his..."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于诺艾尔",
-      "content_zh": "你问诺艾尔吗？她的韧性可是很强的。作为前辈，你也要多照顾她一点哦。",
-      "name_en": "Amber",
-      "title_en": "Amber about Noelle",
-      "content_en": "You wanna know about Noelle? She's super resilient. Still, since she's younger than us we should still look out for her."
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于优菈",
-      "content_zh": "优菈是我的好伙伴！只要习惯了优菈开的玩笑，你就会发现，其实她是很好相处的。只不过，优菈因为自己的姓氏，经常被很多人误解，怎么样才能让大家理解她呢…",
-      "name_en": "Amber",
-      "title_en": "Amber about Eula Lawrence",
-      "content_en": "Eula is a great friend of mine! You just need to get used to her sense of humor and you'll get along fine! The only reason she's misunderstood by so many people is her family name. How can I get them to see her for who she really is?"
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于柯莱",
-      "content_zh": "柯莱和我写信说，她的「魔鳞病」已经彻底康复…我太为她高兴了！真想下一秒就飞到她身边，紧紧地抱住她。她还说很想念蒙德的大家，想等哪一天独当一面之后，亲口来汇报自己的成长…啊，要是能赶上下一次羽球节就好了，我都快等不及了！",
-      "name_en": "Amber",
-      "title_en": "Amber about Collei",
-      "content_en": "Collei wrote to me saying that her Eleazar has been completely cured... I'm so happy for her! I wish I could fly to her side right now and give her the biggest hug! She also said she misses everyone in Mondstadt, and that once she's ready, she'll come visit us in person and tell us all about her progress... Oh, it would be great if she could make it in time for the next Ludi Harpastum. Aaah I can't wait to see her again!"
-    },
-    {
-      "name_zh": "安柏",
-      "title_zh": "安柏关于米卡",
-      "content_zh": "哦，米卡是优菈那儿的老队员了，最初可能是看我和优菈关系比较好吧，总是长官长官地叫我。在我跟他分享自己的侦察心得之后，他又改叫我前辈了…弄得我挺不好意思的。明明我们的职责不一样，他在绘制地图上的专业性，是我怎么都比不上的。",
-      "name_en": "Amber",
-      "title_en": "Amber about Mika Schmidt",
-      "content_en": "Oh! Mika's a veteran of Eula's team. When he first arrived, it was always \"Yes, Commander!\" every time he spoke to me — I guess it must have been because he saw how close I was with Eula. But then, even after I told him I was actually an Outrider, he still called me \"Ma'am\"... It was so embarrassing. We have completely different responsibilities, after all. I definitely could never match his expertise in cartography."
     },
     {
       "name_zh": "班尼特",
@@ -8163,6 +8059,110 @@
       "content_en": "Oh! You mean that chef from Fontaine, right? She's great! I got to try a bunch of her new dishes the other day. They were all so... what's the word... precise! It was like she took all the flavors and ingredients in her dishes and transformed them into art! I was amazed at how meticulous everything was — every measurement, every technique executed to perfection! I kinda want Shenhe to ask Aunty Xianyun to make me a precision cooking machine of my own, so I can try out Escoffier's style of cooking!"
     },
     {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于琴",
+      "content_zh": "大团长出征之后，大大小小的事务都压在了琴的身上。如果我也能多帮到她一点就好了…",
+      "name_en": "Amber",
+      "title_en": "Amber about Jean Gunnhildr",
+      "content_en": "After the Grand Master left on his expedition, all the affairs of the Knights of Favonius, both big and small, have been left up to Jean. If only there was more I could do to help her..."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于琴",
+      "content_zh": "琴可能还在工作？…走，一起请她喝杯咖啡吧。",
+      "name_en": "Amber",
+      "title_en": "Amber about Jean Gunnhildr",
+      "content_en": "Jean might still be working? We should invite her for coffee... Let's go."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于丽莎",
+      "content_zh": "等你有空，我们一起去找丽莎吧！她上次和我讲了一个龙脊雪山宝藏的故事，只讲到一半。唔，我还想知道后续！",
+      "name_en": "Amber",
+      "title_en": "Amber about Lisa Minci",
+      "content_en": "When you have time, we should go see Lisa! Last time I saw her, she was telling me about a story involving a treasure in the Dragonspine area. But, we got cut off before she could finish. I can't wait to hear the rest of her story!"
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于丽莎",
+      "content_zh": "丽莎好像除了睡觉的时间之外都在看书！真厉害啊，我就坐不住那么长时间。",
+      "name_en": "Amber",
+      "title_en": "Amber about Lisa Minci",
+      "content_en": "If Lisa's not sleeping, she'll be reading! I don't know how she does it, I wouldn't be able to sit still for that long."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于凯亚",
+      "content_zh": "…有种不安的感觉！刚才是凯亚陪着你吧？他没给你添麻烦吧？",
+      "name_en": "Amber",
+      "title_en": "Amber about Kaeya Alberich",
+      "content_en": "...I'm feeling uneasy all of a sudden! Was that Kaeya with you earlier? Did he give you any trouble?"
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于凯亚",
+      "content_zh": "花圃里的蒲公英看上去蔫蔫的，哼…一定又是凯亚捣的鬼！",
+      "name_en": "Amber",
+      "title_en": "Amber about Kaeya Alberich",
+      "content_en": "There's something weird-looking about the dandelions in the garden... Hmm, I bet Kaeya had something to do with this!"
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于班尼特",
+      "content_zh": "嗯？班尼特…好像在哪里听过…哦！你说的是冒险家协会那个热血的男孩子啊！嗯，我有时会在秘境附近见到他，好像对寻宝很有热情呢。",
+      "name_en": "Amber",
+      "title_en": "Amber about Bennett",
+      "content_en": "Hmm? Bennett... I feel like I've heard that name before... Oh! Yes, he's that hot-blooded guy from the Adventurers' Guild, right! I tend to come across him way out in the wild from time to time, he seems to really love treasure hunting."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于可莉",
+      "content_zh": "可莉呀，偶尔会有点调皮，但骑士团的大家都很喜欢她！唔…为了不让她又被琴抓去关禁闭，还是看紧她一点吧。",
+      "name_en": "Amber",
+      "title_en": "Amber about Klee",
+      "content_en": "Klee? She can be a bit cheeky sometimes, but everyone in the Knights of Favonius likes her. Although... I really ought to keep a closer eye on her if I wanna keep her from getting put in confinement by Jean again."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于阿贝多",
+      "content_zh": "阿贝多，大多数时候都呆在自己的工坊里，捣鼓一些很厉害的东西。但是，见到他的时候，会有种猜不透他在想些什么的感觉。嗯，猜不透呢…",
+      "name_en": "Amber",
+      "title_en": "Amber about Albedo",
+      "content_en": "Albedo spends most of his time in his workshop, tinkering away with all of his awesome stuff. But, when you see him in person, you never can quite tell what he's thinking... Who knows what goes on in that mind of his..."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于诺艾尔",
+      "content_zh": "你问诺艾尔吗？她的韧性可是很强的。作为前辈，你也要多照顾她一点哦。",
+      "name_en": "Amber",
+      "title_en": "Amber about Noelle",
+      "content_en": "You wanna know about Noelle? She's super resilient. Still, since she's younger than us we should still look out for her."
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于优菈",
+      "content_zh": "优菈是我的好伙伴！只要习惯了优菈开的玩笑，你就会发现，其实她是很好相处的。只不过，优菈因为自己的姓氏，经常被很多人误解，怎么样才能让大家理解她呢…",
+      "name_en": "Amber",
+      "title_en": "Amber about Eula Lawrence",
+      "content_en": "Eula is a great friend of mine! You just need to get used to her sense of humor and you'll get along fine! The only reason she's misunderstood by so many people is her family name. How can I get them to see her for who she really is?"
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于柯莱",
+      "content_zh": "柯莱和我写信说，她的「魔鳞病」已经彻底康复…我太为她高兴了！真想下一秒就飞到她身边，紧紧地抱住她。她还说很想念蒙德的大家，想等哪一天独当一面之后，亲口来汇报自己的成长…啊，要是能赶上下一次羽球节就好了，我都快等不及了！",
+      "name_en": "Amber",
+      "title_en": "Amber about Collei",
+      "content_en": "Collei wrote to me saying that her Eleazar has been completely cured... I'm so happy for her! I wish I could fly to her side right now and give her the biggest hug! She also said she misses everyone in Mondstadt, and that once she's ready, she'll come visit us in person and tell us all about her progress... Oh, it would be great if she could make it in time for the next Ludi Harpastum. Aaah I can't wait to see her again!"
+    },
+    {
+      "name_zh": "安柏",
+      "title_zh": "安柏关于米卡",
+      "content_zh": "哦，米卡是优菈那儿的老队员了，最初可能是看我和优菈关系比较好吧，总是长官长官地叫我。在我跟他分享自己的侦察心得之后，他又改叫我前辈了…弄得我挺不好意思的。明明我们的职责不一样，他在绘制地图上的专业性，是我怎么都比不上的。",
+      "name_en": "Amber",
+      "title_en": "Amber about Mika Schmidt",
+      "content_en": "Oh! Mika's a veteran of Eula's team. When he first arrived, it was always \"Yes, Commander!\" every time he spoke to me — I guess it must have been because he saw how close I was with Eula. But then, even after I told him I was actually an Outrider, he still called me \"Ma'am\"... It was so embarrassing. We have completely different responsibilities, after all. I definitely could never match his expertise in cartography."
+    },
+    {
       "name_zh": "芭芭拉",
       "title_zh": "芭芭拉关于琴",
       "content_zh": "代理团长大人…骑士团的领袖，大家都很喜欢她哦。欸？问我吗？我…我当然也非常尊敬她！",
@@ -8331,6 +8331,78 @@
       "content_en": "Have you heard the expression \"same person, different face\"? Ms. Yelan gives me precisely this feeling. When she came to visit my family, my father and brother treated her with respect, and she was pleasant and polite in return. She seemed like a kind and mature young lady to me. But when I saw her elsewhere, she gave a completely different impression."
     },
     {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于安柏",
+      "content_zh": "她是我非常尊敬的前辈，实力很强不说，对人也很亲切。她还教我怎么做「兔兔伯爵」，你看，我会把它当成护身符带在身边，做得不错吧？",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Amber",
+      "content_en": "I really look up to Amber. Not only is she an accomplished knight, but she's a kind person too. She taught me how to make a Baron Bunny. I keep it on my person for luck, and it looks quite alright I think. Oh no, please do not be alarmed. There's no risk of explosion whatsoever."
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于可莉",
+      "content_zh": "我一直很想知道，她还这么小，是怎么正式成为骑士的。有一次向她请教经验，她还没听完我的话，就拉着我去骑士团外面玩炸弹…我以为这是什么修行，结果最后我和她都被琴团长关了禁闭…",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Klee",
+      "content_en": "I've always been curious as to how she managed to become a fully-fledged knight at such a young age. I actually went to ask her for tips once, but I'd barely started talking to her when she grabbed me by the hand and took me outside the Knights headquarters to play with bombs. I thought it was some kind of training exercise at first, but Jean found us, and we both ended up in solitary confinement..."
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于琴",
+      "content_zh": "琴团长一直都是我的榜样，我的实力和认真程度完全比不上她。她对别人就像对自己一样严格，所以如果有一天我能得到她的认可，那也是对我一直以来努力的最大肯定了。在那之前，我都是不会松懈的！",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Jean Gunnhildr",
+      "content_en": "Master Jean has always been my role model, both in terms of ability and dedication. She holds herself and others to the same high standards, so if there ever comes a day when I meet with her approval, it will be the ultimate acknowledgment of all my efforts so far. Until then, there's no room for complacency!"
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于法尔伽",
+      "content_zh": "本来我想跟着他的队伍一起去冒险，履行女仆的责任，但大团长说我留在蒙德他才不会有后顾之忧…大团长这么器重我，我特别开心！虽然后来我知道大团长不只对我一个人说了这句话，不过…器重就是器重嘛。",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Varka",
+      "content_en": "At first I wanted to join his expedition party and do my part as a maid. But the Grand Master said no — it would give him more peace of mind if I stayed behind to take care of things in Mondstadt. It made me so happy to hear how much he values me! ...Okay, so apparently he said the same thing to a lot of people. But that doesn't change the fact he prizes me too!"
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于凯亚",
+      "content_zh": "他很神秘，来如影，去如风，每天都有很重要的任务要去处理。他还经常会给我安排一些小任务，就好像我已经是他的小队成员了一样…嗯？只是跑腿？不不不，虽然确实是跑腿，可是我很珍惜的！",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Kaeya Alberich",
+      "content_en": "He's a mysterious character! He comes and goes like the wind, and is always occupied with important business. I like the fact that he delegates some of the smaller jobs to me sometimes, it's nice to feel like part of the team, you know... What do you mean, \"errand runner\"? I don't see it like that at all! Okay, well yes, technically I run errands for him. But still, I really appreciate it!"
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于班尼特",
+      "content_zh": "他不止一次来邀请我，说什么比起骑士团，还是冒险家协会更适合我…虽然我是会像一个普通的冒险家一样，帮他照顾他的老爹们，但…骑士团对我来说有特别的意义，而且我也不想认输…嗯，果然还是没法答应。",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Bennett",
+      "content_en": "He's asked me to join the Adventurers' Guild more than a few times, saying that life there would suit me better than with the Knights of Favonius. While I could help him take care of his \"dads\" like the other adventurers... the Knights hold a special meaning for me, and I'm not ready to give up on becoming one yet. No, I simply cannot accept his offer."
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于菲谢尔",
+      "content_zh": "她好像是从别的世界来的，其他的我也不清楚…不过她好像很喜欢骑士团的图书馆，总是在那里看书。我打扫的时候会送去一些热乎乎的茶点，她每次都会感谢我，还会说很多听不明白，但都很夸张的话…",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Fischl von Luftschloss Narfidort/Amy",
+      "content_en": "I think she's from another world, but I don't know the details. One thing I do know, however, is that she loves the Knights of Favonius' library. She can always be found there with her nose in a book. I bring her some refreshments whenever I go in there to clean, and she always thanks me profusely. When I say profusely... I mean she goes a bit over the top, to be honest, and... I actually don't understand half of what she's saying."
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于菲谢尔",
+      "content_zh": "以前我打扫图书馆的时候，记得有本书叫《菲谢尔皇女夜谭》，我还以为只是幻想小说…但没想到，里面的主人公居然真的存在！能有一本自己的传记，她一定很厉害吧。",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Fischl von Luftschloss Narfidort/Amy",
+      "content_en": "So once when I was cleaning the library, I noticed a book on the shelf called Flowers for Princess Fischl. At the time I assumed it was just a fantasy novel... I was so surprised to find out the main character is a real person. I could hardly believe it! She must be someone incredible to have a whole book dedicated to her."
+    },
+    {
+      "name_zh": "诺艾尔",
+      "title_zh": "诺艾尔关于芭芭拉",
+      "content_zh": "我们经常在一起喝茶，有时候她会轻轻哼出很好听的调子，告诉我灵感来了。虽然我对音乐给不出什么实用的建议…但能跟芭芭拉享受这样的时光，我真的非常高兴！",
+      "name_en": "Noelle",
+      "title_en": "Noelle about Barbara Pegg",
+      "content_en": "We take tea breaks together sometimes. Often she'll start humming a tune, saying inspiration has come to her. I'm not the right person to give useful feedback on anything musical... But I still love spending time with Barbara."
+    },
+    {
       "name_zh": "凝光",
       "title_zh": "凝光关于北斗",
       "content_zh": "那位…船长。明明也受到不少人推崇，却总是带头漠视规则。她缴纳的罚金，都够买一艘崭新的远洋船了吧。",
@@ -8441,78 +8513,6 @@
       "name_en": "Ningguang",
       "title_en": "Ningguang about Xianyun/Cloud Retainer",
       "content_en": "#I plan to have Lady Xianyun over for a casual conversation over tea in a few days. I happen to have in my possession a number of mechanical devices, and I would be most interested to hear her insights on their design and use. It would also be a fine opportunity to hear about her experiences as an adeptus adapting to a new life in Liyue Harbor. All I require now is a suitable candidate to deliver the invitation to her on my behalf... Would you be interested, {NICKNAME}?"
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于安柏",
-      "content_zh": "她是我非常尊敬的前辈，实力很强不说，对人也很亲切。她还教我怎么做「兔兔伯爵」，你看，我会把它当成护身符带在身边，做得不错吧？",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Amber",
-      "content_en": "I really look up to Amber. Not only is she an accomplished knight, but she's a kind person too. She taught me how to make a Baron Bunny. I keep it on my person for luck, and it looks quite alright I think. Oh no, please do not be alarmed. There's no risk of explosion whatsoever."
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于可莉",
-      "content_zh": "我一直很想知道，她还这么小，是怎么正式成为骑士的。有一次向她请教经验，她还没听完我的话，就拉着我去骑士团外面玩炸弹…我以为这是什么修行，结果最后我和她都被琴团长关了禁闭…",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Klee",
-      "content_en": "I've always been curious as to how she managed to become a fully-fledged knight at such a young age. I actually went to ask her for tips once, but I'd barely started talking to her when she grabbed me by the hand and took me outside the Knights headquarters to play with bombs. I thought it was some kind of training exercise at first, but Jean found us, and we both ended up in solitary confinement..."
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于琴",
-      "content_zh": "琴团长一直都是我的榜样，我的实力和认真程度完全比不上她。她对别人就像对自己一样严格，所以如果有一天我能得到她的认可，那也是对我一直以来努力的最大肯定了。在那之前，我都是不会松懈的！",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Jean Gunnhildr",
-      "content_en": "Master Jean has always been my role model, both in terms of ability and dedication. She holds herself and others to the same high standards, so if there ever comes a day when I meet with her approval, it will be the ultimate acknowledgment of all my efforts so far. Until then, there's no room for complacency!"
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于法尔伽",
-      "content_zh": "本来我想跟着他的队伍一起去冒险，履行女仆的责任，但大团长说我留在蒙德他才不会有后顾之忧…大团长这么器重我，我特别开心！虽然后来我知道大团长不只对我一个人说了这句话，不过…器重就是器重嘛。",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Varka",
-      "content_en": "At first I wanted to join his expedition party and do my part as a maid. But the Grand Master said no — it would give him more peace of mind if I stayed behind to take care of things in Mondstadt. It made me so happy to hear how much he values me! ...Okay, so apparently he said the same thing to a lot of people. But that doesn't change the fact he prizes me too!"
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于凯亚",
-      "content_zh": "他很神秘，来如影，去如风，每天都有很重要的任务要去处理。他还经常会给我安排一些小任务，就好像我已经是他的小队成员了一样…嗯？只是跑腿？不不不，虽然确实是跑腿，可是我很珍惜的！",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Kaeya Alberich",
-      "content_en": "He's a mysterious character! He comes and goes like the wind, and is always occupied with important business. I like the fact that he delegates some of the smaller jobs to me sometimes, it's nice to feel like part of the team, you know... What do you mean, \"errand runner\"? I don't see it like that at all! Okay, well yes, technically I run errands for him. But still, I really appreciate it!"
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于班尼特",
-      "content_zh": "他不止一次来邀请我，说什么比起骑士团，还是冒险家协会更适合我…虽然我是会像一个普通的冒险家一样，帮他照顾他的老爹们，但…骑士团对我来说有特别的意义，而且我也不想认输…嗯，果然还是没法答应。",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Bennett",
-      "content_en": "He's asked me to join the Adventurers' Guild more than a few times, saying that life there would suit me better than with the Knights of Favonius. While I could help him take care of his \"dads\" like the other adventurers... the Knights hold a special meaning for me, and I'm not ready to give up on becoming one yet. No, I simply cannot accept his offer."
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于菲谢尔",
-      "content_zh": "她好像是从别的世界来的，其他的我也不清楚…不过她好像很喜欢骑士团的图书馆，总是在那里看书。我打扫的时候会送去一些热乎乎的茶点，她每次都会感谢我，还会说很多听不明白，但都很夸张的话…",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Fischl von Luftschloss Narfidort/Amy",
-      "content_en": "I think she's from another world, but I don't know the details. One thing I do know, however, is that she loves the Knights of Favonius' library. She can always be found there with her nose in a book. I bring her some refreshments whenever I go in there to clean, and she always thanks me profusely. When I say profusely... I mean she goes a bit over the top, to be honest, and... I actually don't understand half of what she's saying."
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于菲谢尔",
-      "content_zh": "以前我打扫图书馆的时候，记得有本书叫《菲谢尔皇女夜谭》，我还以为只是幻想小说…但没想到，里面的主人公居然真的存在！能有一本自己的传记，她一定很厉害吧。",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Fischl von Luftschloss Narfidort/Amy",
-      "content_en": "So once when I was cleaning the library, I noticed a book on the shelf called Flowers for Princess Fischl. At the time I assumed it was just a fantasy novel... I was so surprised to find out the main character is a real person. I could hardly believe it! She must be someone incredible to have a whole book dedicated to her."
-    },
-    {
-      "name_zh": "诺艾尔",
-      "title_zh": "诺艾尔关于芭芭拉",
-      "content_zh": "我们经常在一起喝茶，有时候她会轻轻哼出很好听的调子，告诉我灵感来了。虽然我对音乐给不出什么实用的建议…但能跟芭芭拉享受这样的时光，我真的非常高兴！",
-      "name_en": "Noelle",
-      "title_en": "Noelle about Barbara Pegg",
-      "content_en": "We take tea breaks together sometimes. Often she'll start humming a tune, saying inspiration has come to her. I'm not the right person to give useful feedback on anything musical... But I still love spending time with Barbara."
     },
     {
       "name_zh": "凯亚",
