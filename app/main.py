@@ -1,14 +1,15 @@
 from contextlib import asynccontextmanager
+
+from config import settings, setup_logging
+
+setup_logging("web")
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import settings
 from app.services.neo4j_service import Neo4jService
 from app.services.rabbitmq_service import RabbitMQService
 from app.api.v1.router import api_router
-import logging
-
-logging.basicConfig(level=logging.INFO)
 
 neo4j_service: Neo4jService = None
 rabbitmq_service: RabbitMQService = None

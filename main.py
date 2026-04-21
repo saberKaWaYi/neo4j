@@ -1,8 +1,6 @@
 import argparse
 import uvicorn
 
-from config import setup_logging
-
 
 def run_web(host: str = "0.0.0.0", port: int = 8000, reload: bool = True):
     """启动FastAPI Web服务"""
@@ -10,10 +8,9 @@ def run_web(host: str = "0.0.0.0", port: int = 8000, reload: bool = True):
 
 
 def run_crawler():
-    """运行爬虫任务"""
-    setup_logging()
-    from crawler.genshin import run_crawler
-    run_crawler()
+    """爬取并入 Neo4j"""
+    from crawler.genshin.genshin_network import run_crawler as run_genshin_network_crawler
+    run_genshin_network_crawler()
 
 
 def main():

@@ -1,13 +1,19 @@
+import sys
+from pathlib import Path
 import logging
 from urllib.parse import quote
 import requests
 from bs4 import BeautifulSoup
 import time
-import json
 
-from config import crawler_settings, DATA_DIR, setup_logging
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
 
-setup_logging()
+from config import setup_logging,crawler_settings,settings
+from app.services.neo4j_service import Neo4jService
+
+setup_logging("crawler")
 logger = logging.getLogger("crawler")
 
 
@@ -156,19 +162,52 @@ class GenshinCrawler:
             raise
 
     def _save_results(self):
-        logger.info("开始执行步骤4：保存结果到 JSON 文件")
-        output_path = DATA_DIR / 'social_network_demo.json'
-        payload = {
-            "characters": self.characters,
-            "social_network": self.social_network
-        }
+        logger.info("开始执行步骤4：将内存中的结果写入 Neo4j")
+        nodes = [
+            {"id": c["name_en"], "properties": {"name_zh": c["name_zh"], "name_en": c["name_en"]}}
+            for c in self.characters
+        ]
+        edges = []
+        for row in self.social_network:
+            source_id = row["name_en"]
+            target_id = row["title_en"].split(" about ", 1)[1].strip()
+            edge_id = f"{source_id} to {target_id}"
+            source_name_en = row["name_en"]
+            target_name_en = row["title_en"].split(" about ", 1)[1].strip()
+            source_name_zh = row["name_zh"]
+            target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
+            title_en = row["title_en"]
+            title_zh = row["title_zh"]
+            edges.append({
+                "id": edge_id,
+                "source_id": source_id,
+                "target_id": target_id,
+                "properties": {
+                    "source_name_en": source_name_en,
+                    "target_name_en": target_name_en,
+                    "source_name_zh": source_name_zh,
+                    "target_name_zh": target_name_zh,
+                    "title_en": title_en,
+                    "title_zh": title_zh,
+                },
+            })
+        neo4j = Neo4jService(
+            uri=settings.neo4j_uri,
+            username=settings.neo4j_username,
+            password=settings.neo4j_password,
+            database=settings.neo4j_database,
+        )
         try:
-            with output_path.open('w', encoding='utf-8') as f:
-                json.dump(payload, f, ensure_ascii=False, indent=2)
-            logger.info(f"步骤4执行完成，结果已保存到 {output_path}")
+            neo4j.connect()
+            n_count = neo4j.add_nodes("Character", nodes)
+            e_count = neo4j.add_edges("To", edges)
+            logger.info(f"步骤4执行完成，写入 Neo4j 节点数: {n_count}，关系数: {e_count}")
         except Exception as e:
             logger.error(f"步骤4执行失败: {e}")
             raise
+        finally:
+            neo4j.close()
+
 
 def run_crawler():
     logger.info("原神拓扑爬取程序开始运行")
