@@ -10,8 +10,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from config import setup_logging, crawler_settings, settings, get_business_database
-from app.services.neo4j_service import Neo4jService
+from config import setup_logging, crawler_settings, settings
 
 setup_logging("crawler")
 logger = logging.getLogger("crawler")
@@ -162,7 +161,7 @@ class GenshinCrawler:
             raise
 
     def _save_results(self):
-        logger.info("开始执行步骤4：将内存中的结果写入 Neo4j")
+        logger.info("开始执行步骤4：将内存中的结果发送到 FastAPI Producer")
         nodes = [
             {"id": c["name_en"], "properties": {"name_zh": c["name_zh"], "name_en": c["name_en"]}}
             for c in self.characters
@@ -191,22 +190,37 @@ class GenshinCrawler:
                     "title_zh": title_zh,
                 },
             })
-        neo4j = Neo4jService(
-            uri=settings.neo4j_uri,
-            username=settings.neo4j_username,
-            password=settings.neo4j_password,
-            database=get_business_database("genshin"),
+        payload_nodes = {
+            "operation": "add_nodes",
+            "data": {"label": "Character", "nodes": nodes},
+        }
+        payload_edges = {
+            "operation": "add_edges",
+            "data": {"label": "To", "edges": edges},
+        }
+        api_base_url = settings.crawler_api_base_url.rstrip("/")
+        send_url = f"{api_base_url}{settings.api_prefix}/messages/send_nebula"
+        response_nodes = requests.post(
+            send_url,
+            json=payload_nodes,
+            timeout=15,
         )
-        try:
-            neo4j.connect()
-            n_count = neo4j.add_nodes("Character", nodes)
-            e_count = neo4j.add_edges("To", edges)
-            logger.info(f"步骤4执行完成，写入 Neo4j 节点数: {n_count}，关系数: {e_count}")
-        except Exception as e:
-            logger.error(f"步骤4执行失败: {e}")
-            raise
-        finally:
-            neo4j.close()
+        if response_nodes.status_code != 200:
+            logger.error(f"步骤4发送节点数据失败: {response_nodes.status_code}")
+            raise Exception(f"步骤4发送节点数据失败: {response_nodes.status_code}")
+
+        response_edges = requests.post(
+            send_url,
+            json=payload_edges,
+            timeout=15,
+        )
+        if response_edges.status_code != 200:
+            logger.error(f"步骤4发送边数据失败: {response_edges.status_code}")
+            raise Exception(f"步骤4发送边数据失败: {response_edges.status_code}")
+
+        logger.info(
+            "步骤4执行完成，已通过 FastAPI 入队",
+        )
 
 
 def run_crawler():
