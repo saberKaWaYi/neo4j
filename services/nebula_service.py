@@ -122,54 +122,65 @@ class NebulaService:
         self._execute(f"CREATE EDGE IF NOT EXISTS `{edge}`({prop_sql});")
         logger.info("Ensured Nebula edge type exists: %s", edge)
 
-    def add_nodes(
-        self, space_name: str, tag: str, nodes: list[dict], chunk_size: int = 10000
-    ) -> int:
+    def add_nodes(self, space_name: str, tag: str, nodes: list[dict]) -> int:
         """分块批量插入节点。"""
+        if not nodes:
+            return 0
         self.select_space(space_name)
         validated_tag = self._validate_identifier(tag)
+        key_properties = list(nodes[0]["properties"].keys())
+        key_properties_sql = ", ".join(self._validate_identifier(k) for k in key_properties)
         created_count = 0
+        chunk_size = 10000
         for begin in range(0, len(nodes), chunk_size):
             batch = nodes[begin : begin + chunk_size]
+            if not batch:
+                continue
             values_sql: list[str] = []
             for node in batch:
                 vid = self._escape_string(str(node["vid"]))
-                properties = node.get("properties", {})
-                properties_json = self._escape_string(json.dumps(properties, ensure_ascii=False))
-                values_sql.append(f'"{vid}": ("{vid}", "{properties_json}")')
+                properties = node["properties"]
+                property_values = ", ".join(
+                    self._to_ngql_literal(properties[k]) for k in key_properties
+                )
+                values_sql.append(f'"{vid}": ({property_values})')
             if not values_sql:
                 continue
             query = (
-                f'INSERT VERTEX `{validated_tag}`(id, properties) '
+                f'INSERT VERTEX {validated_tag} ({key_properties_sql}) '
                 f'VALUES {", ".join(values_sql)};'
             )
             self._execute(query)
             created_count += len(batch)
         return created_count
 
-    def add_edges(
-        self, space_name: str, edge_type: str, edges: list[dict], chunk_size: int = 1000
-    ) -> int:
-        """分块批量插入边（关系）。"""
+    def add_edges(self, space_name: str, edge_type: str, edges: list[dict]) -> int:
+        """分块批量插入边"""
+        if not edges:
+            return 0
         self.select_space(space_name)
         validated_edge_type = self._validate_identifier(edge_type)
+        key_properties = list(edges[0]["properties"].keys())
+        key_properties_sql = ", ".join(self._validate_identifier(k) for k in key_properties)
         created_count = 0
+        chunk_size = 10000
         for begin in range(0, len(edges), chunk_size):
             batch = edges[begin : begin + chunk_size]
             values_sql: list[str] = []
             for edge in batch:
                 source_vid = self._escape_string(str(edge["source_vid"]))
                 target_vid = self._escape_string(str(edge["target_vid"]))
-                edge_id = self._escape_string(f"{source_vid} to {target_vid}")
-                properties = edge.get("properties", {})
-                properties_json = self._escape_string(json.dumps(properties, ensure_ascii=False))
+                properties = edge["properties"]
+                property_values = ", ".join(
+                    self._to_ngql_literal(properties[k]) for k in key_properties
+                )
                 values_sql.append(
-                    f'"{source_vid}"->"{target_vid}"@0: ("{edge_id}", "{properties_json}")'
+                    f'"{source_vid}"->"{target_vid}"@0: ({property_values})'
                 )
             if not values_sql:
                 continue
             query = (
-                f'INSERT EDGE `{validated_edge_type}`(id, properties) '
+                f'INSERT EDGE `{validated_edge_type}`({key_properties_sql}) '
                 f'VALUES {", ".join(values_sql)};'
             )
             self._execute(query)
@@ -283,6 +294,12 @@ class NebulaService:
                 f"Nebula query failed: {result.error_msg()} (code={result.error_code()}), query={query}"
             )
         return result
+
+    def _to_ngql_literal(self, value) -> str:
+        """将 Python 值转换为 nGQL 字面量。"""
+        if isinstance(value, (int, float)):
+            return str(value)
+        return f'"{self._escape_string(str(value))}"'
 
     @staticmethod
     def _validate_identifier(identifier: str) -> str:
