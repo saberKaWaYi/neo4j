@@ -29,7 +29,7 @@ def build() -> None:
     )
     svc.connect(use_space=False)
     try:
-        svc.create_space(space_name=space_name, partition_num=5, replica_factor=1)
+        svc.create_space(space_name=space_name, partition_num=5, replica_factor=1, vid_type="FIXED_STRING(128)")
         svc.select_space(space_name)
         svc.create_tag("Character", {"photo": "string", "name_zh": "string", "name_en": "string"})
         svc.create_edge_type("To", {"source_name_en": "string", "target_name_en": "string", "source_name_zh": "string", "target_name_zh": "string", "title_en": "string", "title_zh": "string"})
