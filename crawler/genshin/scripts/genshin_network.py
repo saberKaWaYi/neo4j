@@ -75,7 +75,7 @@ class GenshinCrawler:
                     if "旅行者" in name or "奇偶" in name:
                         continue
                     url = item.find("img")["src"]
-                    self.characters.append({"name_zh":name,"photo":url})
+                    self.characters.append({"photo":url,"name_zh":name})
             logger.info(f"步骤1执行完成，共获取 {len(self.characters)} 个角色中文名称和照片")
         except Exception as e:
             logger.error(f"步骤1执行失败: {e}")
