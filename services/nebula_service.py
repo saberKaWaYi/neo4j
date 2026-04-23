@@ -196,15 +196,19 @@ class NebulaService:
         self.select_space(space_name)
         validated_edge_type = self._validate_identifier(edge_type)
         deleted_count = 0
-        basic_query = f'DELETE EDGE {validated_edge_type} '
-        edge_list = []
-        for edge in edges:
-            source_vid = self._escape_string(str(edge["source_vid"]))
-            target_vid = self._escape_string(str(edge["target_vid"]))
-            edge_list.append(f'"{source_vid}" -> "{target_vid}"')
-            deleted_count += 1
-        basic_query += f'{", ".join(edge_list)};'
-        self._execute(basic_query)
+        chunk_size = 10000
+        for begin in range(0, len(edges), chunk_size):
+            batch = edges[begin : begin + chunk_size]
+            if not batch:
+                continue
+            edge_list = []
+            for edge in batch:
+                source_vid = self._escape_string(str(edge["source_vid"]))
+                target_vid = self._escape_string(str(edge["target_vid"]))
+                edge_list.append(f'"{source_vid}" -> "{target_vid}"')
+            query = f'DELETE EDGE {validated_edge_type} {", ".join(edge_list)};'
+            self._execute(query)
+            deleted_count += len(batch)
         return deleted_count
 
     def execute_operation(self, space_name: str, operation: str, data: dict) -> dict:
