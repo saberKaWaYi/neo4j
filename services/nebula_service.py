@@ -155,7 +155,7 @@ class NebulaService:
         return created_count
 
     def add_edges(self, space_name: str, edge_type: str, edges: list[dict]) -> int:
-        """分块批量插入边"""
+        """分块批量插入边。"""
         if not edges:
             return 0
         self.select_space(space_name)
