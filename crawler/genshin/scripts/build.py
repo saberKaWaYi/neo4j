@@ -13,29 +13,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-from neo4j import GraphDatabase
-
-from config import settings, get_business_database
+from app.services.nebula_service import NebulaService
+from config import settings, get_business_space
 
 
 def build() -> None:
-    database_name = get_business_database("genshin")
-    logger.info("Ensuring database exists: %s", database_name)
-    driver = GraphDatabase.driver(
-        settings.neo4j_uri,
-        auth=(settings.neo4j_username, settings.neo4j_password),
+    space_name = get_business_space("genshin")
+    logger.info("Ensuring Nebula space exists: %s", space_name)
+    svc = NebulaService(
+        host=settings.nebula_host,
+        port=settings.nebula_port,
+        username=settings.nebula_username,
+        password=settings.nebula_password,
+        space=space_name,
     )
+    svc.connect(use_space=False)
     try:
-        with driver.session(database="system") as session:
-            session.run(f"CREATE DATABASE {database_name} IF NOT EXISTS").consume()
-        logger.info("Database ready: %s", database_name)
+        svc.create_space(space_name=space_name, partition_num=5, replica_factor=1)
+        svc.select_space(space_name)
+        svc.create_tag("Character", {"photo": "string", "name_zh": "string", "name_en": "string"})
+        svc.create_edge_type("To", {"source_name_en": "string", "target_name_en": "string", "source_name_zh": "string", "target_name_zh": "string", "title_en": "string", "title_zh": "string"})
+        logger.info("Nebula schema ready for space: %s", space_name)
     finally:
-        driver.close()
+        svc.close()
 
 
 if __name__ == "__main__":
     try:
         build()
     except Exception as exc:
-        logger.exception("Failed to build database: %s", exc)
+        logger.exception("Failed to build Nebula schema: %s", exc)
         raise
