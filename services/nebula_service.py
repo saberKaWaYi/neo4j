@@ -180,15 +180,16 @@ class NebulaService:
         """批量删除节点。"""
         self.select_space(space_name)
         deleted_count = 0
-        for vid in vids:
-            escaped_vid = self._escape_string(str(vid))
-            query = (
-                f'DELETE VERTEX "{escaped_vid}" WITH EDGE;'
-                if cascade
-                else f'DELETE VERTEX "{escaped_vid}";'
-            )
+        chunk_size = 10000
+        for begin in range(0, len(vids), chunk_size):
+            batch = vids[begin : begin + chunk_size]
+            if not batch:
+                continue
+            escaped_vids = [f'"{self._escape_string(str(vid))}"' for vid in batch]
+            suffix = " WITH EDGE;" if cascade else ";"
+            query = f'DELETE VERTEX {", ".join(escaped_vids)}{suffix}'
             self._execute(query)
-            deleted_count += 1
+            deleted_count += len(batch)
         return deleted_count
 
     def delete_edges(self, space_name: str, edge_type: str, edges: list[dict]) -> int:
