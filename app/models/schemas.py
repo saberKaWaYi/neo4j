@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
+from typing import Literal
 from datetime import datetime
 
 
@@ -25,7 +25,7 @@ class EdgeItem(BaseModel):
 
 class AddEdgesData(BaseModel):
     """添加边数据"""
-    label: str = Field(..., description="关系类型，如KNOWS")
+    label: str = Field(..., description="关系类型，如Character_to_Character")
     edges: list[EdgeItem] = Field(..., description="边列表")
 
 
@@ -52,26 +52,3 @@ class MessageResponse(BaseModel):
     message_id: str
     message: str
     timestamp: datetime
-
-
-class ConsumedMessage(BaseModel):
-    """已消费的消息"""
-    message_id: str
-    timestamp: datetime
-    operation: str
-    data: dict
-    status: str
-
-
-class ConsumeResponse(BaseModel):
-    """消费响应"""
-    success: bool
-    message: Optional[ConsumedMessage] = None
-    error: Optional[str] = None
-
-
-class HealthResponse(BaseModel):
-    """健康检查响应"""
-    status: str
-    neo4j_connected: bool
-    rabbitmq_connected: bool
