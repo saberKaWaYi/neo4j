@@ -27,13 +27,13 @@ class GenshinCrawler:
         self.max_retries = crawler_settings.max_retries
 
     def run(self):
-        self._fetch_character_names_zh()
+        self._fetch_character_names_zh_and_photos()
         self._fetch_character_names_en()
         self._fetch_social_network()
         self._save_results()
 
-    def _fetch_character_names_zh(self):
-        logger.info("开始执行步骤1：获取角色名称中文列表")
+    def _fetch_character_names_zh_and_photos(self):
+        logger.info("开始执行步骤1：获取角色名称中文列表和照片")
         url = "https://wiki.biligame.com/ys/%E8%A7%92%E8%89%B2"
         try:
             times = 0
@@ -56,8 +56,9 @@ class GenshinCrawler:
                     name = name_tag.text.strip()
                     if "旅行者" in name or "奇偶" in name:
                         continue
-                    self.characters.append({"name_zh":name})
-            logger.info(f"步骤1执行完成，共获取 {len(self.characters)} 个角色中文名称")
+                    url = item.find("img")["src"]
+                    self.characters.append({"photo":url,"name_zh":name})
+            logger.info(f"步骤1执行完成，共获取 {len(self.characters)} 个角色中文名称和照片")
         except Exception as e:
             logger.error(f"步骤1执行失败: {e}")
             raise
@@ -163,7 +164,7 @@ class GenshinCrawler:
     def _save_results(self):
         logger.info("开始执行步骤4：将内存中的结果发送到 FastAPI Producer")
         nodes = [
-            {"id": c["name_en"], "properties": {"name_zh": c["name_zh"], "name_en": c["name_en"]}}
+            {"id": c["name_en"], "properties": {"photo": c["photo"],"name_zh": c["name_zh"], "name_en": c["name_en"]}}
             for c in self.characters
         ]
         edges = []
@@ -171,8 +172,8 @@ class GenshinCrawler:
             source_id = row["name_en"]
             target_id = row["title_en"].split(" about ", 1)[1].strip()
             edge_id = f"{source_id} to {target_id}"
-            source_name_en = row["name_en"]
-            target_name_en = row["title_en"].split(" about ", 1)[1].strip()
+            source_name_en = source_id
+            target_name_en = target_id
             source_name_zh = row["name_zh"]
             target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
             title_en = row["title_en"]
