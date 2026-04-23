@@ -197,12 +197,13 @@ class NebulaService:
         validated_edge_type = self._validate_identifier(edge_type)
         deleted_count = 0
         basic_query = f'DELETE EDGE {validated_edge_type} '
+        edge_list = []
         for edge in edges:
             source_vid = self._escape_string(str(edge["source_vid"]))
             target_vid = self._escape_string(str(edge["target_vid"]))
-            basic_query += f'"{source_vid}" -> "{target_vid}"'
+            edge_list.append(f'"{source_vid}" -> "{target_vid}"')
             deleted_count += 1
-        basic_query += ';'
+        basic_query += f'{", ".join(edge_list)};'
         self._execute(basic_query)
         return deleted_count
 
