@@ -1,12 +1,15 @@
-import json
 import logging
-import uuid
-from datetime import datetime, timezone
-from typing import Optional
-
-import pika
 
 logger = logging.getLogger(__name__)
+
+from typing import Optional
+
+import uuid
+from datetime import datetime, timezone
+
+import json
+
+import pika
 
 
 class RabbitMQService:
@@ -18,16 +21,18 @@ class RabbitMQService:
         port: int,
         username: str,
         password: str,
-        queue_names: Optional[list[str]] = None,
-        default_queue_name: str = "nebula_operations",
+        queue_names: list[str],
     ):
         self.host = host
         self.port = port
         self.username = username
         self.password = password
-        names = queue_names or [default_queue_name]
+        if not queue_names:
+            raise ValueError("queue_names must be provided and cannot be empty")
+        names = [name.strip() for name in queue_names if name and name.strip()]
+        if not names:
+            raise ValueError("queue_names must include at least one non-empty queue name")
         self.queue_names = list(dict.fromkeys(names))
-        self.default_queue_name = default_queue_name
         self._connection: Optional[pika.BlockingConnection] = None
         self._channel: Optional[pika.channel.Channel] = None
 
@@ -54,12 +59,10 @@ class RabbitMQService:
             self._connection.close()
             logger.info("RabbitMQ connection closed")
 
-    def publish_message(
-        self, operation: str, data: dict, queue_name: Optional[str] = None
-    ) -> str:
+    def publish_message(self, operation: str, data: dict, queue_name: str) -> str:
         """发布消息到队列"""
         message_id = str(uuid.uuid4())
-        target_queue = self._resolve_queue_name(queue_name)
+        target_queue = self.validate_queue_name(queue_name)
         message = {
             "message_id": message_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -90,11 +93,9 @@ class RabbitMQService:
         )
         return message_id
 
-    def consume_message(
-        self, auto_ack: bool = False, queue_name: Optional[str] = None
-    ) -> Optional[dict]:
+    def consume_message(self, queue_name: str, auto_ack: bool = False) -> Optional[dict]:
         """从队列消费一条消息"""
-        target_queue = self._resolve_queue_name(queue_name)
+        target_queue = self.validate_queue_name(queue_name)
         if not self._channel:
             self.connect()
 
@@ -124,10 +125,10 @@ class RabbitMQService:
                 f"Rejected message with delivery_tag {delivery_tag}, requeue={requeue}"
             )
 
-    def _resolve_queue_name(self, queue_name: Optional[str]) -> str:
-        target_queue = queue_name or self.default_queue_name
+    def validate_queue_name(self, queue_name: str) -> str:
+        target_queue = queue_name.strip()
+        if not target_queue:
+            raise ValueError("queue_name must be provided and cannot be empty")
         if target_queue not in self.queue_names:
-            self.queue_names.append(target_queue)
-            if self._channel:
-                self._channel.queue_declare(queue=target_queue, durable=True)
+            raise ValueError(f"queue_name {target_queue} is not valid")
         return target_queue

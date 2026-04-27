@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -9,8 +7,6 @@ from models.schemas import AddEdgesData, AddNodesData, DeleteEdgesData, DeleteNo
 
 import re
 _IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-
-import json
 
 from nebula3.Config import Config
 from nebula3.gclient.net import ConnectionPool
