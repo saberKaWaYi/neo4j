@@ -19,15 +19,14 @@ async def lifespan(app: FastAPI):
     global rabbitmq_service
 
     rabbitmq_service = RabbitMQService(
-        host=settings.rabbitmq_host,
-        port=settings.rabbitmq_port,
-        username=settings.rabbitmq_username,
-        password=settings.rabbitmq_password,
+        host=settings.rabbitmq.host,
+        port=settings.rabbitmq.port,
+        username=settings.rabbitmq.username,
+        password=settings.rabbitmq.password,
         queue_names=[
-            settings.rabbitmq_queue_nebula,
-            settings.rabbitmq_queue_mongo,
+            settings.rabbitmq.queue_nebula,
+            settings.rabbitmq.queue_mongo,
         ],
-        default_queue_name=settings.rabbitmq_queue_nebula,
     )
     rabbitmq_service.connect()
 
@@ -39,9 +38,9 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """创建FastAPI应用"""
     app = FastAPI(
-        title=settings.app_name,
-        version=settings.app_version,
-        debug=settings.debug,
+        title=settings.app.app_name,
+        version=settings.app.app_version,
+        debug=settings.app.debug,
         lifespan=lifespan,
     )
 
@@ -53,7 +52,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(api_router, prefix=settings.api_prefix)
+    app.include_router(api_router, prefix=settings.app.api_prefix)
 
     return app
 

@@ -15,29 +15,28 @@ class QueueWorker:
     def __init__(self):
         self.space_name = get_business_space("genshin")
         self.nebula = NebulaService(
-            host=settings.nebula_host,
-            port=settings.nebula_port,
-            username=settings.nebula_username,
-            password=settings.nebula_password,
+            host=settings.nebula.host,
+            port=settings.nebula.port,
+            username=settings.nebula.username,
+            password=settings.nebula.password,
         )
         self.rabbitmq = RabbitMQService(
-            host=settings.rabbitmq_host,
-            port=settings.rabbitmq_port,
-            username=settings.rabbitmq_username,
-            password=settings.rabbitmq_password,
+            host=settings.rabbitmq.host,
+            port=settings.rabbitmq.port,
+            username=settings.rabbitmq.username,
+            password=settings.rabbitmq.password,
             queue_names=[
-                settings.rabbitmq_queue_nebula,
-                settings.rabbitmq_queue_mongo,
+                settings.rabbitmq.queue_nebula,
+                settings.rabbitmq.queue_mongo,
             ],
-            default_queue_name=settings.rabbitmq_queue_nebula,
         )
         self.queue_handlers = {
-            settings.rabbitmq_queue_nebula: self._handle_nebula_message,
-            settings.rabbitmq_queue_mongo: self._handle_mongo_message,
+            settings.rabbitmq.queue_nebula: self._handle_nebula_message,
+            settings.rabbitmq.queue_mongo: self._handle_mongo_message,
         }
         self.queue_poll_order = [
-            settings.rabbitmq_queue_nebula,
-            settings.rabbitmq_queue_mongo,
+            settings.rabbitmq.queue_nebula,
+            settings.rabbitmq.queue_mongo,
         ]
 
     def run_forever(self) -> None:

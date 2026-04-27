@@ -20,13 +20,13 @@ def get_rabbitmq_service() -> RabbitMQService:
 @router.post("/send_nebula", response_model=MessageResponse)
 async def send_nebula_message(request: MessageRequest):
     """发送消息到 Nebula 队列"""
-    return await _send_to_queue(request, settings.rabbitmq_queue_nebula)
+    return await _send_to_queue(request, settings.rabbitmq.queue_nebula)
 
 
 @router.post("/send_mongo", response_model=MessageResponse)
 async def send_mongo_message(request: MessageRequest):
     """发送消息到 Mongo 队列"""
-    return await _send_to_queue(request, settings.rabbitmq_queue_mongo)
+    return await _send_to_queue(request, settings.rabbitmq.queue_mongo)
 
 
 async def _send_to_queue(request: MessageRequest, queue_name: str) -> MessageResponse:
