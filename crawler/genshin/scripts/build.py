@@ -14,12 +14,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 from services.nebula_service import NebulaService
-from config import settings, get_business_space
+from settings_config import settings
 
 
 def build() -> None:
-    space_name = get_business_space("genshin")
-    logger.info("Ensuring Nebula space exists: %s", space_name)
+    logger.info("Ensuring Nebula space exists: %s", "genshin")
     svc = NebulaService(
         host=settings.nebula_host,
         port=settings.nebula_port,
@@ -28,10 +27,10 @@ def build() -> None:
     )
     svc.connect()
     try:
-        svc.create_space(space_name=space_name, partition_num=5, replica_factor=1, vid_type="FIXED_STRING(128)")
-        svc.create_tag(space_name, "Character", {"photo": "string", "name_zh": "string", "name_en": "string"})
+        svc.create_space(space_name="genshin", partition_num=5, replica_factor=1, vid_type="FIXED_STRING(128)")
+        svc.create_tag("genshin", "Character", {"photo": "string", "name_zh": "string", "name_en": "string"})
         svc.create_edge_type(
-            space_name,
+            "genshin",
             "Character_to_Character",
             {
                 "source_name_en": "string",
@@ -42,7 +41,7 @@ def build() -> None:
                 "title_zh": "string",
             },
         )
-        logger.info("Nebula schema ready for space: %s", space_name)
+        logger.info("Nebula schema ready for space: %s", "genshin")
     finally:
         svc.close()
 
