@@ -28,16 +28,16 @@ class AddEdgesData(BaseModel):
     edges: list[EdgeItem] = Field(..., description="边列表")
 
 
-class EdgeItemSimple(BaseModel):
-
-    source_vid: str = Field(..., description="源节点vid")
-    target_vid: str = Field(..., description="目标节点vid")
-
-
 class DeleteNodesData(BaseModel):
 
     vids: list[str] = Field(..., description="要删除的节点vid列表")
     cascade: bool = Field(default=True, description="是否级联删除关联边")
+
+
+class EdgeItemSimple(BaseModel):
+
+    source_vid: str = Field(..., description="源节点vid")
+    target_vid: str = Field(..., description="目标节点vid")
 
 
 class DeleteEdgesData(BaseModel):
