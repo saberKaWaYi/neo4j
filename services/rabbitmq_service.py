@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-from typing import Optional
+from typing import Literal, Optional
 
 import uuid
 from datetime import datetime, timezone
@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 import json
 
 import pika
+
+ALLOWED_OPERATIONS = {"add_nodes", "add_edges", "delete_nodes", "delete_edges"}
 
 
 class RabbitMQService:
@@ -59,7 +61,12 @@ class RabbitMQService:
             self._connection.close()
             logger.info("RabbitMQ connection closed")
 
-    def publish_message(self, operation: str, data: dict, queue_name: str) -> str:
+    def publish_message(
+        self,
+        operation: Literal[ALLOWED_OPERATIONS],
+        data: dict,
+        queue_name: str,
+    ) -> str:
         """发布消息到队列"""
         message_id = str(uuid.uuid4())
         target_queue = self.validate_queue_name(queue_name)
