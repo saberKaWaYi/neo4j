@@ -1,17 +1,11 @@
-import logging
-import sys
 from pathlib import Path
-from urllib.parse import quote
-import requests
-from bs4 import BeautifulSoup
-import time
-import json
+import sys
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-from config import crawler_settings
+import logging
 
 
 def _setup_script_logging() -> None:
@@ -33,16 +27,23 @@ def _setup_script_logging() -> None:
 _setup_script_logging()
 logger = logging.getLogger(__name__)
 
+from settings_config import settings
+import json
+from urllib.parse import quote
+import requests
+from bs4 import BeautifulSoup
+import time
+
 
 class GenshinCrawler:
 
     def __init__(self):
         self.characters = []
         self.social_network = []
-        self.cookies = crawler_settings.website_cookies["wiki_biligame_com"]["cookie_name"]
-        self.headers = crawler_settings.headers
-        self.time_sleep = crawler_settings.time_sleep
-        self.max_retries = crawler_settings.max_retries
+        self.cookies = json.loads(settings.crawler_cookies)
+        self.headers = json.loads(settings.crawler_headers)
+        self.time_sleep = settings.crawler_time_sleep
+        self.max_retries = settings.crawler_max_retries
 
     def run(self):
         self._fetch_character_names_zh_and_photos()
