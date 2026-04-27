@@ -61,3 +61,5 @@ class Settings(BaseSettings):
         if service_debug is None:
             return self.debug
         return service_debug
+
+settings = Settings()
