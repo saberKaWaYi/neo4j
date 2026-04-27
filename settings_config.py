@@ -1,12 +1,17 @@
 from typing import Literal
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LogServiceName = Literal["crawler", "web", "worker"]
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        enable_decoding=False,
+    )
 
     """全局配置"""
     debug: bool = False
@@ -46,6 +51,11 @@ class Settings(BaseSettings):
     def parse_businesses(cls, value):
         if isinstance(value, str):
             items = [item.strip() for item in value.split(",") if item.strip()]
+            if not items:
+                raise ValueError("BUSINESSES must include at least one business")
+            return items
+        if isinstance(value, list):
+            items = [str(item).strip() for item in value if str(item).strip()]
             if not items:
                 raise ValueError("BUSINESSES must include at least one business")
             return items
