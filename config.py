@@ -36,7 +36,8 @@ def _console_handler() -> dict:
     }
 
 
-def _logging_dict_web() -> dict:
+def _logging_dict_web(debug: bool) -> dict:
+    level = "DEBUG" if debug else "INFO"
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -46,7 +47,7 @@ def _logging_dict_web() -> dict:
                 "class": "logging.FileHandler",
                 "filename": str(WEB_LOG),
                 "formatter": "standard",
-                "level": "INFO",
+                "level": level,
                 "encoding": "utf-8",
             },
             "console": _console_handler(),
@@ -54,39 +55,40 @@ def _logging_dict_web() -> dict:
         "loggers": {
             "app": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "services": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "uvicorn": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "uvicorn.error": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "uvicorn.access": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "fastapi": {
                 "handlers": ["web_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
         },
     }
 
 
-def _logging_dict_crawler() -> dict:
+def _logging_dict_crawler(debug: bool) -> dict:
+    level = "DEBUG" if debug else "INFO"
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -96,7 +98,7 @@ def _logging_dict_crawler() -> dict:
                 "class": "logging.FileHandler",
                 "filename": str(CRAWLER_LOG),
                 "formatter": "standard",
-                "level": "DEBUG",
+                "level": level,
                 "encoding": "utf-8",
             },
             "console": _console_handler(),
@@ -104,19 +106,20 @@ def _logging_dict_crawler() -> dict:
         "loggers": {
             "crawler": {
                 "handlers": ["crawler_file", "console"],
-                "level": "DEBUG",
+                "level": level,
                 "propagate": False,
             },
             "services": {
                 "handlers": ["crawler_file", "console"],
-                "level": "DEBUG",
+                "level": level,
                 "propagate": False,
             },
         },
     }
 
 
-def _logging_dict_worker() -> dict:
+def _logging_dict_worker(debug: bool) -> dict:
+    level = "DEBUG" if debug else "INFO"
     return {
         "version": 1,
         "disable_existing_loggers": False,
@@ -126,7 +129,7 @@ def _logging_dict_worker() -> dict:
                 "class": "logging.FileHandler",
                 "filename": str(WORKER_LOG),
                 "formatter": "standard",
-                "level": "INFO",
+                "level": level,
                 "encoding": "utf-8",
             },
             "console": _console_handler(),
@@ -134,19 +137,20 @@ def _logging_dict_worker() -> dict:
         "loggers": {
             "worker": {
                 "handlers": ["worker_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
             "services": {
                 "handlers": ["worker_file", "console"],
-                "level": "INFO",
+                "level": level,
                 "propagate": False,
             },
         },
     }
 
 
-def setup_logging(service: LogService) -> None:
+def setup_logging(service: LogService, *, debug: bool | None = None) -> None:
+    effective_debug = settings.debug if debug is None else debug
     builders = {
         "web": _logging_dict_web,
         "crawler": _logging_dict_crawler,
@@ -155,7 +159,7 @@ def setup_logging(service: LogService) -> None:
     builder = builders.get(service)
     if builder is None:
         raise ValueError(f"Unknown log service: {service!r}; expected one of {tuple(builders)}")
-    logging.config.dictConfig(builder())
+    logging.config.dictConfig(builder(effective_debug))
 
 
 class CrawlerSettings:
