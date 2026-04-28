@@ -3,7 +3,12 @@ logger = logging.getLogger(__name__)
 
 from typing import Optional
 from pydantic import ValidationError
-from models.schemas import AddEdgesData, AddNodesData, DeleteEdgesData, DeleteNodesData
+from models.schemas_graph import (
+    AddEdgesPayload,
+    AddNodesPayload,
+    DeleteEdgesPayload,
+    DeleteNodesPayload,
+)
 
 import re
 _IDENTIFIER_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -270,10 +275,10 @@ class NebulaService:
     @staticmethod
     def _validate_operation_data(operation: str, data: dict) -> dict:
         model_map = {
-            "add_nodes": AddNodesData,
-            "add_edges": AddEdgesData,
-            "delete_nodes": DeleteNodesData,
-            "delete_edges": DeleteEdgesData,
+            "add_nodes": AddNodesPayload,
+            "add_edges": AddEdgesPayload,
+            "delete_nodes": DeleteNodesPayload,
+            "delete_edges": DeleteEdgesPayload,
         }
         model_cls = model_map.get(operation)
         if not model_cls:
