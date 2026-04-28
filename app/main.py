@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from services.rabbitmq_service import RabbitMQService
+
 from app.api.v1.router import api_router
 
 from settings_config import settings
