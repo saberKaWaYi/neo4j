@@ -7,6 +7,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 import logging
 
+
 def _setup_script_logging() -> None:
     log = logging.getLogger(__name__)
     if log.handlers:
@@ -27,6 +28,7 @@ _setup_script_logging()
 logger = logging.getLogger(__name__)
 
 import json
+
 from services.nebula_service import NebulaService
 
 NEBULA_HOST = "172.25.241.218"
@@ -52,16 +54,13 @@ def _load_json(path: Path) -> dict:
 def _build_nodes(characters: list[dict]) -> list[dict]:
     nodes = []
     for row in characters:
-        name_en = str(row.get("name_en", "")).strip()
-        if not name_en:
-            continue
         nodes.append(
             {
-                "vid": name_en,
+                "vid": row["name_en"],
                 "properties": {
-                    "photo": str(row.get("photo", "").strip()),
-                    "name_zh": str(row.get("name_zh", "").strip()),
-                    "name_en": name_en,
+                    "photo": row["photo"],
+                    "name_zh": row["name_zh"],
+                    "name_en": row["name_en"],
                 },
             }
         )
