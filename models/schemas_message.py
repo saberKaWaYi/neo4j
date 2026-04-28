@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 
 class NebulaOperationMessage(BaseModel):
