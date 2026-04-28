@@ -59,8 +59,8 @@ def _build_nodes(characters: list[dict]) -> list[dict]:
             {
                 "vid": name_en,
                 "properties": {
-                    "photo": str(row.get("photo", "")),
-                    "name_zh": str(row.get("name_zh", "")),
+                    "photo": str(row.get("photo", "").strip()),
+                    "name_zh": str(row.get("name_zh", "").strip()),
                     "name_en": name_en,
                 },
             }
