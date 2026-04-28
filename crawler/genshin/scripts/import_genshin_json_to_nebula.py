@@ -5,21 +5,31 @@ _REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
 
-import json
 import logging
 
-from services.nebula_service import NebulaService
+def _setup_script_logging() -> None:
+    log = logging.getLogger(__name__)
+    if log.handlers:
+        return
+    fmt = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+    log_path = Path(__file__).resolve().parent / "import_genshin_json_to_nebula.log"
+    fh = logging.FileHandler(log_path, encoding="utf-8")
+    fh.setFormatter(fmt)
+    ch = logging.StreamHandler()
+    ch.setFormatter(fmt)
+    log.addHandler(fh)
+    log.addHandler(ch)
+    log.setLevel(logging.DEBUG)
+    log.propagate = False
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
+_setup_script_logging()
 logger = logging.getLogger(__name__)
 
+import json
+from services.nebula_service import NebulaService
 
-# Hard-coded script config
-NEBULA_HOST = "graphd"
+NEBULA_HOST = "172.25.241.218"
 NEBULA_PORT = 9669
 NEBULA_USERNAME = "root"
 NEBULA_PASSWORD = "nebula"
