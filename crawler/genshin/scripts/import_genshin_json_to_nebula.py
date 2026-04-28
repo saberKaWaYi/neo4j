@@ -71,36 +71,28 @@ def _build_nodes(characters: list[dict]) -> list[dict]:
 def _build_edges(social_network: list[dict]) -> list[dict]:
     edges = []
     for row in social_network:
-        source_vid = str(row.get("name_en", "")).strip()
-        title_en = str(row.get("title_en", "")).strip()
-        title_zh = str(row.get("title_zh", "")).strip()
-        source_name_zh = str(row.get("name_zh", "")).strip()
-
-        if not source_vid or " about " not in title_en:
-            continue
-
-        target_vid = title_en.split(" about ", 1)[1].strip()
-        if not target_vid:
-            continue
-
-        target_name_zh = ""
-        if "关于" in title_zh:
-            target_name_zh = title_zh.split("关于", 1)[1].strip()
-
-        edges.append(
-            {
-                "source_vid": source_vid,
-                "target_vid": target_vid,
-                "properties": {
-                    "source_name_en": source_vid,
-                    "target_name_en": target_vid,
-                    "source_name_zh": source_name_zh,
-                    "target_name_zh": target_name_zh,
-                    "title_en": title_en,
-                    "title_zh": title_zh,
-                },
-            }
-        )
+        source_id = row["name_en"]
+        target_id = row["title_en"].split(" about ", 1)[1].strip()
+        edge_id = f"{source_id} to {target_id}"
+        source_name_en = source_id
+        target_name_en = target_id
+        source_name_zh = row["name_zh"]
+        target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
+        title_en = row["title_en"]
+        title_zh = row["title_zh"]
+        edges.append({
+            "id": edge_id,
+            "source_id": source_id,
+            "target_id": target_id,
+            "properties": {
+                "source_name_en": source_name_en,
+                "target_name_en": target_name_en,
+                "source_name_zh": source_name_zh,
+                "target_name_zh": target_name_zh,
+                "title_en": title_en,
+                "title_zh": title_zh,
+            },
+        })
     return edges
 
 
