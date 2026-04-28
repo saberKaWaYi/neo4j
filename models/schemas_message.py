@@ -1,7 +1,8 @@
-from datetime import datetime
+from pydantic import BaseModel, Field
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from datetime import datetime
+import uuid
 
 
 class NebulaOperationMessage(BaseModel):
@@ -10,7 +11,7 @@ class NebulaOperationMessage(BaseModel):
 
 
 class NebulaOperationResponse(BaseModel):
-    success: bool
-    message_id: str
-    message: str
-    timestamp: datetime
+    success: bool = Field(..., description="Success status")
+    message_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Message ID")
+    message: str = Field(..., description="Message content")
+    timestamp: datetime = Field(default_factory=datetime.now, description="Timestamp of the message")
