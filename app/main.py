@@ -6,7 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from services.rabbitmq_service import RabbitMQService
 from app.api.v1.router import api_router
 
-from config import setup_logging, settings
+from settings_config import settings
+from logging_config import setup_logging
 
 setup_logging("web")
 
@@ -19,14 +20,11 @@ async def lifespan(app: FastAPI):
     global rabbitmq_service
 
     rabbitmq_service = RabbitMQService(
-        host=settings.rabbitmq.host,
-        port=settings.rabbitmq.port,
-        username=settings.rabbitmq.username,
-        password=settings.rabbitmq.password,
-        queue_names=[
-            settings.rabbitmq.queue_nebula,
-            settings.rabbitmq.queue_mongo,
-        ],
+        host=settings.rabbitmq_host,
+        port=settings.rabbitmq_port,
+        username=settings.rabbitmq_username,
+        password=settings.rabbitmq_password,
+        queue_names=[settings.rabbitmq_queue_nebula, settings.rabbitmq_queue_mongo],
     )
     rabbitmq_service.connect()
 
@@ -38,9 +36,9 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """创建FastAPI应用"""
     app = FastAPI(
-        title=settings.app.app_name,
-        version=settings.app.app_version,
-        debug=settings.app.debug,
+        title=settings.web_name,
+        version=settings.web_version,
+        debug=settings.web_debug,
         lifespan=lifespan,
     )
 
@@ -52,9 +50,8 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(api_router, prefix=settings.app.api_prefix)
-
     return app
 
 
 app = create_app()
+app.include_router(api_router, prefix="/api/v1")
