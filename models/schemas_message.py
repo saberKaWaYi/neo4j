@@ -10,7 +10,7 @@ class NebulaOperationMessage(BaseModel):
     data: dict = Field(..., description="Payload matched by operation type")
 
 
-class NebulaOperationResponse(BaseModel):
+class MessageResponse(BaseModel):
     success: bool = Field(..., description="Success status")
     message_id: str = Field(default_factory=lambda: str(uuid.uuid4()), description="Message ID")
     message: str = Field(..., description="Message content")
