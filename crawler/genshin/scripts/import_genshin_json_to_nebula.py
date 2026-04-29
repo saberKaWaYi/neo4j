@@ -51,63 +51,12 @@ def _load_json(path: Path) -> dict:
     return payload
 
 
-def _build_nodes(characters: list[dict]) -> list[dict]:
-    nodes = []
-    for row in characters:
-        nodes.append(
-            {
-                "vid": row["name_en"],
-                "properties": {
-                    "photo": row["photo"],
-                    "name_zh": row["name_zh"],
-                    "name_en": row["name_en"],
-                },
-            }
-        )
-    return nodes
-
-
-def _build_edges(social_network: list[dict]) -> list[dict]:
-    edges = []
-    for row in social_network:
-        source_id = row["name_en"]
-        target_id = row["title_en"].split(" about ", 1)[1].strip()
-        edge_id = f"{source_id} to {target_id}"
-        source_name_en = source_id
-        target_name_en = target_id
-        source_name_zh = row["name_zh"]
-        target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
-        title_en = row["title_en"]
-        title_zh = row["title_zh"]
-        edges.append({
-            "id": edge_id,
-            "source_id": source_id,
-            "target_id": target_id,
-            "properties": {
-                "source_name_en": source_name_en,
-                "target_name_en": target_name_en,
-                "source_name_zh": source_name_zh,
-                "target_name_zh": target_name_zh,
-                "title_en": title_en,
-                "title_zh": title_zh,
-            },
-        })
-    return edges
-
-
 def import_json_to_nebula() -> None:
     logger.info("Loading JSON from %s", JSON_PATH)
     payload = _load_json(JSON_PATH)
 
-    characters = payload.get("characters", [])
-    social_network = payload.get("social_network", [])
-    if not isinstance(characters, list) or not isinstance(social_network, list):
-        raise ValueError("JSON fields 'characters' and 'social_network' must be arrays")
-
-    nodes = _build_nodes(characters)
-    edges = _build_edges(social_network)
-
-    logger.info("Prepared %s nodes and %s edges", len(nodes), len(edges))
+    nodes = payload["nodes"]
+    edges = payload["edges"]
 
     svc = NebulaService(
         host=NEBULA_HOST,
@@ -120,6 +69,9 @@ def import_json_to_nebula() -> None:
         created_nodes = svc.add_nodes(SPACE_NAME, TAG_NAME, nodes)
         created_edges = svc.add_edges(SPACE_NAME, EDGE_NAME, edges)
         logger.info("Import completed: nodes=%s, edges=%s", created_nodes, created_edges)
+    except Exception as e:
+        logger.error("Import failed: %s", e)
+        raise
     finally:
         svc.close()
 
