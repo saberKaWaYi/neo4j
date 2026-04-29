@@ -27,7 +27,6 @@ def _setup_script_logging() -> None:
 _setup_script_logging()
 logger = logging.getLogger(__name__)
 
-
 from settings_config import settings
 
 import subprocess
