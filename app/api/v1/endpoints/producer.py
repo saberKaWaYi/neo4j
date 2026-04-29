@@ -1,14 +1,16 @@
 from fastapi import APIRouter, HTTPException
-from datetime import datetime
-import logging
+router = APIRouter()
 
-from models.schemas_message import MessageRequest, MessageResponse
+
+import logging
+logger = logging.getLogger(__name__)
+
+from models.schemas_message import NebulaOperationMessage, MessageResponse
 from services.rabbitmq_service import RabbitMQService
 from settings_config import settings
 
-router = APIRouter()
-logger = logging.getLogger(__name__)
-
+from datetime import datetime
+from typing import Literal
 
 def get_rabbitmq_service() -> RabbitMQService:
     from app.main import rabbitmq_service
@@ -18,12 +20,12 @@ def get_rabbitmq_service() -> RabbitMQService:
 
 
 @router.post("/send_nebula", response_model=MessageResponse)
-async def send_nebula_message(request: MessageRequest):
+async def send_nebula_message(request: NebulaOperationMessage):
     """发送消息到 Nebula 队列"""
     return await _send_to_queue(request, settings.rabbitmq.queue_nebula)
 
 
-async def _send_to_queue(request: MessageRequest, queue_name: str) -> MessageResponse:
+async def _send_to_queue(request: Literal[NebulaOperationMessage], queue_name: str) -> MessageResponse:
     try:
         rabbitmq = get_rabbitmq_service()
         message_id = rabbitmq.publish_message(
