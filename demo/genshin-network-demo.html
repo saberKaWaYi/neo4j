@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genshin Character Atlas Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(13, 24, 41, 0.82);
+      --panel-strong: rgba(10, 18, 32, 0.92);
+      --border: rgba(162, 194, 255, 0.18);
+      --text: #eef4ff;
+      --muted: #93a4c5;
+      --accent: #78e4d7;
+      --accent-2: #ffd98a;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top, rgba(48, 96, 181, 0.28), transparent 32%),
+        radial-gradient(circle at 85% 20%, rgba(50, 177, 160, 0.18), transparent 24%),
+        linear-gradient(180deg, #09101c 0%, #081321 45%, #050b14 100%);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .shell {
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+      gap: 20px;
+      align-items: stretch;
+      margin-bottom: 20px;
+    }
+
+    .hero-main,
+    .hero-side,
+    .toolbar,
+    .detail,
+    .empty,
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 28px;
+      border-radius: 24px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      inset: auto -40px -50px auto;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(120, 228, 215, 0.22), transparent 68%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 0.98;
+      max-width: 10ch;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 60ch;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .stat .label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .stat strong {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .hero-side {
+      border-radius: 24px;
+      padding: 20px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .hero-side h2,
+    .detail h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .path-box,
+    .upload-box,
+    .search-box,
+    .sort-box {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .mini-label {
+      display: block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .file-path {
+      color: var(--text);
+      font-size: 14px;
+      word-break: break-all;
+      line-height: 1.5;
+    }
+
+    .upload-box input {
+      width: 100%;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      border-radius: 22px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 220px 180px;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(5, 13, 23, 0.82);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: rgba(120, 228, 215, 0.55);
+      box-shadow: 0 0 0 3px rgba(120, 228, 215, 0.15);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+      position: relative;
+      min-height: 320px;
+    }
+
+    .card:hover,
+    .card.is-active {
+      transform: translateY(-4px);
+      border-color: rgba(120, 228, 215, 0.4);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .card-photo {
+      aspect-ratio: 4 / 5;
+      background: linear-gradient(180deg, rgba(31, 56, 92, 0.2), rgba(7, 14, 24, 0.7));
+      overflow: hidden;
+    }
+
+    .card-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 260ms ease;
+    }
+
+    .card:hover .card-photo img,
+    .card.is-active .card-photo img {
+      transform: scale(1.04);
+    }
+
+    .card-body {
+      padding: 14px 14px 16px;
+    }
+
+    .card-name {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.3;
+    }
+
+    .card-subtitle {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 20px;
+    }
+
+    .card-index {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(5, 13, 23, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--accent-2);
+    }
+
+    .detail {
+      border-radius: 22px;
+      padding: 18px;
+      position: sticky;
+      top: 24px;
+    }
+
+    .detail-cover {
+      aspect-ratio: 4 / 5;
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.04);
+      margin-bottom: 16px;
+    }
+
+    .detail-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .detail-meta {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-row {
+      display: grid;
+      gap: 5px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .meta-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .meta-key {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta-value {
+      font-size: 15px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .empty {
+      border-radius: 22px;
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--muted);
+    }
+
+    .status.warn {
+      color: #ffd98a;
+      border-color: rgba(255, 217, 138, 0.22);
+      background: rgba(255, 217, 138, 0.08);
+    }
+
+    @media (max-width: 1180px) {
+      .layout,
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .detail {
+        position: static;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .hero-main,
+      .hero-side,
+      .toolbar,
+      .detail {
+        border-radius: 18px;
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 38px;
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-main">
+        <div>
+          <div class="eyebrow">Genshin Demo</div>
+          <h1>Character Atlas</h1>
+          <p class="lead">
+            这是一个纯前端 demo 页面。它会优先直接读取仓库里的
+            <code>crawler/genshin/scripts/genshin_network.json</code>，如果原始文件不是严格合法 JSON，
+            页面会自动退回到容错解析，把角色卡片尽量恢复出来。
+          </p>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="label">角色数量</span>
+            <strong id="stat-count">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">当前展示</span>
+            <strong id="stat-visible">0</strong>
+          </div>
+          <div class="stat">
+            <span class="label">数据模式</span>
+            <strong id="stat-mode">-</strong>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div>
+          <h2>数据来源</h2>
+          <p class="hint">默认从当前仓库相对路径加载，也支持临时选择本地 JSON 文件。</p>
+        </div>
+
+        <div class="path-box">
+          <span class="mini-label">默认路径</span>
+          <div class="file-path" id="default-path">../crawler/genshin/scripts/genshin_network.json</div>
+        </div>
+
+        <div class="upload-box">
+          <span class="mini-label">改用本地文件</span>
+          <input id="file-input" type="file" accept=".json,application/json" />
+        </div>
+
+        <div class="status" id="status-box">准备加载数据…</div>
+      </aside>
+    </section>
+
+    <section class="toolbar">
+      <label class="search-box">
+        <span class="mini-label">搜索角色</span>
+        <input id="search-input" type="search" placeholder="输入英文名、中文名、序号" />
+      </label>
+
+      <label class="sort-box">
+        <span class="mini-label">排序方式</span>
+        <select id="sort-select">
+          <option value="index">按原始顺序</option>
+          <option value="az">按英文名 A-Z</option>
+          <option value="za">按英文名 Z-A</option>
+        </select>
+      </label>
+
+      <label class="sort-box">
+        <span class="mini-label">筛选范围</span>
+        <select id="limit-select">
+          <option value="all">全部</option>
+          <option value="48">前 48 个</option>
+          <option value="96">前 96 个</option>
+          <option value="144">前 144 个</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="layout">
+      <main>
+        <div class="grid" id="card-grid"></div>
+        <div class="empty" id="empty-state" hidden>没有匹配结果，换个关键词试试看。</div>
+      </main>
+
+      <aside class="detail" id="detail-panel">
+        <div class="detail-cover">
+          <img id="detail-image" alt="" />
+        </div>
+        <div class="detail-meta">
+          <h2 id="detail-title">等待选择</h2>
+          <p class="hint" id="detail-subtitle">点一张卡片，这里会显示更完整的信息。</p>
+
+          <div class="meta-row">
+            <span class="meta-key">英文名</span>
+            <div class="meta-value" id="detail-en">-</div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-key">中文名</span>
+            <div class="meta-value" id="detail-zh">-</div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-key">序号</span>
+            <div class="meta-value" id="detail-index">-</div>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-key">图片地址</span>
+            <div class="meta-value" id="detail-photo">-</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <script>
+    const DEFAULT_JSON_PATH = "../crawler/genshin/scripts/genshin_network.json";
+
+    const state = {
+      allCharacters: [],
+      visibleCharacters: [],
+      selectedId: null,
+      mode: "未加载"
+    };
+
+    const elements = {
+      grid: document.getElementById("card-grid"),
+      empty: document.getElementById("empty-state"),
+      search: document.getElementById("search-input"),
+      sort: document.getElementById("sort-select"),
+      limit: document.getElementById("limit-select"),
+      fileInput: document.getElementById("file-input"),
+      status: document.getElementById("status-box"),
+      statCount: document.getElementById("stat-count"),
+      statVisible: document.getElementById("stat-visible"),
+      statMode: document.getElementById("stat-mode"),
+      detailTitle: document.getElementById("detail-title"),
+      detailSubtitle: document.getElementById("detail-subtitle"),
+      detailImage: document.getElementById("detail-image"),
+      detailEn: document.getElementById("detail-en"),
+      detailZh: document.getElementById("detail-zh"),
+      detailIndex: document.getElementById("detail-index"),
+      detailPhoto: document.getElementById("detail-photo")
+    };
+
+    function setStatus(message, isWarn = false) {
+      elements.status.textContent = message;
+      elements.status.className = isWarn ? "status warn" : "status";
+    }
+
+    function cleanText(value) {
+      if (!value) return "";
+      return String(value)
+        .replace(/\s+/g, " ")
+        .replace(/^"+|"+$/g, "")
+        .trim();
+    }
+
+    function looksReadableZh(value) {
+      const text = cleanText(value);
+      if (!text) return false;
+      return !/[A-Za-z]{5,}/.test(text);
+    }
+
+    function normalizeCharacter(entry, index) {
+      const nameEn = cleanText(entry.name_en) || `Unknown ${index + 1}`;
+      const nameZh = looksReadableZh(entry.name_zh) ? cleanText(entry.name_zh) : "";
+      const photo = cleanText(entry.photo);
+
+      return {
+        id: `${nameEn}-${index}`,
+        index: index + 1,
+        nameEn,
+        nameZh,
+        photo
+      };
+    }
+
+    function parseStrictJson(raw) {
+      const parsed = JSON.parse(raw);
+      if (!parsed || !Array.isArray(parsed.characters)) {
+        throw new Error("JSON 中没有 characters 数组");
+      }
+      return parsed.characters.map(normalizeCharacter).filter(item => item.photo || item.nameEn);
+    }
+
+    function parseCharactersFromBrokenJson(raw) {
+      const sectionMatch = raw.match(/"characters"\s*:\s*\[([\s\S]*?)\]\s*,/);
+      const section = sectionMatch ? sectionMatch[1] : raw;
+      const regex = /"photo"\s*:\s*"([^"]+)"[\s\S]*?"name_zh"\s*:\s*"([^,\r\n"]*)(?:"?)\s*,[\s\S]*?"name_en"\s*:\s*"([^"]+)"/g;
+      const recovered = [];
+      let match;
+
+      while ((match = regex.exec(section)) !== null) {
+        recovered.push(normalizeCharacter({
+          photo: match[1],
+          name_zh: match[2],
+          name_en: match[3]
+        }, recovered.length));
+      }
+
+      if (!recovered.length) {
+        throw new Error("容错解析也没有拿到角色数据");
+      }
+
+      return recovered;
+    }
+
+    function sortCharacters(items) {
+      const list = [...items];
+      const mode = elements.sort.value;
+
+      if (mode === "az") {
+        list.sort((a, b) => a.nameEn.localeCompare(b.nameEn));
+      } else if (mode === "za") {
+        list.sort((a, b) => b.nameEn.localeCompare(a.nameEn));
+      } else {
+        list.sort((a, b) => a.index - b.index);
+      }
+
+      return list;
+    }
+
+    function filterCharacters() {
+      const keyword = elements.search.value.trim().toLowerCase();
+      const limitMode = elements.limit.value;
+      let items = [...state.allCharacters];
+
+      if (keyword) {
+        items = items.filter(item => {
+          return [
+            item.nameEn.toLowerCase(),
+            item.nameZh.toLowerCase(),
+            String(item.index)
+          ].some(value => value.includes(keyword));
+        });
+      }
+
+      items = sortCharacters(items);
+
+      if (limitMode !== "all") {
+        items = items.slice(0, Number(limitMode));
+      }
+
+      state.visibleCharacters = items;
+      elements.statVisible.textContent = String(items.length);
+      renderGrid();
+
+      if (!items.some(item => item.id === state.selectedId)) {
+        if (items.length) {
+          selectCharacter(items[0].id);
+        } else {
+          state.selectedId = null;
+          renderDetail(null);
+        }
+      } else {
+        renderGrid();
+      }
+    }
+
+    function renderGrid() {
+      elements.grid.innerHTML = "";
+      elements.empty.hidden = state.visibleCharacters.length > 0;
+
+      for (const item of state.visibleCharacters) {
+        const card = document.createElement("article");
+        card.className = `card${item.id === state.selectedId ? " is-active" : ""}`;
+        card.tabIndex = 0;
+        card.innerHTML = `
+          <div class="card-index">#${item.index}</div>
+          <div class="card-photo">
+            <img src="${item.photo}" alt="${item.nameEn}" loading="lazy" referrerpolicy="no-referrer" />
+          </div>
+          <div class="card-body">
+            <h3 class="card-name">${item.nameEn}</h3>
+            <p class="card-subtitle">${item.nameZh || "中文名缺失或原数据损坏"}</p>
+          </div>
+        `;
+
+        card.addEventListener("click", () => selectCharacter(item.id));
+        card.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCharacter(item.id);
+          }
+        });
+
+        elements.grid.appendChild(card);
+      }
+    }
+
+    function renderDetail(item) {
+      if (!item) {
+        elements.detailTitle.textContent = "没有可展示的角色";
+        elements.detailSubtitle.textContent = "当前筛选结果为空。";
+        elements.detailImage.src = "";
+        elements.detailImage.alt = "";
+        elements.detailEn.textContent = "-";
+        elements.detailZh.textContent = "-";
+        elements.detailIndex.textContent = "-";
+        elements.detailPhoto.textContent = "-";
+        return;
+      }
+
+      elements.detailTitle.textContent = item.nameEn;
+      elements.detailSubtitle.textContent = item.nameZh || "中文字段可用性有限，当前展示的是可恢复结果。";
+      elements.detailImage.src = item.photo;
+      elements.detailImage.alt = item.nameEn;
+      elements.detailEn.textContent = item.nameEn;
+      elements.detailZh.textContent = item.nameZh || "未能从原始文件中稳定恢复";
+      elements.detailIndex.textContent = `#${item.index}`;
+      elements.detailPhoto.textContent = item.photo || "-";
+    }
+
+    function selectCharacter(id) {
+      state.selectedId = id;
+      const selected = state.visibleCharacters.find(item => item.id === id) || null;
+      renderDetail(selected);
+      renderGrid();
+    }
+
+    async function loadFromText(raw, sourceLabel) {
+      try {
+        const strictCharacters = parseStrictJson(raw);
+        state.allCharacters = strictCharacters;
+        state.mode = "严格 JSON";
+        setStatus(`已从 ${sourceLabel} 读取 ${strictCharacters.length} 个角色。`);
+      } catch (strictError) {
+        const recoveredCharacters = parseCharactersFromBrokenJson(raw);
+        state.allCharacters = recoveredCharacters;
+        state.mode = "容错恢复";
+        setStatus(
+          `原始文件不是严格合法 JSON，已启用容错恢复并提取 ${recoveredCharacters.length} 个角色。`,
+          true
+        );
+      }
+
+      elements.statCount.textContent = String(state.allCharacters.length);
+      elements.statMode.textContent = state.mode;
+      filterCharacters();
+    }
+
+    async function loadDefaultJson() {
+      try {
+        const response = await fetch(DEFAULT_JSON_PATH, { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const raw = await response.text();
+        await loadFromText(raw, DEFAULT_JSON_PATH);
+      } catch (error) {
+        setStatus(
+          "默认 JSON 加载失败。直接双击打开 HTML 时，浏览器可能不允许读取相对 JSON；这时请改用本地文件选择。",
+          true
+        );
+      }
+    }
+
+    elements.search.addEventListener("input", filterCharacters);
+    elements.sort.addEventListener("change", filterCharacters);
+    elements.limit.addEventListener("change", filterCharacters);
+    elements.fileInput.addEventListener("change", async (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      try {
+        const raw = await file.text();
+        await loadFromText(raw, file.name);
+      } catch (error) {
+        setStatus(`读取本地文件失败：${error.message}`, true);
+      }
+    });
+
+    loadDefaultJson();
+  </script>
+</body>
+</html>

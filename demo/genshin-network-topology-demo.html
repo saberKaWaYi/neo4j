@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genshin Relationship Topology Demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07101a;
+      --panel: rgba(10, 18, 30, 0.84);
+      --border: rgba(169, 198, 255, 0.14);
+      --text: #eef5ff;
+      --muted: #94a4c3;
+      --accent: #71e3d5;
+      --accent-2: #ffd78e;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at top left, rgba(40, 101, 170, 0.2), transparent 28%),
+        radial-gradient(circle at 88% 20%, rgba(53, 179, 160, 0.16), transparent 25%),
+        linear-gradient(180deg, #07101a 0%, #08111d 40%, #050a13 100%);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    body { padding: 24px; }
+
+    .shell {
+      max-width: 1520px;
+      margin: 0 auto;
+      display: grid;
+      gap: 20px;
+    }
+
+    .hero,
+    .toolbar,
+    .graph-panel,
+    .sidebar,
+    .chip-list,
+    .status {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      border-radius: 24px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 20px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 12px;
+      font-size: clamp(34px, 5vw, 60px);
+      line-height: 1;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 62ch;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .stat {
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 14px 16px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stat strong {
+      font-size: 25px;
+      font-weight: 700;
+    }
+
+    .hero-side {
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .box {
+      border-radius: 18px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .mini-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .file-path {
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: break-all;
+    }
+
+    .status {
+      border-radius: 16px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .status.warn {
+      color: var(--accent-2);
+      border-color: rgba(255, 215, 142, 0.24);
+      background: rgba(255, 215, 142, 0.08);
+    }
+
+    .toolbar {
+      border-radius: 22px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 180px 180px 180px;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(6, 13, 22, 0.86);
+      color: var(--text);
+      padding: 13px 14px;
+      font: inherit;
+      outline: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .graph-panel {
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      min-height: 760px;
+    }
+
+    .graph-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 700px;
+      cursor: grab;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(39, 88, 145, 0.12), transparent 28%),
+        linear-gradient(180deg, rgba(5, 10, 18, 0.96), rgba(5, 10, 18, 0.98));
+    }
+
+    canvas.dragging { cursor: grabbing; }
+
+    .sidebar {
+      border-radius: 24px;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      position: sticky;
+      top: 24px;
+    }
+
+    h2, h3 { margin: 0; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .meta-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta-row {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 12px;
+    }
+
+    .meta-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .meta-key {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .chip-list {
+      border-radius: 18px;
+      padding: 12px;
+      max-height: 220px;
+      overflow: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      padding: 8px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      line-height: 1.3;
+      cursor: pointer;
+    }
+
+    .relation-list {
+      display: grid;
+      gap: 10px;
+      max-height: 300px;
+      overflow: auto;
+    }
+
+    .relation-card {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .relation-head {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .relation-body {
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .relation-sub {
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--muted);
+      white-space: pre-wrap;
+    }
+
+    .edge-tooltip {
+      position: fixed;
+      z-index: 20;
+      max-width: 360px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(9, 16, 27, 0.96);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+      color: var(--text);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+
+    .edge-tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1180px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar { position: static; }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 14px; }
+
+      .hero,
+      .toolbar,
+      .graph-panel,
+      .sidebar {
+        border-radius: 18px;
+      }
+
+      .toolbar { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Genshin Topology Demo</div>
+        <h1>Relationship Graph</h1>
+        <p class="lead">
+          这页会从 <code>social_network</code> 数据里推导人物关系边：把 <code>name_en</code>
+          作为起点，把 <code>title_en</code> 里 <code>about</code> 后面的角色作为终点。
+          现在节点会优先显示角色头像，而且页面只会在加载和筛选时排布一次，不会再一直自己乱动。
+        </p>
+
+        <div class="stats">
+          <div class="stat"><span>节点数</span><strong id="stat-nodes">0</strong></div>
+          <div class="stat"><span>边数</span><strong id="stat-edges">0</strong></div>
+          <div class="stat"><span>当前显示</span><strong id="stat-visible">0</strong></div>
+          <div class="stat"><span>数据模式</span><strong id="stat-mode">-</strong></div>
+        </div>
+      </div>
+
+      <div class="hero-side">
+        <div class="box">
+          <span class="mini-label">默认路径</span>
+          <div class="file-path">../crawler/genshin/scripts/genshin_network.json</div>
+        </div>
+
+        <label class="box">
+          <span class="mini-label">改用本地 JSON</span>
+          <input id="file-input" type="file" accept=".json,application/json" />
+        </label>
+
+        <div class="status" id="status-box">准备加载拓扑数据…</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <label>
+        <span class="mini-label">搜索角色</span>
+        <input id="search-input" type="search" placeholder="输入角色英文名" />
+      </label>
+
+      <label>
+        <span class="mini-label">显示模式</span>
+        <select id="view-select">
+          <option value="all">全部节点</option>
+          <option value="connected">仅有连接的节点</option>
+          <option value="top">高连接度节点</option>
+        </select>
+      </label>
+
+      <label>
+        <span class="mini-label">节点尺寸</span>
+        <select id="size-select">
+          <option value="degree">按连接度</option>
+          <option value="fixed">固定大小</option>
+        </select>
+      </label>
+
+      <label>
+        <span class="mini-label">关系过滤</span>
+        <select id="edge-select">
+          <option value="all">全部边</option>
+          <option value="mutual">只看双向关系</option>
+          <option value="single">只看单向关系</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="layout">
+      <section class="graph-panel">
+        <div class="graph-header">
+          <span>拖拽移动视野，滚轮缩放，点击头像聚焦关系</span>
+          <span id="graph-meta">-</span>
+        </div>
+        <canvas id="graph-canvas" width="1120" height="700"></canvas>
+      </section>
+
+      <aside class="sidebar">
+        <div>
+          <h2 id="detail-name">等待选择</h2>
+          <p class="hint" id="detail-hint">选中一个角色后，这里会显示它的中英文名称、出入边、相邻节点和关系原文。</p>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta-row">
+            <span class="meta-key">名称</span>
+            <div class="meta-value" id="detail-en">-</div>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">连接度</span>
+            <div class="meta-value" id="detail-degree">-</div>
+          </div>
+          <div class="meta-row">
+            <span class="meta-key">出边 / 入边</span>
+            <div class="meta-value" id="detail-io">-</div>
+          </div>
+        </div>
+
+        <div>
+          <h3>关联角色</h3>
+          <div class="chip-list" id="neighbor-list"></div>
+        </div>
+
+        <div>
+          <h3>关系文本</h3>
+          <div class="relation-list" id="relation-list"></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <div class="edge-tooltip" id="edge-tooltip"></div>
+
+  <script>
+    const DEFAULT_JSON_PATH = "../crawler/genshin/scripts/genshin_network.json";
+
+    const state = {
+      mode: "未加载",
+      rawNodes: [],
+      rawEdges: [],
+      nodes: [],
+      edges: [],
+      selectedId: null,
+      hoveredEdgeId: null,
+      transform: { x: 0, y: 0, scale: 1 }
+    };
+
+    const canvas = document.getElementById("graph-canvas");
+    const ctx = canvas.getContext("2d");
+    const imageCache = new Map();
+    let renderQueued = false;
+
+    const els = {
+      fileInput: document.getElementById("file-input"),
+      search: document.getElementById("search-input"),
+      view: document.getElementById("view-select"),
+      size: document.getElementById("size-select"),
+      edge: document.getElementById("edge-select"),
+      status: document.getElementById("status-box"),
+      statNodes: document.getElementById("stat-nodes"),
+      statEdges: document.getElementById("stat-edges"),
+      statVisible: document.getElementById("stat-visible"),
+      statMode: document.getElementById("stat-mode"),
+      graphMeta: document.getElementById("graph-meta"),
+      detailName: document.getElementById("detail-name"),
+      detailHint: document.getElementById("detail-hint"),
+      detailEn: document.getElementById("detail-en"),
+      detailDegree: document.getElementById("detail-degree"),
+      detailIo: document.getElementById("detail-io"),
+      neighborList: document.getElementById("neighbor-list"),
+      relationList: document.getElementById("relation-list")
+    };
+    els.edgeTooltip = document.getElementById("edge-tooltip");
+
+    function setStatus(message, warn = false) {
+      els.status.textContent = message;
+      els.status.className = warn ? "status warn" : "status";
+    }
+
+    function queueRender() {
+      if (renderQueued) return;
+      renderQueued = true;
+      requestAnimationFrame(() => {
+        renderQueued = false;
+        render();
+      });
+    }
+
+    function cleanText(value) {
+      if (!value) return "";
+      return String(value).replace(/\s+/g, " ").trim();
+    }
+
+    function looksReadableZh(value) {
+      return /[\u3400-\u9fff]/.test(cleanText(value));
+    }
+
+    function safeZh(value) {
+      return looksReadableZh(value) ? cleanText(value) : "";
+    }
+
+    function formatBilingual(en, zh) {
+      const enText = cleanText(en);
+      const zhText = safeZh(zh);
+      return zhText ? `${enText} / ${zhText}` : enText;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function unescapeJsonString(value) {
+      return cleanText(value)
+        .replace(/\\"/g, '"')
+        .replace(/\\n/g, " ")
+        .replace(/\\r/g, " ")
+        .replace(/\\t/g, " ");
+    }
+
+    function parseStrict(raw) {
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed.characters) || !Array.isArray(parsed.social_network)) {
+        throw new Error("missing social graph arrays");
+      }
+      return parsed;
+    }
+
+    function parseBroken(raw) {
+      const characterRegex = /"photo"\s*:\s*"([^"]+)"[\s\S]*?"name_zh"\s*:\s*"([^,\r\n"]*)(?:"?)\s*,[\s\S]*?"name_en"\s*:\s*"([^"]+)"/g;
+      const relationRegex = /"name_zh"\s*:\s*"([^,\r\n"]*)(?:"?)\s*,[\s\S]*?"title_zh"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"content_zh"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"name_en"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"title_en"\s*:\s*"((?:\\.|[^"\\])*)"[\s\S]*?"content_en"\s*:\s*"((?:\\.|[^"\\])*)"/g;
+
+      const characters = [];
+      let match;
+      while ((match = characterRegex.exec(raw)) !== null) {
+        characters.push({
+          photo: match[1],
+          name_zh: match[2],
+          name_en: match[3]
+        });
+      }
+
+      const social_network = [];
+      while ((match = relationRegex.exec(raw)) !== null) {
+        social_network.push({
+          name_zh: safeZh(match[1]),
+          title_zh: safeZh(unescapeJsonString(match[2])),
+          content_zh: safeZh(unescapeJsonString(match[3])),
+          name_en: unescapeJsonString(match[4]),
+          title_en: unescapeJsonString(match[5]),
+          content_en: unescapeJsonString(match[6])
+        });
+      }
+
+      if (!characters.length || !social_network.length) {
+        throw new Error("broken json parse failed");
+      }
+
+      return { characters, social_network };
+    }
+
+    function buildGraph(payload) {
+      const photoMap = new Map();
+      const zhMap = new Map();
+      for (const character of payload.characters) {
+        const name = cleanText(character.name_en);
+        if (name && !photoMap.has(name)) {
+          photoMap.set(name, cleanText(character.photo));
+        }
+        const nameZh = safeZh(character.name_zh);
+        if (name && nameZh && !zhMap.has(name)) {
+          zhMap.set(name, nameZh);
+        }
+      }
+
+      for (const item of payload.social_network) {
+        const sourceEn = cleanText(item.name_en);
+        const sourceZh = safeZh(item.name_zh);
+        if (sourceEn && sourceZh && !zhMap.has(sourceEn)) {
+          zhMap.set(sourceEn, sourceZh);
+        }
+      }
+
+      const edgeMap = new Map();
+      for (const item of payload.social_network) {
+        const source = cleanText(item.name_en);
+        const title = cleanText(item.title_en);
+        const content = cleanText(item.content_en);
+        if (!source || !title.includes(" about ")) continue;
+
+        const target = cleanText(title.split(" about ").slice(1).join(" about "));
+        if (!target || source === target) continue;
+
+        const key = `${source}__${target}`;
+        if (!edgeMap.has(key)) {
+          edgeMap.set(key, {
+            id: key,
+            source,
+            target,
+            sourceZh: zhMap.get(source) || "",
+            targetZh: zhMap.get(target) || "",
+            titles: [],
+            titlesZh: [],
+            excerpts: [],
+            excerptsZh: [],
+            mutual: false
+          });
+        }
+
+        const edge = edgeMap.get(key);
+        if (title) edge.titles.push(title);
+        if (safeZh(item.title_zh)) edge.titlesZh.push(safeZh(item.title_zh));
+        if (content) edge.excerpts.push(content);
+        if (safeZh(item.content_zh)) edge.excerptsZh.push(safeZh(item.content_zh));
+      }
+
+      const nodeMap = new Map();
+      const totalNodeEstimate = new Set(
+        payload.social_network.flatMap(item => {
+          const source = cleanText(item.name_en);
+          const title = cleanText(item.title_en);
+          const target = title.includes(" about ")
+            ? cleanText(title.split(" about ").slice(1).join(" about "))
+            : "";
+          return [source, target].filter(Boolean);
+        })
+      ).size || 1;
+      let placementIndex = 0;
+      function ensureNode(name) {
+        if (!nodeMap.has(name)) {
+          const angle = placementIndex * 2.399963229728653;
+          const radiusSeed = 240 + Math.sqrt(placementIndex + 1) * 52 + totalNodeEstimate * 2.2;
+          placementIndex += 1;
+          nodeMap.set(name, {
+            id: name,
+            label: name,
+            zhLabel: zhMap.get(name) || "",
+            photo: photoMap.get(name) || "",
+            inDegree: 0,
+            outDegree: 0,
+            degree: 0,
+            neighbors: new Set(),
+            x: Math.cos(angle) * radiusSeed,
+            y: Math.sin(angle) * radiusSeed * 0.78,
+            vx: 0,
+            vy: 0,
+            radius: 10
+          });
+        }
+        return nodeMap.get(name);
+      }
+
+      for (const edge of edgeMap.values()) {
+        const sourceNode = ensureNode(edge.source);
+        const targetNode = ensureNode(edge.target);
+        sourceNode.outDegree += 1;
+        targetNode.inDegree += 1;
+        sourceNode.neighbors.add(targetNode.id);
+        targetNode.neighbors.add(sourceNode.id);
+      }
+
+      const edges = Array.from(edgeMap.values());
+      const edgeSet = new Set(edges.map(edge => edge.id));
+      for (const edge of edges) {
+        edge.mutual = edgeSet.has(`${edge.target}__${edge.source}`);
+      }
+
+      const nodes = Array.from(nodeMap.values()).map(node => {
+        node.degree = node.inDegree + node.outDegree;
+        node.radius = 14 + Math.min(20, Math.sqrt(node.degree || 1) * 2.6);
+        return node;
+      });
+
+      return { nodes, edges };
+    }
+
+    function ensureNodeImage(node) {
+      if (!node.photo || imageCache.has(node.photo)) return;
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.referrerPolicy = "no-referrer";
+      img.decoding = "async";
+      img.onload = () => queueRender();
+      img.onerror = () => queueRender();
+      img.src = node.photo;
+      imageCache.set(node.photo, img);
+    }
+
+    function cloneVisibleGraph(nodes, edges) {
+      const nodeCopies = nodes.map(node => ({
+        ...node,
+        neighbors: new Set(node.neighbors)
+      }));
+      const byId = new Map(nodeCopies.map(node => [node.id, node]));
+      const edgeCopies = edges
+        .filter(edge => byId.has(edge.source) && byId.has(edge.target))
+        .map(edge => ({
+          ...edge,
+          sourceNode: byId.get(edge.source),
+          targetNode: byId.get(edge.target)
+        }));
+      return { nodeCopies, edgeCopies };
+    }
+
+    function applyFilters() {
+      const keyword = els.search.value.trim().toLowerCase();
+      const view = els.view.value;
+      const edgeMode = els.edge.value;
+
+      let edges = state.rawEdges.filter(edge => {
+        if (edgeMode === "mutual") return edge.mutual;
+        if (edgeMode === "single") return !edge.mutual;
+        return true;
+      });
+
+      const connectedIds = new Set();
+      for (const edge of edges) {
+        connectedIds.add(edge.source);
+        connectedIds.add(edge.target);
+      }
+
+      let nodes = state.rawNodes.filter(node => {
+        if (view === "connected" && !connectedIds.has(node.id)) return false;
+        if (view === "top" && node.degree < 6) return false;
+        if (
+          keyword &&
+          !node.label.toLowerCase().includes(keyword) &&
+          !safeZh(node.zhLabel).toLowerCase().includes(keyword)
+        ) return false;
+        return true;
+      });
+
+      if (keyword) {
+        const ids = new Set(nodes.map(node => node.id));
+        edges = edges.filter(edge => ids.has(edge.source) || ids.has(edge.target));
+        const expanded = new Set();
+        for (const edge of edges) {
+          expanded.add(edge.source);
+          expanded.add(edge.target);
+        }
+        nodes = state.rawNodes.filter(node => expanded.has(node.id));
+      } else {
+        const ids = new Set(nodes.map(node => node.id));
+        edges = edges.filter(edge => ids.has(edge.source) && ids.has(edge.target));
+      }
+
+      const visible = cloneVisibleGraph(nodes, edges);
+      state.nodes = visible.nodeCopies;
+      state.edges = visible.edgeCopies;
+
+      for (const node of state.nodes) ensureNodeImage(node);
+
+      els.statVisible.textContent = String(state.nodes.length);
+      els.graphMeta.textContent = `${state.nodes.length} nodes / ${state.edges.length} edges`;
+
+      if (!state.nodes.some(node => node.id === state.selectedId)) {
+        state.selectedId = state.nodes[0] ? state.nodes[0].id : null;
+      }
+      updateSidebar();
+    }
+
+    function centerGraph() {
+      state.transform = {
+        x: canvas.width / 2,
+        y: canvas.height / 2,
+        scale: 1
+      };
+    }
+
+    function tick(iterations = 1) {
+      for (let step = 0; step < iterations; step += 1) {
+        for (const node of state.nodes) {
+          node.vx *= 0.88;
+          node.vy *= 0.88;
+        }
+
+        for (let i = 0; i < state.nodes.length; i += 1) {
+          for (let j = i + 1; j < state.nodes.length; j += 1) {
+            const a = state.nodes[i];
+            const b = state.nodes[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let distSq = dx * dx + dy * dy + 0.01;
+            let force = 3600 / distSq;
+            let dist = Math.sqrt(distSq);
+            dx /= dist;
+            dy /= dist;
+            a.vx -= dx * force;
+            a.vy -= dy * force;
+            b.vx += dx * force;
+            b.vy += dy * force;
+          }
+        }
+
+        for (const edge of state.edges) {
+          const a = edge.sourceNode;
+          const b = edge.targetNode;
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const desired = 145 + Math.min(120, (a.degree + b.degree) * 3.6);
+          const pull = (dist - desired) * 0.00145;
+          dx /= dist;
+          dy /= dist;
+          a.vx += dx * pull * 17;
+          a.vy += dy * pull * 17;
+          b.vx -= dx * pull * 17;
+          b.vy -= dy * pull * 17;
+        }
+
+        for (const node of state.nodes) {
+          const centerPull = 0.00018;
+          node.vx += -node.x * centerPull;
+          node.vy += -node.y * centerPull;
+          node.x += node.vx;
+          node.y += node.vy;
+        }
+      }
+    }
+
+    function resolveNodeCollisions(iterations = 3) {
+      for (let step = 0; step < iterations; step += 1) {
+        for (let i = 0; i < state.nodes.length; i += 1) {
+          for (let j = i + 1; j < state.nodes.length; j += 1) {
+            const a = state.nodes[i];
+            const b = state.nodes[j];
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+            const minGap = getNodeRadius(a) + getNodeRadius(b) + 20;
+            if (dist >= minGap) continue;
+            const push = (minGap - dist) * 0.5;
+            dx /= dist;
+            dy /= dist;
+            a.x -= dx * push;
+            a.y -= dy * push;
+            b.x += dx * push;
+            b.y += dy * push;
+          }
+        }
+      }
+    }
+
+    function normalizeLayoutSpread() {
+      if (!state.nodes.length) return;
+
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
+
+      for (const node of state.nodes) {
+        minX = Math.min(minX, node.x);
+        maxX = Math.max(maxX, node.x);
+        minY = Math.min(minY, node.y);
+        maxY = Math.max(maxY, node.y);
+      }
+
+      const width = Math.max(1, maxX - minX);
+      const height = Math.max(1, maxY - minY);
+      const targetWidth = canvas.width * 0.72;
+      const targetHeight = canvas.height * 0.68;
+      const scale = Math.max(1, Math.min(targetWidth / width, targetHeight / height));
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+
+      for (const node of state.nodes) {
+        node.x = (node.x - centerX) * scale;
+        node.y = (node.y - centerY) * scale;
+      }
+    }
+
+    function settleLayout(iterations = 220) {
+      tick(iterations);
+      for (const node of state.nodes) {
+        node.vx = 0;
+        node.vy = 0;
+      }
+      resolveNodeCollisions(4);
+      normalizeLayoutSpread();
+      resolveNodeCollisions(2);
+    }
+
+    function getSelectedNode() {
+      return state.nodes.find(node => node.id === state.selectedId) || null;
+    }
+
+    function getNodeRadius(node) {
+      if (els.size.value === "fixed") return 18;
+      return node.radius;
+    }
+
+    function pointToSegmentDistance(px, py, x1, y1, x2, y2) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const lengthSq = dx * dx + dy * dy || 1;
+      const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / lengthSq));
+      const cx = x1 + t * dx;
+      const cy = y1 + t * dy;
+      const ox = px - cx;
+      const oy = py - cy;
+      return { distance: Math.sqrt(ox * ox + oy * oy), x: cx, y: cy };
+    }
+
+    function getEdgeScreenGeometry(edge) {
+      const selected = getSelectedNode();
+      const sourceRadius = getNodeRadius(edge.sourceNode) + (selected && edge.sourceNode.id === selected.id ? 4 : 0);
+      const targetRadius = getNodeRadius(edge.targetNode) + (selected && edge.targetNode.id === selected.id ? 4 : 0);
+      const dx = edge.targetNode.x - edge.sourceNode.x;
+      const dy = edge.targetNode.y - edge.sourceNode.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const ux = dx / dist;
+      const uy = dy / dist;
+      const x1 = edge.sourceNode.x + ux * sourceRadius;
+      const y1 = edge.sourceNode.y + uy * sourceRadius;
+      const x2 = edge.targetNode.x - ux * targetRadius;
+      const y2 = edge.targetNode.y - uy * targetRadius;
+      return { x1, y1, x2, y2 };
+    }
+
+    function hideEdgeTooltip() {
+      els.edgeTooltip.classList.remove("show");
+    }
+
+    function showEdgeTooltip(edge, clientX, clientY) {
+      const titleZh = edge.titlesZh && edge.titlesZh.length ? edge.titlesZh[0] : "";
+      const excerptEn = edge.excerpts[0] || edge.titles[0] || "";
+      const excerptZh = edge.excerptsZh && edge.excerptsZh.length ? edge.excerptsZh[0] : "";
+      els.edgeTooltip.innerHTML = `
+        <div class="relation-head">${escapeHtml(formatBilingual(edge.source, edge.sourceZh))} → ${escapeHtml(formatBilingual(edge.target, edge.targetZh))}</div>
+        ${titleZh ? `<div class="relation-sub">${escapeHtml(titleZh)}</div>` : ""}
+        ${excerptEn ? `<div class="relation-body" style="margin-top:8px;">${escapeHtml(excerptEn)}</div>` : ""}
+        ${excerptZh ? `<div class="relation-sub">${escapeHtml(excerptZh)}</div>` : ""}
+      `;
+
+      const pad = 18;
+      const width = 360;
+      const left = Math.min(window.innerWidth - width - pad, clientX + 16);
+      const top = Math.min(window.innerHeight - 180, clientY + 16);
+      els.edgeTooltip.style.left = `${Math.max(pad, left)}px`;
+      els.edgeTooltip.style.top = `${Math.max(pad, top)}px`;
+      els.edgeTooltip.classList.add("show");
+    }
+
+    function pickEdge(clientX, clientY) {
+      const point = worldPoint(clientX, clientY);
+      let best = null;
+      let bestDistance = Infinity;
+      for (const edge of state.edges) {
+        const { x1, y1, x2, y2 } = getEdgeScreenGeometry(edge);
+        const result = pointToSegmentDistance(point.x, point.y, x1, y1, x2, y2);
+        if (result.distance < 8 / state.transform.scale && result.distance < bestDistance) {
+          bestDistance = result.distance;
+          best = edge;
+        }
+      }
+      return best;
+    }
+
+    function drawNodeImage(node, radius, faded) {
+      const img = node.photo ? imageCache.get(node.photo) : null;
+      if (img && img.complete && img.naturalWidth > 0) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.globalAlpha = faded ? 0.36 : 1;
+        ctx.drawImage(img, node.x - radius, node.y - radius, radius * 2, radius * 2);
+        ctx.restore();
+        return;
+      }
+
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = faded ? "rgba(89, 103, 129, 0.5)" : "rgba(12, 28, 49, 0.95)";
+      ctx.fill();
+
+      ctx.fillStyle = faded ? "rgba(238, 245, 255, 0.45)" : "rgba(238, 245, 255, 0.92)";
+      ctx.font = `${Math.max(10, radius * 0.72)}px Inter, Segoe UI, sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(node.label.slice(0, 1).toUpperCase(), node.x, node.y + 0.5);
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(state.transform.x, state.transform.y);
+      ctx.scale(state.transform.scale, state.transform.scale);
+
+      const selected = getSelectedNode();
+      const neighborSet = selected ? new Set(selected.neighbors) : new Set();
+      const activeSet = selected ? new Set([selected.id, ...selected.neighbors]) : new Set();
+
+      for (const edge of state.edges) {
+        const { sourceNode, targetNode } = edge;
+        const { x1, y1, x2, y2 } = getEdgeScreenGeometry(edge);
+        const isActive = !selected || (activeSet.has(sourceNode.id) && activeSet.has(targetNode.id));
+        const isHovered = state.hoveredEdgeId === edge.id;
+        const isFromSelected = selected && edge.source === selected.id;
+        const isToSelected = selected && edge.target === selected.id;
+        let edgeColor = "rgba(148, 164, 195, 0.10)";
+
+        if (selected && isActive) {
+          if (isFromSelected && isToSelected) {
+            edgeColor = "rgba(255, 215, 142, 0.74)";
+          } else if (isFromSelected && edge.mutual) {
+            edgeColor = "rgba(255, 215, 142, 0.74)";
+          } else if (isToSelected && edge.mutual) {
+            edgeColor = "rgba(255, 215, 142, 0.74)";
+          } else if (isFromSelected) {
+            edgeColor = "rgba(113, 227, 213, 0.72)";
+          } else if (isToSelected) {
+            edgeColor = "rgba(255, 156, 166, 0.72)";
+          } else {
+            edgeColor = edge.mutual
+              ? "rgba(255, 215, 142, 0.36)"
+              : "rgba(148, 164, 195, 0.18)";
+          }
+        } else if (!selected && isActive) {
+          edgeColor = edge.mutual
+            ? "rgba(255, 215, 142, 0.62)"
+            : "rgba(113, 227, 213, 0.52)";
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.lineWidth = isHovered ? 3.4 : (edge.mutual ? 2.1 : 1.1);
+        ctx.strokeStyle = isHovered
+          ? "rgba(255, 255, 255, 0.88)"
+          : edgeColor;
+        ctx.stroke();
+      }
+
+      for (const node of state.nodes) {
+        const radius = getNodeRadius(node);
+        const isSelected = selected && node.id === selected.id;
+        const isNeighbor = selected && neighborSet.has(node.id);
+        const faded = selected && !isSelected && !isNeighbor;
+        const outerRadius = radius + (isSelected ? 4 : 0);
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, outerRadius, 0, Math.PI * 2);
+        ctx.fillStyle = isSelected
+          ? "rgba(255, 215, 142, 0.96)"
+          : isNeighbor
+            ? "rgba(113, 227, 213, 0.9)"
+            : faded
+              ? "rgba(101, 118, 144, 0.28)"
+              : "rgba(137, 172, 255, 0.82)";
+        ctx.fill();
+
+        drawNodeImage(node, radius, faded);
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, outerRadius, 0, Math.PI * 2);
+        ctx.lineWidth = isSelected ? 2.4 : 1;
+        ctx.strokeStyle = isSelected
+          ? "rgba(255, 255, 255, 0.9)"
+          : "rgba(255, 255, 255, 0.12)";
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = faded ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.2)";
+        ctx.stroke();
+
+        if (!faded || isSelected || state.transform.scale > 1.18) {
+          ctx.fillStyle = faded ? "rgba(238, 245, 255, 0.34)" : "rgba(238, 245, 255, 0.92)";
+          ctx.font = `${isSelected ? 15 : 12}px Inter, Segoe UI, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "alphabetic";
+          ctx.fillText(node.label, node.x, node.y - radius - 12);
+          if (node.zhLabel && state.transform.scale > 1.22) {
+            ctx.fillStyle = faded ? "rgba(148, 164, 195, 0.32)" : "rgba(148, 164, 195, 0.88)";
+            ctx.font = `${isSelected ? 11 : 10}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+            ctx.fillText(node.zhLabel, node.x, node.y - radius + 2);
+          }
+        }
+      }
+
+      ctx.restore();
+    }
+
+    function worldPoint(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (clientX - rect.left - state.transform.x) / state.transform.scale,
+        y: (clientY - rect.top - state.transform.y) / state.transform.scale
+      };
+    }
+
+    function pickNode(clientX, clientY) {
+      const point = worldPoint(clientX, clientY);
+      for (let i = state.nodes.length - 1; i >= 0; i -= 1) {
+        const node = state.nodes[i];
+        const radius = getNodeRadius(node) + 6;
+        const dx = point.x - node.x;
+        const dy = point.y - node.y;
+        if (dx * dx + dy * dy <= radius * radius) return node;
+      }
+      return null;
+    }
+
+    function updateSidebar() {
+      const node = getSelectedNode();
+      if (!node) {
+        els.detailName.textContent = "没有可展示的节点";
+        els.detailHint.textContent = "当前筛选结果为空。";
+        els.detailEn.textContent = "-";
+        els.detailDegree.textContent = "-";
+        els.detailIo.textContent = "-";
+        els.neighborList.innerHTML = "";
+        els.relationList.innerHTML = "";
+        return;
+      }
+
+      els.detailName.textContent = formatBilingual(node.label, node.zhLabel);
+      els.detailHint.textContent = node.zhLabel
+        ? "高亮显示的是该角色的局部关系，名称按 英文 / 中文 展示。"
+        : "高亮显示的是该角色的局部关系。当前数据里可恢复中文有限，所以这里优先显示英文。";
+      els.detailEn.textContent = formatBilingual(node.label, node.zhLabel);
+      els.detailDegree.textContent = `${node.degree}（入 ${node.inDegree} / 出 ${node.outDegree}）`;
+      els.detailIo.textContent = `${node.outDegree} 条评价他人 / ${node.inDegree} 条被他人提及`;
+
+      const neighbors = state.nodes
+        .filter(item => node.neighbors.has(item.id))
+        .sort((a, b) => b.degree - a.degree || a.label.localeCompare(b.label));
+
+      els.neighborList.innerHTML = "";
+      for (const item of neighbors) {
+        const chip = document.createElement("button");
+        chip.className = "chip";
+        chip.textContent = formatBilingual(item.label, item.zhLabel);
+        chip.addEventListener("click", () => {
+          state.selectedId = item.id;
+          updateSidebar();
+          queueRender();
+        });
+        els.neighborList.appendChild(chip);
+      }
+
+      const relatedEdges = state.edges.filter(edge => edge.source === node.id || edge.target === node.id);
+      els.relationList.innerHTML = "";
+      for (const edge of relatedEdges.slice(0, 18)) {
+        const div = document.createElement("div");
+        div.className = "relation-card";
+        const titleZh = edge.titlesZh && edge.titlesZh.length ? edge.titlesZh[0] : "";
+        const excerptZh = edge.excerptsZh && edge.excerptsZh.length ? edge.excerptsZh[0] : "";
+        div.innerHTML = `
+          <div class="relation-head">${formatBilingual(edge.source, edge.sourceZh)} → ${formatBilingual(edge.target, edge.targetZh)}</div>
+          <div class="relation-body">${edge.excerpts[0] || edge.titles[0] || "无文本"}</div>
+          ${titleZh ? `<div class="relation-head" style="margin-top:8px;">${titleZh}</div>` : ""}
+          ${excerptZh ? `<div class="relation-sub">${excerptZh}</div>` : ""}
+        `;
+        els.relationList.appendChild(div);
+      }
+    }
+
+    function loadGraph(raw) {
+      let payload;
+      try {
+        payload = parseStrict(raw);
+        state.mode = "严格 JSON";
+        setStatus("已按严格 JSON 解析拓扑数据。");
+      } catch (error) {
+        payload = parseBroken(raw);
+        state.mode = "容错恢复";
+        setStatus("原始文件不是严格合法 JSON，已切换到容错恢复模式。", true);
+      }
+
+      const graph = buildGraph(payload);
+      state.rawNodes = graph.nodes;
+      state.rawEdges = graph.edges;
+
+      els.statNodes.textContent = String(graph.nodes.length);
+      els.statEdges.textContent = String(graph.edges.length);
+      els.statMode.textContent = state.mode;
+
+      state.selectedId = graph.nodes[0] ? graph.nodes[0].id : null;
+      applyFilters();
+      centerGraph();
+      settleLayout(240);
+      queueRender();
+    }
+
+    let dragMode = null;
+    let lastPointer = { x: 0, y: 0 };
+    let draggedNode = null;
+
+    canvas.addEventListener("pointerdown", event => {
+      const node = pickNode(event.clientX, event.clientY);
+      lastPointer = { x: event.clientX, y: event.clientY };
+
+      if (node) {
+        draggedNode = node;
+        dragMode = "node";
+      } else {
+        dragMode = "pan";
+        canvas.classList.add("dragging");
+      }
+    });
+
+    window.addEventListener("pointermove", event => {
+      if (dragMode) {
+        if (dragMode === "node" && draggedNode) {
+          const point = worldPoint(event.clientX, event.clientY);
+          draggedNode.x = point.x;
+          draggedNode.y = point.y;
+        } else if (dragMode === "pan") {
+          state.transform.x += event.clientX - lastPointer.x;
+          state.transform.y += event.clientY - lastPointer.y;
+          lastPointer = { x: event.clientX, y: event.clientY };
+        }
+
+        hideEdgeTooltip();
+        state.hoveredEdgeId = null;
+        queueRender();
+        return;
+      }
+
+      const hoveredEdge = pickEdge(event.clientX, event.clientY);
+      if (hoveredEdge) {
+        state.hoveredEdgeId = hoveredEdge.id;
+        showEdgeTooltip(hoveredEdge, event.clientX, event.clientY);
+      } else {
+        state.hoveredEdgeId = null;
+        hideEdgeTooltip();
+      }
+      queueRender();
+    });
+
+    window.addEventListener("pointerup", event => {
+      const node = pickNode(event.clientX, event.clientY);
+      if (dragMode === "node" && node && draggedNode && node.id === draggedNode.id) {
+        state.selectedId = node.id;
+        updateSidebar();
+      }
+
+      dragMode = null;
+      draggedNode = null;
+      canvas.classList.remove("dragging");
+      hideEdgeTooltip();
+      queueRender();
+    });
+
+    canvas.addEventListener("wheel", event => {
+      event.preventDefault();
+      const zoom = event.deltaY < 0 ? 1.08 : 0.92;
+      const pointBefore = worldPoint(event.clientX, event.clientY);
+      state.transform.scale = Math.min(2.8, Math.max(0.35, state.transform.scale * zoom));
+      const rect = canvas.getBoundingClientRect();
+      state.transform.x = event.clientX - rect.left - pointBefore.x * state.transform.scale;
+      state.transform.y = event.clientY - rect.top - pointBefore.y * state.transform.scale;
+      hideEdgeTooltip();
+      state.hoveredEdgeId = null;
+      queueRender();
+    }, { passive: false });
+
+    canvas.addEventListener("pointerleave", () => {
+      state.hoveredEdgeId = null;
+      hideEdgeTooltip();
+      queueRender();
+    });
+
+    async function loadDefault() {
+      try {
+        const response = await fetch(DEFAULT_JSON_PATH, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const raw = await response.text();
+        loadGraph(raw);
+      } catch (error) {
+        setStatus("默认 JSON 加载失败。若你是直接双击打开 HTML，请使用上方本地文件选择。", true);
+      }
+    }
+
+    els.fileInput.addEventListener("change", async event => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      loadGraph(await file.text());
+    });
+
+    for (const control of [els.search, els.view, els.size, els.edge]) {
+      const handleChange = () => {
+        applyFilters();
+        settleLayout(180);
+        queueRender();
+      };
+      control.addEventListener("input", handleChange);
+      control.addEventListener("change", handleChange);
+    }
+
+    loadDefault();
+  </script>
+</body>
+</html>
