@@ -115,6 +115,7 @@ class GenshinCrawler:
             character_en = soup.select_one('th:-soup-contains("全名/本名") + td span[lang="en"]').get_text(strip=True)[:-1]
             if "流浪者" in character_zh:
                 character_en = character_en[:character_en.index("；")]
+            logger.info(f"步骤2获取角色 {character_zh} 的英文名称成功: {character_en}")
             return character_en
         except Exception as e:
             logger.error(f"步骤2获取角色 {character_zh} 的英文名称失败: {e}")
