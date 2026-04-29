@@ -183,9 +183,37 @@ class GenshinCrawler:
     def _save_results(self):
         logger.info("开始执行步骤4：保存结果到 JSON 文件")
         output_path = Path(__file__).resolve().parent / "genshin_network.json"
+        nodes = [
+            {"id": c["name_en"], "properties": {"photo": c["photo"],"name_zh": c["name_zh"], "name_en": c["name_en"]}}
+            for c in self.characters
+        ]
+        edges = []
+        for row in self.social_network:
+            source_id = row["name_en"]
+            target_id = row["title_en"].split(" about ", 1)[1].strip()
+            edge_id = f"{source_id} to {target_id}"
+            source_name_en = source_id
+            target_name_en = target_id
+            source_name_zh = row["name_zh"]
+            target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
+            title_en = row["title_en"]
+            title_zh = row["title_zh"]
+            edges.append({
+                "id": edge_id,
+                "source_id": source_id,
+                "target_id": target_id,
+                "properties": {
+                    "source_name_en": source_name_en,
+                    "target_name_en": target_name_en,
+                    "source_name_zh": source_name_zh,
+                    "target_name_zh": target_name_zh,
+                    "title_en": title_en,
+                    "title_zh": title_zh,
+                },
+            })
         payload = {
-            "characters": self.characters,
-            "social_network": self.social_network
+            "nodes": nodes,
+            "edges": edges,
         }
         try:
             with output_path.open('w', encoding='utf-8') as f:
