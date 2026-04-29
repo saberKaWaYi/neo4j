@@ -48,6 +48,7 @@ def _load_json(path: Path) -> dict:
         payload = json.load(file)
     if not isinstance(payload, dict):
         raise ValueError("JSON root must be an object")
+    logger.info("JSON loaded successfully")
     return payload
 
 
