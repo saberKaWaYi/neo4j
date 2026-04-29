@@ -2,9 +2,9 @@ from fastapi import APIRouter, HTTPException
 from datetime import datetime
 import logging
 
-from models.schemas import MessageRequest, MessageResponse
+from models.schemas_message import MessageRequest, MessageResponse
 from services.rabbitmq_service import RabbitMQService
-from config import settings
+from settings_config import settings
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -21,12 +21,6 @@ def get_rabbitmq_service() -> RabbitMQService:
 async def send_nebula_message(request: MessageRequest):
     """发送消息到 Nebula 队列"""
     return await _send_to_queue(request, settings.rabbitmq.queue_nebula)
-
-
-@router.post("/send_mongo", response_model=MessageResponse)
-async def send_mongo_message(request: MessageRequest):
-    """发送消息到 Mongo 队列"""
-    return await _send_to_queue(request, settings.rabbitmq.queue_mongo)
 
 
 async def _send_to_queue(request: MessageRequest, queue_name: str) -> MessageResponse:
