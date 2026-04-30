@@ -6,8 +6,8 @@ logger = logging.getLogger(__name__)
 
 from settings_config import settings
 
-from models.schemas_message import NebulaOperationMessage, MessageResponse
 from services.rabbitmq_service import RabbitMQService
+from models.schemas_message import NebulaOperationMessage, MessageResponse
 
 from datetime import datetime
 from typing import Literal
