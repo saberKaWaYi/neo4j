@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 router = APIRouter()
 
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -22,10 +21,10 @@ def get_rabbitmq_service() -> RabbitMQService:
 @router.post("/send_nebula", response_model=MessageResponse)
 async def send_nebula_message(request: NebulaOperationMessage):
     """发送消息到 Nebula 队列"""
-    return await _send_to_queue(request, settings.rabbitmq.queue_nebula)
+    return await _send_to_queue(request, settings.rabbitmq_queue_nebula)
 
 
-async def _send_to_queue(request: Literal[NebulaOperationMessage], queue_name: str) -> MessageResponse:
+async def _send_to_queue(request: Literal[NebulaOperationMessage], queue_name: Literal[settings.rabbitmq_queue_nebula]) -> MessageResponse:
     try:
         rabbitmq = get_rabbitmq_service()
         message_id = rabbitmq.publish_message(
