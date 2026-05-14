@@ -1,42 +1,40 @@
 import logging
-import time
-
-from config import settings, setup_logging, get_business_space
-from services.nebula_service import NebulaService
-from services.rabbitmq_service import RabbitMQService
+from logging_config import setup_logging
 
 setup_logging("worker")
-logger = logging.getLogger("worker.run")
+logger = logging.getLogger("worker")
 
+from settings_config import settings
 
-class QueueWorker:
-    """单 worker 多队列分发消费者。"""
+from services.rabbitmq_service import RabbitMQService
+from services.nebula_service import NebulaService
+
+import time
+
+class NebulaQueueWorker:
 
     def __init__(self):
-        self.space_name = get_business_space("genshin")
+        self.space_name = settings.businesses
         self.nebula = NebulaService(
-            host=settings.nebula.host,
-            port=settings.nebula.port,
-            username=settings.nebula.username,
-            password=settings.nebula.password,
+            host=settings.nebula_host,
+            port=settings.nebula_port,
+            username=settings.nebula_username,
+            password=settings.nebula_password
         )
         self.rabbitmq = RabbitMQService(
-            host=settings.rabbitmq.host,
-            port=settings.rabbitmq.port,
-            username=settings.rabbitmq.username,
-            password=settings.rabbitmq.password,
+            host=settings.rabbitmq_host,
+            port=settings.rabbitmq_port,
+            username=settings.rabbitmq_username,
+            password=settings.rabbitmq_password,
             queue_names=[
-                settings.rabbitmq.queue_nebula,
-                settings.rabbitmq.queue_mongo,
-            ],
+                settings.rabbitmq_queue_nebula
+            ]
         )
         self.queue_handlers = {
-            settings.rabbitmq.queue_nebula: self._handle_nebula_message,
-            settings.rabbitmq.queue_mongo: self._handle_mongo_message,
+            settings.rabbitmq_queue_nebula: self._handle_nebula_message
         }
         self.queue_poll_order = [
-            settings.rabbitmq.queue_nebula,
-            settings.rabbitmq.queue_mongo,
+            settings.rabbitmq_queue_nebula
         ]
 
     def run_forever(self) -> None:
@@ -98,14 +96,7 @@ class QueueWorker:
             result,
         )
 
-    def _handle_mongo_message(self, message: dict) -> None:
-        logger.info(
-            "Mongo handler placeholder consumed message_id=%s operation=%s",
-            message.get("message_id"),
-            message.get("operation"),
-        )
-
 
 def run_worker() -> None:
-    worker = QueueWorker()
+    worker = NebulaQueueWorker()
     worker.run_forever()
