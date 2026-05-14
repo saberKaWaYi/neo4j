@@ -9,8 +9,8 @@ from settings_config import settings
 from services.rabbitmq_service import RabbitMQService
 from models.schemas_message import NebulaOperationMessage, MessageResponse
 
-from datetime import datetime
 from typing import Union
+from datetime import datetime
 
 def get_rabbitmq_service() -> RabbitMQService:
     from app.main import rabbitmq_service
