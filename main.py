@@ -25,7 +25,7 @@ def main():
     parser.add_argument(
         "command",
         choices=["web", "crawler", "worker"],
-        help="运行模式: web(启动API服务) / crawler(运行爬虫) / worker(多队列消费并分发)",
+        help="运行模式: web(启动API服务) / crawler(运行爬虫) / worker(启动多队列消费)",
     )
     parser.add_argument("--host", default="0.0.0.0", help="Web服务主机地址")
     parser.add_argument("--port", type=int, default=8000, help="Web服务端口")
