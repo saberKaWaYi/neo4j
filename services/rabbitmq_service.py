@@ -61,6 +61,7 @@ class RabbitMQService:
 
     def publish_message(
         self,
+        space_name: str,
         operation: Literal["add_nodes", "add_edges", "delete_nodes", "delete_edges"],
         data: dict,
         queue_name: str,
@@ -71,6 +72,7 @@ class RabbitMQService:
         message = {
             "message_id": message_id,
             "timestamp": datetime.now(timezone.utc).isoformat(),
+            "space_name": space_name,
             "operation": operation,
             "data": data,
             "target_queue": target_queue,
@@ -91,8 +93,9 @@ class RabbitMQService:
         )
 
         logger.info(
-            "Published message %s with operation %s to queue %s",
+            "Published message %s with space=%s operation=%s to queue %s",
             message_id,
+            space_name,
             operation,
             target_queue,
         )

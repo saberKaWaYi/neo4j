@@ -195,10 +195,12 @@ class GenshinCrawler:
                 },
             })
         payload_nodes = {
+            "space_name": "genshin",
             "operation": "add_nodes",
             "data": {"label": "Character", "nodes": nodes},
         }
         payload_edges = {
+            "space_name": "genshin",
             "operation": "add_edges",
             "data": {"label": "Character_to_Character", "edges": edges},
         }

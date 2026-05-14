@@ -6,6 +6,7 @@ from datetime import datetime
 
 
 class NebulaOperationMessage(BaseModel):
+    space_name: str = Field(..., description="Nebula space database name")
     operation: Literal["add_nodes", "add_edges", "delete_nodes", "delete_edges"]
     data: dict = Field(..., description="Payload matched by operation type")
 

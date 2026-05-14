@@ -85,9 +85,9 @@ class QueueWorker:
                 self.rabbitmq.reject_message(delivery_tag, requeue=False)
 
     def _handle_nebula_message(self, message: dict) -> None:
+        space_name = message.get("space_name")
         operation = message.get("operation")
         data = message.get("data")
-        space_name = message.get("space_name")
         result = self.nebula.execute_operation(space_name, operation, data)
         logger.info(
             "Nebula processed message_id=%s operation=%s result=%s",

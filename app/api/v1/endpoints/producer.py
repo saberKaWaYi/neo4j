@@ -29,7 +29,7 @@ async def _send_to_queue(request: Union[NebulaOperationMessage], queue_name: str
     try:
         rabbitmq = get_rabbitmq_service()
         message_id = rabbitmq.publish_message(
-            request.operation, request.data, queue_name=queue_name
+            request.space_name, request.operation, request.data, queue_name=queue_name
         )
 
         logger.info(
