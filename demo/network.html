@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Genshin Network Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand hide-when-collapsed">
+            <strong>拓扑网络</strong>
+            <span>edges 关系探索</span>
+          </div>
+          <button class="icon-btn" data-sidebar-toggle title="收放筛选栏">☰</button>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <button class="theme-btn" data-theme-toggle><span data-theme-icon>☀</span><span data-theme-label>白天</span></button>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>数据</h2>
+          <label class="file-drop">
+            <strong>选择本地 JSON</strong>
+            <span class="micro" data-file-name>点击导入 genshin_network.json</span>
+            <input data-file-input type="file" accept=".json,application/json" />
+          </label>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>筛选</h2>
+          <div class="field">
+            <label for="lang">语言</label>
+            <select id="lang" data-lang>
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="nodeSearch">角色搜索</label>
+            <input id="nodeSearch" data-search type="text" placeholder="输入角色名或 id" />
+          </div>
+          <div class="field">
+            <label for="edgeSearch">边标题搜索</label>
+            <input id="edgeSearch" data-edge-search type="text" placeholder="about / 关于 / 标题" />
+          </div>
+          <div class="field">
+            <label for="layout">布局</label>
+            <select id="layout" data-layout>
+              <option value="radial">度数辐射</option>
+              <option value="force">柔和力导向</option>
+              <option value="circle">环形</option>
+              <option value="columns">出入分列</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sizeMode">节点大小</label>
+            <select id="sizeMode" data-size-mode>
+              <option value="degree">按出度+入度</option>
+              <option value="same">一样大小</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="minDegree">最小连接数 <span data-min-degree-label>0</span></label>
+            <input id="minDegree" data-min-degree type="range" min="0" max="30" value="0" />
+          </div>
+          <div class="field">
+            <label for="edgeLimit">最多显示边数</label>
+            <input id="edgeLimit" data-edge-limit type="number" min="20" max="2000" step="20" value="500" />
+          </div>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>页面</h2>
+          <div class="nav-stack">
+            <a class="nav-link" href="./characters.html">角色图鉴</a>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="page-header">
+          <div class="page-title">
+            <h1>Genshin Relation Graph</h1>
+            <p data-status>请从左侧选择本地 genshin_network.json 导入数据。</p>
+          </div>
+          <div class="stats">
+            <div class="stat"><b data-total-nodes>0</b><span>节点</span></div>
+            <div class="stat"><b data-total-edges>0</b><span>边</span></div>
+            <div class="stat"><b data-density>0</b><span>平均连接</span></div>
+          </div>
+        </header>
+        <section class="graph-wrap">
+          <canvas id="graphCanvas"></canvas>
+        </section>
+      </main>
+    </div>
+    <div class="tooltip" id="tooltip"></div>
+
+    <script src="./common.js"></script>
+    <script>
+      const canvas = qs("#graphCanvas");
+      const ctx = canvas.getContext("2d");
+      const tooltip = qs("#tooltip");
+      const graph = {
+        nodes: [],
+        edges: [],
+        nodeMap: new Map(),
+        dragging: null,
+        hoverNode: null,
+        hoverEdge: null,
+        running: true,
+        cooling: 0,
+        canvasWidth: 0,
+        canvasHeight: 0,
+        imageCache: new Map(),
+      };
+      const filters = {
+        query: "",
+        edgeQuery: "",
+        layout: "radial",
+        sizeMode: "degree",
+        minDegree: 0,
+        edgeLimit: 500,
+      };
+
+      boot((data) => {
+        bindControls();
+        rebuildGraph();
+        requestAnimationFrame(tick);
+      });
+
+      function bindControls() {
+        const lang = qs("[data-lang]");
+        lang.value = state.lang;
+        lang.onchange = () => {
+          state.lang = lang.value;
+          localStorage.setItem("genshin-demo-lang", state.lang);
+          draw();
+        };
+        qs("[data-search]").oninput = (event) => {
+          filters.query = event.target.value.trim().toLowerCase();
+          rebuildGraph();
+        };
+        qs("[data-edge-search]").oninput = (event) => {
+          filters.edgeQuery = event.target.value.trim().toLowerCase();
+          rebuildGraph();
+        };
+        qs("[data-layout]").value = filters.layout;
+        qs("[data-layout]").onchange = (event) => {
+          filters.layout = event.target.value;
+          applyLayout(true);
+        };
+        qs("[data-size-mode]").onchange = (event) => {
+          filters.sizeMode = event.target.value;
+          rebuildGraph();
+        };
+        qs("[data-min-degree]").oninput = (event) => {
+          filters.minDegree = Number(event.target.value);
+          qs("[data-min-degree-label]").textContent = filters.minDegree;
+          rebuildGraph();
+        };
+        qs("[data-edge-limit]").onchange = (event) => {
+          filters.edgeLimit = Number(event.target.value) || 500;
+          rebuildGraph();
+        };
+        canvas.addEventListener("pointerdown", onPointerDown);
+        canvas.addEventListener("pointermove", onPointerMove);
+        canvas.addEventListener("pointerup", onPointerUp);
+        canvas.addEventListener("pointerleave", onPointerUp);
+        window.addEventListener("resize", () => {
+          resizeCanvas();
+          applyLayout(false);
+        });
+      }
+
+      function rebuildGraph() {
+        const degree = new Map(state.data.nodes.map((node) => [node.id, { in: 0, out: 0, total: 0 }]));
+        state.data.edges.forEach((edge) => {
+          const source = degree.get(edge.source_id) || { in: 0, out: 0, total: 0 };
+          const target = degree.get(edge.target_id) || { in: 0, out: 0, total: 0 };
+          source.out += 1;
+          target.in += 1;
+          source.total += 1;
+          target.total += 1;
+          degree.set(edge.source_id, source);
+          degree.set(edge.target_id, target);
+        });
+
+        const matchedIds = new Set();
+        const nodeCandidates = state.data.nodes.filter((node) => {
+          const d = degree.get(node.id)?.total || 0;
+          if (d < filters.minDegree) return false;
+          if (!filters.query) return true;
+          const haystack = [node.id, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
+          const ok = haystack.includes(filters.query);
+          if (ok) matchedIds.add(node.id);
+          return ok;
+        });
+        const allowed = new Set(nodeCandidates.map((node) => node.id));
+        let edges = state.data.edges
+          .filter((edge) => allowed.has(edge.source_id) && allowed.has(edge.target_id))
+          .filter((edge) => {
+            if (!filters.edgeQuery) return true;
+            const haystack = [
+              edge.id,
+              edge.properties.title_zh,
+              edge.properties.title_en,
+              edge.properties.source_name_zh,
+              edge.properties.target_name_zh,
+              edge.properties.source_name_en,
+              edge.properties.target_name_en,
+            ].join(" ").toLowerCase();
+            return haystack.includes(filters.edgeQuery);
+          })
+          .sort((a, b) => (degree.get(b.source_id)?.total || 0) - (degree.get(a.source_id)?.total || 0))
+          .slice(0, filters.edgeLimit);
+
+        const usedIds = new Set(edges.flatMap((edge) => [edge.source_id, edge.target_id]));
+        if (filters.query && matchedIds.size) matchedIds.forEach((id) => usedIds.add(id));
+        graph.nodes = nodeCandidates
+          .filter((node) => usedIds.has(node.id) || (!edges.length && allowed.has(node.id)))
+          .map((node, index) => {
+            const seed = seededPosition(index, node.id);
+            return {
+              ...node,
+              x: seed.x * Math.max(1, canvas.clientWidth),
+              y: seed.y * Math.max(1, canvas.clientHeight),
+              vx: 0,
+              vy: 0,
+              degree: degree.get(node.id) || { in: 0, out: 0, total: 0 },
+            };
+          });
+        graph.nodeMap = new Map(graph.nodes.map((node) => [node.id, node]));
+        graph.edges = edges.filter((edge) => graph.nodeMap.has(edge.source_id) && graph.nodeMap.has(edge.target_id));
+        graph.nodes.forEach((node) => {
+          node.r = filters.sizeMode === "same" ? 18 : Math.max(16, Math.min(34, 14 + Math.sqrt(node.degree.total) * 2.4));
+          preloadNodeImage(node);
+        });
+
+        qs("[data-total-nodes]").textContent = graph.nodes.length;
+        qs("[data-total-edges]").textContent = graph.edges.length;
+        qs("[data-density]").textContent = graph.nodes.length ? (graph.edges.length / graph.nodes.length).toFixed(1) : "0";
+        applyLayout(true);
+      }
+
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const nextWidth = Math.max(1, Math.floor(rect.width * dpr));
+        const nextHeight = Math.max(1, Math.floor(rect.height * dpr));
+        if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
+          canvas.width = nextWidth;
+          canvas.height = nextHeight;
+          graph.canvasWidth = rect.width;
+          graph.canvasHeight = rect.height;
+        }
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function applyLayout(resetVelocity) {
+        resizeCanvas();
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        const cx = w / 2;
+        const cy = h / 2;
+        const nodes = [...graph.nodes].sort((a, b) => b.degree.total - a.degree.total);
+        nodes.forEach((node, i) => {
+          if (resetVelocity) node.vx = node.vy = 0;
+          if (filters.layout === "circle") {
+            const angle = (Math.PI * 2 * i) / Math.max(1, nodes.length);
+            const radius = Math.min(w, h) * 0.38;
+            node.x = cx + Math.cos(angle) * radius;
+            node.y = cy + Math.sin(angle) * radius;
+          } else if (filters.layout === "radial") {
+            const ring = 1 - (node.degree.total || 1) / Math.max(1, nodes[0]?.degree.total || 1);
+            const angle = (Math.PI * 2 * i * 0.618) % (Math.PI * 2);
+            const radius = Math.min(w, h) * (0.08 + ring * 0.38);
+            node.x = cx + Math.cos(angle) * radius;
+            node.y = cy + Math.sin(angle) * radius;
+          } else if (filters.layout === "columns") {
+            const balance = node.degree.out - node.degree.in;
+            const column = balance > 3 ? 0.25 : balance < -3 ? 0.75 : 0.5;
+            node.x = w * column + (seededPosition(i, node.id).x - 0.5) * 50;
+            node.y = 56 + (i % Math.max(1, Math.floor(h / 42))) * 42;
+          } else {
+            const seed = seededPosition(i, node.id);
+            const angle = Math.PI * 2 * seed.x;
+            const radius = Math.min(w, h) * (0.1 + seed.y * 0.28);
+            node.x = cx + Math.cos(angle) * radius;
+            node.y = cy + Math.sin(angle) * radius;
+          }
+        });
+        graph.running = true;
+        graph.cooling = filters.layout === "force" ? 1 : 0;
+        draw();
+      }
+
+      function tick() {
+        if (filters.layout === "force" && graph.running) {
+          for (let i = 0; i < 2; i++) simulate();
+        }
+        draw();
+        requestAnimationFrame(tick);
+      }
+
+      function simulate() {
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        const cx = w / 2;
+        const cy = h / 2;
+        graph.nodes.forEach((a, i) => {
+          for (let j = i + 1; j < graph.nodes.length; j++) {
+            const b = graph.nodes[j];
+            const dx = a.x - b.x || 0.01;
+            const dy = a.y - b.y || 0.01;
+            const dist2 = dx * dx + dy * dy;
+            const force = Math.min(1.8, 780 / dist2) * graph.cooling;
+            const dist = Math.sqrt(dist2);
+            a.vx += (dx / dist) * force;
+            a.vy += (dy / dist) * force;
+            b.vx -= (dx / dist) * force;
+            b.vy -= (dy / dist) * force;
+          }
+        });
+        graph.edges.forEach((edge) => {
+          const a = graph.nodeMap.get(edge.source_id);
+          const b = graph.nodeMap.get(edge.target_id);
+          if (!a || !b) return;
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const target = 72 + Math.min(55, (a.r + b.r) * 2.2);
+          const force = (dist - target) * 0.0009 * graph.cooling;
+          a.vx += dx * force;
+          a.vy += dy * force;
+          b.vx -= dx * force;
+          b.vy -= dy * force;
+        });
+        let energy = 0;
+        graph.nodes.forEach((node) => {
+          if (node.fixed) return;
+          node.vx += (cx - node.x) * 0.006 * graph.cooling;
+          node.vy += (cy - node.y) * 0.006 * graph.cooling;
+          node.vx *= 0.72;
+          node.vy *= 0.72;
+          const speed = Math.hypot(node.vx, node.vy);
+          if (speed > 5) {
+            node.vx = (node.vx / speed) * 5;
+            node.vy = (node.vy / speed) * 5;
+          }
+          node.x = Math.max(node.r + 8, Math.min(w - node.r - 8, node.x + node.vx));
+          node.y = Math.max(node.r + 8, Math.min(h - node.r - 8, node.y + node.vy));
+          energy += Math.abs(node.vx) + Math.abs(node.vy);
+        });
+        graph.cooling *= 0.985;
+        if (graph.cooling < 0.035 || energy < 0.08) graph.running = false;
+      }
+
+      function draw() {
+        resizeCanvas();
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+        ctx.lineCap = "round";
+        graph.edges.forEach((edge) => {
+          const a = graph.nodeMap.get(edge.source_id);
+          const b = graph.nodeMap.get(edge.target_id);
+          if (!a || !b) return;
+          const active = edge === graph.hoverEdge || a === graph.hoverNode || b === graph.hoverNode;
+          ctx.strokeStyle = active ? "rgba(200, 138, 40, 0.88)" : getCssColor("--line", 0.72);
+          ctx.lineWidth = active ? 2.1 : 0.9;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        });
+        graph.nodes.forEach((node) => {
+          const active = node === graph.hoverNode;
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.r + (active ? 7 : 4), 0, Math.PI * 2);
+          ctx.fillStyle = active ? "rgba(200, 138, 40, 0.26)" : "rgba(35, 122, 111, 0.16)";
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(node.x, node.y, node.r, 0, Math.PI * 2);
+          drawNodeFace(node);
+          ctx.strokeStyle = active ? getCssColor("--accent-2") : getCssColor("--panel-strong");
+          ctx.lineWidth = active ? 3 : 2;
+          ctx.stroke();
+
+        });
+      }
+
+      function drawNodeFace(node) {
+        const image = graph.imageCache.get(node.properties.photo || "");
+        if (image?.ready) {
+          ctx.save();
+          ctx.clip();
+          const size = node.r * 2;
+          ctx.fillStyle = getCssColor("--panel-strong");
+          ctx.fillRect(node.x - node.r, node.y - node.r, size, size);
+          ctx.drawImage(image.element, node.x - node.r, node.y - node.r, size, size);
+          ctx.restore();
+          return;
+        }
+
+        const gradient = ctx.createRadialGradient(node.x - node.r * 0.35, node.y - node.r * 0.35, 1, node.x, node.y, node.r);
+        gradient.addColorStop(0, getCssColor("--accent-2"));
+        gradient.addColorStop(1, getCssColor("--accent"));
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.78)";
+        ctx.font = `700 ${Math.max(12, node.r * 0.75)}px Segoe UI, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(String(getName(node) || node.id).slice(0, 1).toUpperCase(), node.x, node.y + 1);
+        ctx.restore();
+      }
+
+      function preloadNodeImage(node) {
+        const url = node.properties.photo;
+        if (!url || graph.imageCache.has(url)) return;
+        const entry = { ready: false, failed: false, element: new Image() };
+        entry.element.crossOrigin = "anonymous";
+        entry.element.onload = () => {
+          entry.ready = true;
+          draw();
+        };
+        entry.element.onerror = () => {
+          entry.failed = true;
+          draw();
+        };
+        entry.element.src = url;
+        graph.imageCache.set(url, entry);
+      }
+
+      function onPointerDown(event) {
+        const point = eventPoint(event);
+        graph.dragging = findNode(point.x, point.y);
+        if (graph.dragging) {
+          graph.dragging.fixed = true;
+          graph.running = false;
+          canvas.setPointerCapture(event.pointerId);
+        }
+      }
+
+      function onPointerMove(event) {
+        const point = eventPoint(event);
+        if (graph.dragging) {
+          graph.dragging.x = point.x;
+          graph.dragging.y = point.y;
+          graph.dragging.vx = graph.dragging.vy = 0;
+          showNodeTooltip(graph.dragging, event);
+          return;
+        }
+        graph.hoverNode = findNode(point.x, point.y);
+        graph.hoverEdge = graph.hoverNode ? null : findEdge(point.x, point.y);
+        if (graph.hoverNode) showNodeTooltip(graph.hoverNode, event);
+        else if (graph.hoverEdge) showEdgeTooltip(graph.hoverEdge, event);
+        else hideTooltip();
+      }
+
+      function onPointerUp(event) {
+        if (graph.dragging) {
+          graph.dragging.fixed = false;
+          graph.dragging = null;
+          try {
+            canvas.releasePointerCapture(event.pointerId);
+          } catch {}
+        }
+      }
+
+      function findNode(x, y) {
+        for (let i = graph.nodes.length - 1; i >= 0; i--) {
+          const node = graph.nodes[i];
+          const dx = x - node.x;
+          const dy = y - node.y;
+          if (Math.sqrt(dx * dx + dy * dy) <= node.r + 5) return node;
+        }
+        return null;
+      }
+
+      function findEdge(x, y) {
+        let best = null;
+        let bestDistance = 7;
+        graph.edges.forEach((edge) => {
+          const a = graph.nodeMap.get(edge.source_id);
+          const b = graph.nodeMap.get(edge.target_id);
+          if (!a || !b) return;
+          const distance = pointToSegmentDistance(x, y, a.x, a.y, b.x, b.y);
+          if (distance < bestDistance) {
+            bestDistance = distance;
+            best = edge;
+          }
+        });
+        return best;
+      }
+
+      function showNodeTooltip(node, event) {
+        tooltip.innerHTML = `
+          ${node.properties.photo ? `<img src="${escapeHtml(node.properties.photo)}" alt="">` : ""}
+          <h3>${escapeHtml(getName(node))}</h3>
+          <p>${escapeHtml(getOtherName(node))}</p>
+          <p>ID: ${escapeHtml(node.id)}</p>
+          <div class="chips">
+            <span class="chip">入度 ${node.degree.in}</span>
+            <span class="chip">出度 ${node.degree.out}</span>
+            <span class="chip">总计 ${node.degree.total}</span>
+          </div>
+        `;
+        moveTooltip(event);
+      }
+
+      function showEdgeTooltip(edge, event) {
+        const source = edgeEndpoint(edge, "source");
+        const target = edgeEndpoint(edge, "target");
+        const titleZh = edge.properties.title_zh || "";
+        const titleEn = edge.properties.title_en || "";
+        const currentTitle = edgeTitle(edge);
+        const extraFields = Object.entries(edge.properties || {})
+          .filter(([key, value]) => value && !["source_name_en", "target_name_en", "source_name_zh", "target_name_zh", "title_en", "title_zh"].includes(key))
+          .map(([key, value]) => `<p>${escapeHtml(key)}: ${escapeHtml(value)}</p>`)
+          .join("");
+        tooltip.innerHTML = `
+          <h3>${escapeHtml(source)} 对 ${escapeHtml(target)} 的想法</h3>
+          <p>${escapeHtml(currentTitle)}</p>
+          ${titleZh && titleZh !== currentTitle ? `<p>中文：${escapeHtml(titleZh)}</p>` : ""}
+          ${titleEn && titleEn !== currentTitle ? `<p>English: ${escapeHtml(titleEn)}</p>` : ""}
+          ${extraFields}
+          <div class="chips">
+            <span class="chip">${escapeHtml(edge.source_id)}</span>
+            <span class="chip">想法</span>
+            <span class="chip">${escapeHtml(edge.target_id)}</span>
+          </div>
+        `;
+        moveTooltip(event);
+      }
+
+      function moveTooltip(event) {
+        tooltip.classList.add("visible");
+        const x = Math.min(window.innerWidth - 320, event.clientX + 14);
+        const y = Math.min(window.innerHeight - 180, event.clientY + 14);
+        tooltip.style.left = `${Math.max(10, x)}px`;
+        tooltip.style.top = `${Math.max(10, y)}px`;
+      }
+
+      function hideTooltip() {
+        graph.hoverNode = null;
+        graph.hoverEdge = null;
+        tooltip.classList.remove("visible");
+      }
+
+      function eventPoint(event) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      }
+
+      function pointToSegmentDistance(px, py, x1, y1, x2, y2) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        if (dx === 0 && dy === 0) return Math.hypot(px - x1, py - y1);
+        const t = Math.max(0, Math.min(1, ((px - x1) * dx + (py - y1) * dy) / (dx * dx + dy * dy)));
+        return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+      }
+
+      function getCssColor(name, alpha) {
+        const color = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        if (alpha == null) return color;
+        return color.startsWith("#") ? `${color}${Math.round(alpha * 255).toString(16).padStart(2, "0")}` : color;
+      }
+
+      function trimText(value, length) {
+        const text = String(value || "");
+        return text.length > length ? `${text.slice(0, length - 1)}…` : text;
+      }
+
+      function seededPosition(index, text) {
+        let hash = 2166136261;
+        const value = `${text}:${index}`;
+        for (let i = 0; i < value.length; i++) {
+          hash ^= value.charCodeAt(i);
+          hash = Math.imul(hash, 16777619);
+        }
+        const a = ((hash >>> 0) % 10000) / 10000;
+        hash = Math.imul(hash ^ 0x9e3779b9, 16777619);
+        const b = ((hash >>> 0) % 10000) / 10000;
+        return { x: a, y: b };
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+    </script>
+  </body>
+</html>

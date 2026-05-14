@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Genshin Characters Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand hide-when-collapsed">
+            <strong>角色图鉴</strong>
+            <span>nodes 数据浏览</span>
+          </div>
+          <button class="icon-btn" data-sidebar-toggle title="收放筛选栏">☰</button>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <button class="theme-btn" data-theme-toggle><span data-theme-icon>☀</span><span data-theme-label>白天</span></button>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>数据</h2>
+          <label class="file-drop">
+            <strong>选择本地 JSON</strong>
+            <span class="micro" data-file-name>点击导入 genshin_network.json</span>
+            <input data-file-input type="file" accept=".json,application/json" />
+          </label>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>筛选</h2>
+          <div class="field">
+            <label for="lang">语言</label>
+            <select id="lang" data-lang>
+              <option value="zh">中文</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="search">名字模糊搜索</label>
+            <input id="search" data-search type="text" placeholder="输入中文、英文或 id" />
+          </div>
+          <div class="field">
+            <label for="sort">排序</label>
+            <select id="sort" data-sort>
+              <option value="name">按当前语言名字</option>
+              <option value="degree">按网络连接数</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel-section hide-when-collapsed">
+          <h2>页面</h2>
+          <div class="nav-stack">
+            <a class="nav-link" href="./network.html">拓扑网络</a>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="page-header">
+          <div class="page-title">
+            <h1>Genshin Character Atlas</h1>
+            <p data-status>请从左侧选择本地 genshin_network.json 导入数据。</p>
+          </div>
+          <div class="stats">
+            <div class="stat"><b data-total>0</b><span>角色</span></div>
+            <div class="stat"><b data-visible>0</b><span>当前结果</span></div>
+            <div class="stat"><b data-edges>0</b><span>关系</span></div>
+          </div>
+        </header>
+        <section id="characterGrid" class="grid"></section>
+      </main>
+    </div>
+
+    <script src="./common.js"></script>
+    <script>
+      const filters = {
+        query: "",
+        sort: "name",
+      };
+      let degreeMap = new Map();
+
+      boot((data) => {
+        degreeMap = buildDegreeMap(data);
+        bindControls();
+        render();
+      });
+
+      function bindControls() {
+        const lang = qs("[data-lang]");
+        lang.value = state.lang;
+        lang.onchange = () => {
+          state.lang = lang.value;
+          localStorage.setItem("genshin-demo-lang", state.lang);
+          render();
+        };
+        qs("[data-search]").oninput = (event) => {
+          filters.query = event.target.value.trim().toLowerCase();
+          render();
+        };
+        qs("[data-sort]").onchange = (event) => {
+          filters.sort = event.target.value;
+          render();
+        };
+      }
+
+      function buildDegreeMap(data) {
+        const map = new Map(data.nodes.map((node) => [node.id, 0]));
+        data.edges.forEach((edge) => {
+          map.set(edge.source_id, (map.get(edge.source_id) || 0) + 1);
+          map.set(edge.target_id, (map.get(edge.target_id) || 0) + 1);
+        });
+        return map;
+      }
+
+      function render() {
+        const nodes = state.data.nodes || [];
+        const visible = nodes
+          .filter((node) => {
+            if (!filters.query) return true;
+            const haystack = [node.id, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
+            return haystack.includes(filters.query);
+          })
+          .sort((a, b) => {
+            if (filters.sort === "degree") return (degreeMap.get(b.id) || 0) - (degreeMap.get(a.id) || 0);
+            return getName(a).localeCompare(getName(b), state.lang === "zh" ? "zh-Hans-CN" : "en");
+          });
+
+        qs("[data-total]").textContent = nodes.length;
+        qs("[data-visible]").textContent = visible.length;
+        qs("[data-edges]").textContent = state.data.edges?.length || 0;
+
+        const grid = qs("#characterGrid");
+        if (!visible.length) {
+          grid.innerHTML = '<div class="empty">没有找到匹配角色</div>';
+          return;
+        }
+        grid.innerHTML = visible
+          .map((node) => {
+            const degree = degreeMap.get(node.id) || 0;
+            const image = node.properties.photo || "";
+            return `
+              <article class="character-card">
+                <div class="portrait">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(getName(node))}" loading="lazy">` : ""}</div>
+                <div class="card-body">
+                  <h3>${escapeHtml(getName(node))}</h3>
+                  <p>${escapeHtml(getOtherName(node))}</p>
+                  <div class="chips">
+                    <span class="chip">ID: ${escapeHtml(node.id)}</span>
+                    <span class="chip">连接 ${degree}</span>
+                  </div>
+                </div>
+              </article>
+            `;
+          })
+          .join("");
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;",
+        })[char]);
+      }
+    </script>
+  </body>
+</html>

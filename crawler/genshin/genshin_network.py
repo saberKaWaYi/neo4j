@@ -179,8 +179,8 @@ class GenshinCrawler:
             target_name_en = target_id
             source_name_zh = row["name_zh"]
             target_name_zh = row["title_zh"].split("关于", 1)[1].strip()
-            title_en = row["title_en"]
-            title_zh = row["title_zh"]
+            content_en = row["content_en"]
+            content_zh = row["content_zh"]
             edges.append({
                 "id": edge_id,
                 "source_id": source_id,
@@ -190,8 +190,8 @@ class GenshinCrawler:
                     "target_name_en": target_name_en,
                     "source_name_zh": source_name_zh,
                     "target_name_zh": target_name_zh,
-                    "title_en": title_en,
-                    "title_zh": title_zh,
+                    "content_en": content_en,
+                    "content_zh": content_zh,
                 },
             })
         payload_nodes = {
