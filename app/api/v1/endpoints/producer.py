@@ -10,7 +10,7 @@ from services.rabbitmq_service import RabbitMQService
 from models.schemas_message import NebulaOperationMessage, MessageResponse
 
 from datetime import datetime
-from typing import Literal
+from typing import Literal, Union
 
 def get_rabbitmq_service() -> RabbitMQService:
     from app.main import rabbitmq_service
@@ -25,7 +25,7 @@ async def send_nebula_message(request: NebulaOperationMessage):
     return await _send_to_queue(request, settings.rabbitmq_queue_nebula)
 
 
-async def _send_to_queue(request: Literal[NebulaOperationMessage], queue_name: Literal[settings.rabbitmq_queue_nebula]) -> MessageResponse:
+async def _send_to_queue(request: Union[NebulaOperationMessage], queue_name: str) -> MessageResponse:
     try:
         rabbitmq = get_rabbitmq_service()
         message_id = rabbitmq.publish_message(
