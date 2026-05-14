@@ -22,7 +22,8 @@ function getOtherName(node, lang = state.lang) {
 }
 
 function edgeTitle(edge, lang = state.lang) {
-  return edge?.properties?.[`title_${lang}`] || edge?.properties?.title_en || edge?.id || "";
+  const props = edge?.properties || {};
+  return props[`content_${lang}`] || props[`title_${lang}`] || props.content_en || props.title_en || edge?.id || "";
 }
 
 function edgeEndpoint(edge, side, lang = state.lang) {

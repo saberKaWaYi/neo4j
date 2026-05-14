@@ -44,8 +44,8 @@
             <input id="nodeSearch" data-search type="text" placeholder="输入角色名或 id" />
           </div>
           <div class="field">
-            <label for="edgeSearch">边标题搜索</label>
-            <input id="edgeSearch" data-edge-search type="text" placeholder="about / 关于 / 标题" />
+            <label for="edgeSearch">想法内容搜索</label>
+            <input id="edgeSearch" data-edge-search type="text" placeholder="输入想法内容或角色名" />
           </div>
           <div class="field">
             <label for="layout">布局</label>
@@ -207,6 +207,8 @@
             if (!filters.edgeQuery) return true;
             const haystack = [
               edge.id,
+              edge.properties.content_zh,
+              edge.properties.content_en,
               edge.properties.title_zh,
               edge.properties.title_en,
               edge.properties.source_name_zh,
@@ -520,18 +522,19 @@
       function showEdgeTooltip(edge, event) {
         const source = edgeEndpoint(edge, "source");
         const target = edgeEndpoint(edge, "target");
-        const titleZh = edge.properties.title_zh || "";
-        const titleEn = edge.properties.title_en || "";
-        const currentTitle = edgeTitle(edge);
+        const props = edge.properties || {};
+        const contentZh = props.content_zh || props.title_zh || "";
+        const contentEn = props.content_en || props.title_en || "";
+        const currentContent = edgeTitle(edge);
         const extraFields = Object.entries(edge.properties || {})
-          .filter(([key, value]) => value && !["source_name_en", "target_name_en", "source_name_zh", "target_name_zh", "title_en", "title_zh"].includes(key))
+          .filter(([key, value]) => value && !["source_name_en", "target_name_en", "source_name_zh", "target_name_zh", "content_en", "content_zh", "title_en", "title_zh"].includes(key))
           .map(([key, value]) => `<p>${escapeHtml(key)}: ${escapeHtml(value)}</p>`)
           .join("");
         tooltip.innerHTML = `
           <h3>${escapeHtml(source)} 对 ${escapeHtml(target)} 的想法</h3>
-          <p>${escapeHtml(currentTitle)}</p>
-          ${titleZh && titleZh !== currentTitle ? `<p>中文：${escapeHtml(titleZh)}</p>` : ""}
-          ${titleEn && titleEn !== currentTitle ? `<p>English: ${escapeHtml(titleEn)}</p>` : ""}
+          <p>${escapeHtml(currentContent)}</p>
+          ${contentZh && contentZh !== currentContent ? `<p>中文：${escapeHtml(contentZh)}</p>` : ""}
+          ${contentEn && contentEn !== currentContent ? `<p>English: ${escapeHtml(contentEn)}</p>` : ""}
           ${extraFields}
           <div class="chips">
             <span class="chip">${escapeHtml(edge.source_id)}</span>
