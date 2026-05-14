@@ -3,8 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.v1 import rabbitmq_message
-
 from settings_config import settings
 from logging_config import setup_logging
 
@@ -13,6 +11,8 @@ setup_logging("web")
 from services.rabbitmq_service import RabbitMQService
 
 rabbitmq_service: RabbitMQService = None
+
+from app.api.v1 import rabbitmq_message
 
 
 @asynccontextmanager
