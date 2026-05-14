@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,19 +32,19 @@ class Settings(BaseSettings):
     rabbitmq_queue_mongo: str = Field(default="mongo_operations", alias="RABBITMQ_QUEUE_MONGO")
 
     """crawler服务配置"""
-    crawler_debug: bool = Field(default=False, alias="CRAWLER_DEBUG")
+    crawler_debug: Optional[bool] = Field(alias="CRAWLER_DEBUG")
     crawler_cookies: str = Field(...,alias="CRAWLER_COOKIES")
     crawler_headers: str = Field(..., alias="CRAWLER_HEADERS")
     crawler_time_sleep: int = Field(default=3, alias="CRAWLER_TIME_SLEEP")
     crawler_max_retries: int = Field(default=15, alias="CRAWLER_MAX_RETRIES")
 
     """web服务配置"""
-    web_debug: bool = Field(default=False, alias="WEB_DEBUG")
+    web_debug: Optional[bool] = Field(alias="WEB_DEBUG")
     web_name: str = Field(default="Web Service", alias="WEB_NAME")
     web_version: str = Field(default="1.0", alias="WEB_VERSION")
 
     """worker服务配置"""
-    worker_debug: bool = Field(default=False, alias="WORKER_DEBUG")
+    worker_debug: Optional[bool] = Field(alias="WORKER_DEBUG")
 
     @field_validator("businesses", mode="before")
     @classmethod
