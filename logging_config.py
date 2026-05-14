@@ -2,6 +2,7 @@ import logging
 import logging.config
 
 from pathlib import Path
+
 from typing import Literal
 
 from settings_config import settings
