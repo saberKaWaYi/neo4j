@@ -86,8 +86,9 @@ class QueueWorker:
 
     def _handle_nebula_message(self, message: dict) -> None:
         operation = message.get("operation")
-        data = message.get("data", {})
-        result = self.nebula.execute_operation(self.space_name, operation, data)
+        data = message.get("data")
+        space_name = message.get("space_name")
+        result = self.nebula.execute_operation(space_name, operation, data)
         logger.info(
             "Nebula processed message_id=%s operation=%s result=%s",
             message.get("message_id"),
