@@ -24,15 +24,18 @@ class QueueWorker:
                 settings.rabbitmq_queue_nebula
             ]
         )
-        self.handlers = {
-            settings.rabbitmq_queue_nebula: self._handle_nebula_message
-        }
         self.nebula = NebulaService(
             host=settings.nebula_host,
             port=settings.nebula_port,
             username=settings.nebula_username,
             password=settings.nebula_password
         )
+        self.queue_poll_order = [
+            settings.rabbitmq_queue_nebula
+        ]
+        self.handlers = {
+            settings.rabbitmq_queue_nebula: self._handle_nebula_message
+        }
 
     def run_forever(self) -> None:
         logger.info("Starting queue worker, queues=%s", self.rabbitmq.queue_names)
