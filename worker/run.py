@@ -14,7 +14,6 @@ import time
 class QueueWorker:
 
     def __init__(self):
-        self.space_name = settings.businesses
         self.rabbitmq = RabbitMQService(
             host=settings.rabbitmq_host,
             port=settings.rabbitmq_port,
@@ -33,14 +32,14 @@ class QueueWorker:
         self.queue_poll_order = [
             settings.rabbitmq_queue_nebula
         ]
-        self.handlers = {
+        self.queue_handlers = {
             settings.rabbitmq_queue_nebula: self._handle_nebula_message
         }
 
     def run_forever(self) -> None:
         logger.info("Starting queue worker, queues=%s", self.rabbitmq.queue_names)
-        self.nebula.connect()
         self.rabbitmq.connect()
+        self.nebula.connect()
         try:
             while True:
                 has_message = False
@@ -56,8 +55,8 @@ class QueueWorker:
                 if not has_message:
                     time.sleep(1.0)
         finally:
-            self.nebula.close()
             self.rabbitmq.disconnect()
+            self.nebula.close()
 
     def _dispatch_message(self, queue_name: str, message: dict) -> None:
         handler = self.queue_handlers.get(queue_name)
@@ -83,7 +82,7 @@ class QueueWorker:
                 exc,
             )
             if delivery_tag:
-                self.rabbitmq.reject_message(delivery_tag, requeue=True)
+                self.rabbitmq.reject_message(delivery_tag, requeue=False)
 
     def _handle_nebula_message(self, message: dict) -> None:
         operation = message.get("operation")
