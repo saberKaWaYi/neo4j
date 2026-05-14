@@ -10,7 +10,7 @@ from services.rabbitmq_service import RabbitMQService
 from models.schemas_message import NebulaOperationMessage, MessageResponse
 
 from datetime import datetime
-from typing import Literal, Union
+from typing import Union
 
 def get_rabbitmq_service() -> RabbitMQService:
     from app.main import rabbitmq_service
