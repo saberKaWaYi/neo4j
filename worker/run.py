@@ -11,16 +11,10 @@ from services.nebula_service import NebulaService
 
 import time
 
-class NebulaQueueWorker:
+class QueueWorker:
 
     def __init__(self):
         self.space_name = settings.businesses
-        self.nebula = NebulaService(
-            host=settings.nebula_host,
-            port=settings.nebula_port,
-            username=settings.nebula_username,
-            password=settings.nebula_password
-        )
         self.rabbitmq = RabbitMQService(
             host=settings.rabbitmq_host,
             port=settings.rabbitmq_port,
@@ -30,15 +24,18 @@ class NebulaQueueWorker:
                 settings.rabbitmq_queue_nebula
             ]
         )
-        self.queue_handlers = {
+        self.handlers = {
             settings.rabbitmq_queue_nebula: self._handle_nebula_message
         }
-        self.queue_poll_order = [
-            settings.rabbitmq_queue_nebula
-        ]
+        self.nebula = NebulaService(
+            host=settings.nebula_host,
+            port=settings.nebula_port,
+            username=settings.nebula_username,
+            password=settings.nebula_password
+        )
 
     def run_forever(self) -> None:
-        logger.info("Starting queue worker, queues=%s", self.queue_poll_order)
+        logger.info("Starting queue worker, queues=%s", self.rabbitmq.queue_names)
         self.nebula.connect()
         self.rabbitmq.connect()
         try:
@@ -98,5 +95,5 @@ class NebulaQueueWorker:
 
 
 def run_worker() -> None:
-    worker = NebulaQueueWorker()
+    worker = QueueWorker()
     worker.run_forever()
