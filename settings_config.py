@@ -10,11 +10,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        enable_decoding=False,
+        enable_decoding=False
     )
 
     """全局配置"""
-    debug: bool = False
+    debug: bool = Field(default=False, alias="DEBUG")
 
     """nebula服务配置"""
     nebula_host: str = Field(default="127.0.0.1", alias="NEBULA_HOST")
@@ -49,17 +49,10 @@ class Settings(BaseSettings):
     @field_validator("businesses", mode="before")
     @classmethod
     def parse_businesses(cls, value):
-        if isinstance(value, str):
-            items = [item.strip() for item in value.split(",") if item.strip()]
-            if not items:
-                raise ValueError("BUSINESSES must include at least one business")
-            return items
-        if isinstance(value, list):
-            items = [str(item).strip() for item in value if str(item).strip()]
-            if not items:
-                raise ValueError("BUSINESSES must include at least one business")
-            return items
-        raise ValueError("BUSINESSES must be a comma-separated string")
+        items = [item.strip() for item in value.split(",") if item.strip()]
+        if not items:
+            raise ValueError("BUSINESSES must include at least one business")
+        return items
 
     def get_service_debug(self, service: LogServiceName) -> bool:
         service_debug_map = {
