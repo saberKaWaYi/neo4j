@@ -11,8 +11,6 @@ import json
 
 import pika
 
-ALLOWED_OPERATIONS = {"add_nodes", "add_edges", "delete_nodes", "delete_edges"}
-
 
 class RabbitMQService:
     """RabbitMQ 消息队列服务"""
@@ -63,7 +61,7 @@ class RabbitMQService:
 
     def publish_message(
         self,
-        operation: Literal[ALLOWED_OPERATIONS],
+        operation: Literal["add_nodes", "add_edges", "delete_nodes", "delete_edges"],
         data: dict,
         queue_name: str,
     ) -> str:
