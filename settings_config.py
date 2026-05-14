@@ -61,6 +61,8 @@ class Settings(BaseSettings):
             "worker": self.worker_debug,
         }
         service_debug = service_debug_map[service]
+        if service_debug is None:
+            return self.debug
         return service_debug
 
 settings = Settings()
