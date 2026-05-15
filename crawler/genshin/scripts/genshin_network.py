@@ -69,7 +69,11 @@ class GenshinCrawler:
                 raise Exception(f"步骤1请求URL: {url}失败，已达到最大重试次数: {self.max_retries}")
             soup = BeautifulSoup(response.text, "html.parser")
             items = soup.select("div.divsort.g")
+            flag = 0
             for item in items:
+                if not flag:
+                    flag = 1
+                    continue
                 name_tag = item.find("div", class_="L")
                 if name_tag:
                     name = name_tag.text.strip()
