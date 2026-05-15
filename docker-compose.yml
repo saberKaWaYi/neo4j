@@ -48,6 +48,10 @@ services:
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
       - RABBITMQ_QUEUE_NEBULA=${RABBITMQ_QUEUE_NEBULA:-nebula_operations}
       - RABBITMQ_QUEUE_MONGO=${RABBITMQ_QUEUE_MONGO:-mongo_operations}
+      - DEBUG=${DEBUG:-false}
+      - WEB_DEBUG=${WEB_DEBUG}
+      - WEB_NAME=${WEB_NAME:-Web Service}
+      - WEB_VERSION=${WEB_VERSION:-1.0}
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/docs', timeout=3)"]
       interval: 10s
@@ -65,7 +69,12 @@ services:
       web:
         condition: service_healthy
     environment:
-      - CRAWLER_API_BASE_URL=${CRAWLER_API_BASE_URL:-http://web:8000}
+      - DEBUG=${DEBUG:-false}
+      - CRAWLER_DEBUG=${CRAWLER_DEBUG}
+      - CRAWLER_COOKIES=${CRAWLER_COOKIES}
+      - CRAWLER_HEADERS=${CRAWLER_HEADERS}
+      - CRAWLER_TIME_SLEEP=${CRAWLER_TIME_SLEEP:-3}
+      - CRAWLER_MAX_RETRIES=${CRAWLER_MAX_RETRIES:-15}
     restart: unless-stopped
 
   worker:
@@ -90,6 +99,8 @@ services:
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
       - RABBITMQ_QUEUE_NEBULA=${RABBITMQ_QUEUE_NEBULA:-nebula_operations}
       - RABBITMQ_QUEUE_MONGO=${RABBITMQ_QUEUE_MONGO:-mongo_operations}
+      - DEBUG=${DEBUG:-false}
+      - WORKER_DEBUG=${WORKER_DEBUG}
     restart: unless-stopped
 
 volumes:
