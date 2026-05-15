@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Genshin Characters Demo</title>
+    <title>&#35282;&#33394;&#22270;&#37492;</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -11,51 +11,51 @@
       <aside class="sidebar">
         <div class="sidebar-top">
           <div class="brand hide-when-collapsed">
-            <strong>角色图鉴</strong>
-            <span>nodes 数据浏览</span>
+            <strong data-i18n="brandTitle"></strong>
+            <span data-i18n="brandSubtitle"></span>
           </div>
-          <button class="icon-btn" data-sidebar-toggle title="收放筛选栏">☰</button>
+          <button class="icon-btn" data-sidebar-toggle data-title-key="sidebarToggle" title="">&#9776;</button>
         </div>
 
         <div class="panel-section hide-when-collapsed">
-          <button class="theme-btn" data-theme-toggle><span data-theme-icon>☀</span><span data-theme-label>白天</span></button>
+          <button class="theme-btn" data-theme-toggle><span data-theme-icon">&#9728;</span><span data-theme-label></span></button>
         </div>
 
         <div class="panel-section hide-when-collapsed">
-          <h2>数据</h2>
+          <h2 data-i18n="dataSection"></h2>
           <label class="file-drop">
-            <strong>选择本地 JSON</strong>
-            <span class="micro" data-file-name>点击导入 genshin_network.json</span>
+            <strong data-i18n="fileLabel"></strong>
+            <span class="micro" data-file-name data-i18n="fileHint"></span>
             <input data-file-input type="file" accept=".json,application/json" />
           </label>
         </div>
 
         <div class="panel-section hide-when-collapsed">
-          <h2>筛选</h2>
+          <h2 data-i18n="filterSection"></h2>
           <div class="field">
-            <label for="lang">语言</label>
+            <label for="lang" data-i18n="languageLabel"></label>
             <select id="lang" data-lang>
-              <option value="zh">中文</option>
-              <option value="en">English</option>
+              <option value="zh" data-i18n="langZh"></option>
+              <option value="en" data-i18n="langEn"></option>
             </select>
           </div>
           <div class="field">
-            <label for="search">名字模糊搜索</label>
-            <input id="search" data-search type="text" placeholder="输入中文、英文或 id" />
+            <label for="search" data-i18n="searchLabel"></label>
+            <input id="search" data-search type="text" data-placeholder-key="searchPlaceholder" placeholder="" />
           </div>
           <div class="field">
-            <label for="sort">排序</label>
+            <label for="sort" data-i18n="sortLabel"></label>
             <select id="sort" data-sort>
-              <option value="name">按当前语言名字</option>
-              <option value="degree">按网络连接数</option>
+              <option value="name" data-i18n="sortName"></option>
+              <option value="degree" data-i18n="sortDegree"></option>
             </select>
           </div>
         </div>
 
         <div class="panel-section hide-when-collapsed">
-          <h2>页面</h2>
+          <h2 data-i18n="pageSection"></h2>
           <div class="nav-stack">
-            <a class="nav-link" href="./network.html">拓扑网络</a>
+            <a class="nav-link" href="./network.html" data-i18n="networkLink"></a>
           </div>
         </div>
       </aside>
@@ -63,30 +63,107 @@
       <main class="main">
         <header class="page-header">
           <div class="page-title">
-            <h1>Genshin Character Atlas</h1>
-            <p data-status>请从左侧选择本地 genshin_network.json 导入数据。</p>
+            <h1 data-i18n="pageTitle"></h1>
+            <p data-status></p>
           </div>
           <div class="stats">
-            <div class="stat"><b data-total>0</b><span>角色</span></div>
-            <div class="stat"><b data-visible>0</b><span>当前结果</span></div>
-            <div class="stat"><b data-edges>0</b><span>关系</span></div>
+            <div class="stat"><b data-total>0</b><span data-i18n="statTotal"></span></div>
+            <div class="stat"><b data-visible>0</b><span data-i18n="statVisible"></span></div>
+            <div class="stat"><b data-edges>0</b><span data-i18n="statEdges"></span></div>
           </div>
         </header>
         <section id="characterGrid" class="grid"></section>
       </main>
     </div>
+    <div class="floating-related-panel" data-floating-panel>
+      <h4 data-floating-title></h4>
+      <div data-floating-content></div>
+    </div>
 
     <script src="./common.js"></script>
     <script>
+      const PAGE_TEXT = {
+        zh: {
+          documentTitle: "\u89d2\u8272\u56fe\u9274",
+          brandTitle: "\u89d2\u8272\u56fe\u9274",
+          brandSubtitle: "\u89d2\u8272\u5173\u7cfb\u6d4f\u89c8",
+          sidebarToggle: "\u6536\u653e\u7b5b\u9009\u680f",
+          dataSection: "\u6570\u636e",
+          fileLabel: "\u9009\u62e9\u672c\u5730\u6570\u636e\u6587\u4ef6",
+          fileHint: "\u70b9\u51fb\u5bfc\u5165\u6570\u636e\u6587\u4ef6",
+          filterSection: "\u7b5b\u9009",
+          languageLabel: "\u8bed\u8a00",
+          langZh: "\u4e2d\u6587",
+          langEn: "\u82f1\u6587",
+          searchLabel: "\u540d\u5b57\u6a21\u7cca\u641c\u7d22",
+          searchPlaceholder: "\u8f93\u5165\u4e2d\u6587\u3001\u82f1\u6587\u6216 id",
+          sortLabel: "\u6392\u5e8f",
+          sortName: "\u6309\u5f53\u524d\u8bed\u8a00\u540d\u5b57",
+          sortDegree: "\u6309\u5173\u8054\u6570\u91cf",
+          pageSection: "\u9875\u9762",
+          networkLink: "\u62d3\u6251\u7f51\u7edc",
+          pageTitle: "\u89d2\u8272\u56fe\u9274",
+          statTotal: "\u89d2\u8272",
+          statVisible: "\u5f53\u524d\u7ed3\u679c",
+          statEdges: "\u5173\u7cfb",
+          empty: "\u6ca1\u6709\u627e\u5230\u5339\u914d\u89d2\u8272",
+          noRelated: "\u6682\u65e0\u76f8\u5173\u89d2\u8272",
+          idLabel: "ID",
+          connections: "\u8fde\u63a5",
+          relatedTitle: "\u76f8\u5173\u89d2\u8272",
+          loadedStatus: "\u5df2\u52a0\u8f7d {nodes} \u540d\u89d2\u8272\u4e0e {edges} \u6761\u5173\u7cfb\u3002",
+        },
+        en: {
+          documentTitle: "Character Atlas",
+          brandTitle: "Character Atlas",
+          brandSubtitle: "Relationship Browser",
+          sidebarToggle: "Toggle sidebar",
+          dataSection: "Data",
+          fileLabel: "Choose local data file",
+          fileHint: "Click to import a data file",
+          filterSection: "Filters",
+          languageLabel: "Language",
+          langZh: "Chinese",
+          langEn: "English",
+          searchLabel: "Name search",
+          searchPlaceholder: "Search by Chinese, English, or id",
+          sortLabel: "Sort",
+          sortName: "Sort by current language name",
+          sortDegree: "Sort by connection count",
+          pageSection: "Pages",
+          networkLink: "Topology Network",
+          pageTitle: "Character Atlas",
+          statTotal: "Characters",
+          statVisible: "Visible",
+          statEdges: "Relations",
+          empty: "No matching characters found",
+          noRelated: "No related characters yet",
+          idLabel: "ID",
+          connections: "Connections",
+          relatedTitle: "Related Characters",
+          loadedStatus: "Loaded {nodes} characters and {edges} relations.",
+        },
+      };
+
       const filters = {
         query: "",
         sort: "name",
       };
       let degreeMap = new Map();
+      let relationMap = new Map();
+      let hoveredId = null;
+      let pinnedId = null;
+      let controlsBound = false;
+      let panelBound = false;
 
       boot((data) => {
         degreeMap = buildDegreeMap(data);
-        bindControls();
+        relationMap = buildRelationMap(data);
+        if (!controlsBound) {
+          bindControls();
+          controlsBound = true;
+        }
+        applyTranslations();
         render();
       });
 
@@ -96,16 +173,81 @@
         lang.onchange = () => {
           state.lang = lang.value;
           localStorage.setItem("genshin-demo-lang", state.lang);
+          applyTranslations();
           render();
         };
+
         qs("[data-search]").oninput = (event) => {
           filters.query = event.target.value.trim().toLowerCase();
           render();
         };
+
         qs("[data-sort]").onchange = (event) => {
           filters.sort = event.target.value;
           render();
         };
+
+        qs("#characterGrid").addEventListener("mouseover", (event) => {
+          if (pinnedId) return;
+          const card = event.target.closest("[data-character-id]");
+          if (!card) return;
+          const { characterId } = card.dataset;
+          if (hoveredId !== characterId) {
+            hoveredId = characterId;
+            syncFloatingPanel();
+          }
+        });
+
+        qs("#characterGrid").addEventListener("mouseout", (event) => {
+          if (pinnedId) return;
+          const card = event.target.closest("[data-character-id]");
+          if (!card) return;
+          const relatedTarget = event.relatedTarget;
+          if (relatedTarget && card.contains(relatedTarget)) return;
+          if (relatedTarget?.closest?.("[data-floating-panel]")) return;
+          if (hoveredId === card.dataset.characterId) {
+            hoveredId = null;
+            syncFloatingPanel();
+          }
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!pinnedId) return;
+          if (event.target.closest("[data-floating-panel]")) return;
+          pinnedId = null;
+          hoveredId = null;
+          syncFloatingPanel();
+        });
+
+        window.addEventListener("scroll", () => {
+          if (hoveredId || pinnedId) syncFloatingPanel();
+        }, { passive: true });
+
+        window.addEventListener("resize", () => {
+          if (hoveredId || pinnedId) syncFloatingPanel();
+        });
+      }
+
+      function applyTranslations() {
+        document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
+        document.title = t("documentTitle");
+        qsa("[data-i18n]").forEach((element) => {
+          element.textContent = t(element.dataset.i18n);
+        });
+        qsa("[data-placeholder-key]").forEach((element) => {
+          element.placeholder = t(element.dataset.placeholderKey);
+        });
+        qsa("[data-title-key]").forEach((element) => {
+          element.title = t(element.dataset.titleKey);
+        });
+        const fileName = qs("[data-file-name]");
+        if (fileName) {
+          fileName.textContent = fileName.dataset.loadedFileName ? uiText("fileLoaded") : t("fileHint");
+        }
+        const status = qs("[data-status]");
+        if (status && !state.data.nodes.length) {
+          status.textContent = uiText("importPrompt");
+        }
       }
 
       function buildDegreeMap(data) {
@@ -114,6 +256,22 @@
           map.set(edge.source_id, (map.get(edge.source_id) || 0) + 1);
           map.set(edge.target_id, (map.get(edge.target_id) || 0) + 1);
         });
+        return map;
+      }
+
+      function buildRelationMap(data) {
+        const nodeMap = new Map(data.nodes.map((node) => [node.id, node]));
+        const map = new Map(data.nodes.map((node) => [node.id, []]));
+
+        data.edges.forEach((edge) => {
+          const sourceNode = nodeMap.get(edge.source_id);
+          const targetNode = nodeMap.get(edge.target_id);
+          if (sourceNode && targetNode) {
+            map.get(sourceNode.id).push({ node: targetNode, edge, direction: "out" });
+            map.get(targetNode.id).push({ node: sourceNode, edge, direction: "in" });
+          }
+        });
+
         return map;
       }
 
@@ -130,34 +288,180 @@
             return getName(a).localeCompare(getName(b), state.lang === "zh" ? "zh-Hans-CN" : "en");
           });
 
+        if (pinnedId && !nodes.some((node) => node.id === pinnedId)) pinnedId = null;
+        if (hoveredId && !nodes.some((node) => node.id === hoveredId)) hoveredId = null;
+
         qs("[data-total]").textContent = nodes.length;
         qs("[data-visible]").textContent = visible.length;
         qs("[data-edges]").textContent = state.data.edges?.length || 0;
 
+        const status = qs("[data-status]");
+        if (status) {
+          status.textContent = nodes.length
+            ? formatText(t("loadedStatus"), { nodes: nodes.length, edges: state.data.edges?.length || 0 })
+            : uiText("importPrompt");
+        }
+
         const grid = qs("#characterGrid");
         if (!visible.length) {
-          grid.innerHTML = '<div class="empty">没有找到匹配角色</div>';
+          grid.innerHTML = `<div class="empty">${escapeHtml(t("empty"))}</div>`;
+          hideFloatingPanel();
           return;
         }
+
         grid.innerHTML = visible
           .map((node) => {
             const degree = degreeMap.get(node.id) || 0;
             const image = node.properties.photo || "";
             return `
-              <article class="character-card">
+              <article class="character-card" data-character-id="${escapeHtml(node.id)}">
                 <div class="portrait">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(getName(node))}" loading="lazy">` : ""}</div>
                 <div class="card-body">
                   <h3>${escapeHtml(getName(node))}</h3>
-                  <p>${escapeHtml(getOtherName(node))}</p>
+                  ${renderCardMeta(node)}
                   <div class="chips">
-                    <span class="chip">ID: ${escapeHtml(node.id)}</span>
-                    <span class="chip">连接 ${degree}</span>
+                    <span class="chip">${escapeHtml(t("idLabel"))}: ${escapeHtml(node.id)}</span>
+                    <span class="chip">${escapeHtml(t("connections"))} ${degree}</span>
                   </div>
                 </div>
               </article>
             `;
           })
           .join("");
+
+        if (!panelBound) {
+          panelBound = true;
+          bindFloatingPanel();
+        }
+        syncFloatingPanel();
+      }
+
+      function renderRelatedList(related) {
+        if (!related.length) {
+          return `<div class="related-empty">${escapeHtml(t("noRelated"))}</div>`;
+        }
+
+        return `
+          <div class="related-list">
+            ${related
+              .map(({ node, edge, direction }) => {
+                const label = direction === "out" ? edgeEndpoint(edge, "target") : edgeEndpoint(edge, "source");
+                const relation = getStrictRelationText(edge);
+                return `
+                  <button class="related-item" type="button" data-related-jump data-target-id="${escapeHtml(node.id)}">
+                    <strong>${escapeHtml(label || getName(node))}</strong>
+                    <span>${escapeHtml(relation || `${t("idLabel")}: ${node.id}`)}</span>
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+        `;
+      }
+
+      function t(key) {
+        return PAGE_TEXT[state.lang]?.[key] || PAGE_TEXT.en[key] || key;
+      }
+
+      function renderCardMeta(node) {
+        return "";
+      }
+
+      function bindFloatingPanel() {
+        const panel = qs("[data-floating-panel]");
+        panel?.addEventListener("click", (event) => {
+          const item = event.target.closest("[data-related-jump]");
+          if (item) {
+            const { targetId } = item.dataset;
+            pinnedId = targetId;
+            hoveredId = targetId;
+            const targetCard = document.querySelector(`[data-character-id="${cssEscape(targetId)}"]`);
+            targetCard?.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            requestAnimationFrame(() => syncFloatingPanel());
+            return;
+          }
+
+          if (hoveredId) {
+            pinnedId = hoveredId;
+            syncFloatingPanel();
+          }
+        });
+
+        panel?.addEventListener("mouseleave", () => {
+          if (pinnedId) return;
+          hoveredId = null;
+          syncFloatingPanel();
+        });
+      }
+
+      function syncFloatingPanel() {
+        const activeId = pinnedId || hoveredId;
+        if (!activeId) {
+          hideFloatingPanel();
+          return;
+        }
+
+        const anchor = document.querySelector(`[data-character-id="${cssEscape(activeId)}"]`);
+        if (!anchor) {
+          hideFloatingPanel();
+          return;
+        }
+
+        const panel = qs("[data-floating-panel]");
+        const title = qs("[data-floating-title]");
+        const content = qs("[data-floating-content]");
+        if (!panel || !title || !content) return;
+
+        title.textContent = t("relatedTitle");
+        content.innerHTML = renderRelatedList(relationMap.get(activeId) || []);
+        panel.classList.add("is-open");
+        panel.classList.toggle("is-pinned", pinnedId === activeId);
+        positionFloatingPanel(anchor, panel);
+      }
+
+      function positionFloatingPanel(anchor, panel) {
+        const anchorRect = anchor.getBoundingClientRect();
+        const gap = 12;
+        const margin = 16;
+        const panelRect = panel.getBoundingClientRect();
+        let left = anchorRect.right + gap;
+        let top = anchorRect.top;
+
+        if (left + panelRect.width > window.innerWidth - margin) {
+          left = anchorRect.left - panelRect.width - gap;
+        }
+        if (left < margin) {
+          left = Math.max(margin, window.innerWidth - panelRect.width - margin);
+        }
+
+        if (top + panelRect.height > window.innerHeight - margin) {
+          top = window.innerHeight - panelRect.height - margin;
+        }
+        if (top < margin) {
+          top = margin;
+        }
+
+        panel.style.left = `${left}px`;
+        panel.style.top = `${top}px`;
+      }
+
+      function hideFloatingPanel() {
+        const panel = qs("[data-floating-panel]");
+        if (!panel) return;
+        panel.classList.remove("is-open", "is-pinned");
+      }
+
+      function getStrictRelationText(edge) {
+        const props = edge?.properties || {};
+        return props[`content_${state.lang}`] || props[`title_${state.lang}`] || "";
+      }
+
+      function cssEscape(value) {
+        if (window.CSS?.escape) return window.CSS.escape(value);
+        return String(value).replace(/["\\]/g, "\\$&");
       }
 
       function escapeHtml(value) {
