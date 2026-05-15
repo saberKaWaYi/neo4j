@@ -7,6 +7,6 @@ logs
 myvenv
 
 .cursor
-.env
+.env.example
 .gitignore
 *.md
