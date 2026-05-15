@@ -51,8 +51,8 @@ def build() -> None:
                 "target_name_en": "string",
                 "source_name_zh": "string",
                 "target_name_zh": "string",
-                "title_en": "string",
-                "title_zh": "string",
+                "content_en": "string",
+                "content_zh": "string",
             },
         )
         logger.info("Nebula schema ready for space: %s", "genshin")
