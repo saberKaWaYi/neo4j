@@ -144,289 +144,263 @@
           loadedStatus: "Loaded {nodes} characters and {edges} relations.",
         },
       };
-
-      const filters = {
-        query: "",
-        sort: "name",
+      const app = {
+        filters: {
+          query: "",
+          sort: "name",
+        },
+        index: {
+          degreeById: new Map(),
+          relatedById: new Map(),
+        },
+        panel: {
+          hoveredId: null,
+          pinnedId: null,
+        },
+        dom: {},
       };
-      let degreeMap = new Map();
-      let relationMap = new Map();
-      let hoveredId = null;
-      let pinnedId = null;
-      let controlsBound = false;
-      let panelBound = false;
 
       boot((data) => {
-        degreeMap = buildDegreeMap(data);
-        relationMap = buildRelationMap(data);
-        if (!controlsBound) {
-          bindControls();
-          controlsBound = true;
-        }
+        initDom();
+        bindEvents();
+        rebuildIndex(data);
         applyTranslations();
-        render();
+        renderPage();
       });
 
-      function bindControls() {
-        const lang = qs("[data-lang]");
-        lang.value = state.lang;
-        lang.onchange = () => {
-          state.lang = lang.value;
-          localStorage.setItem("genshin-demo-lang", state.lang);
-          applyTranslations();
-          render();
+      function initDom() {
+        app.dom = {
+          lang: qs("[data-lang]"),
+          search: qs("[data-search]"),
+          sort: qs("[data-sort]"),
+          grid: qs("#characterGrid"),
+          status: qs("[data-status]"),
+          total: qs("[data-total]"),
+          visible: qs("[data-visible]"),
+          edges: qs("[data-edges]"),
+          fileName: qs("[data-file-name]"),
+          panel: qs("[data-floating-panel]"),
+          panelTitle: qs("[data-floating-title]"),
+          panelContent: qs("[data-floating-content]"),
         };
-
-        qs("[data-search]").oninput = (event) => {
-          filters.query = event.target.value.trim().toLowerCase();
-          render();
-        };
-
-        qs("[data-sort]").onchange = (event) => {
-          filters.sort = event.target.value;
-          render();
-        };
-
-        qs("#characterGrid").addEventListener("mouseover", (event) => {
-          if (pinnedId) return;
-          const card = event.target.closest("[data-character-id]");
-          if (!card) return;
-          const { characterId } = card.dataset;
-          if (hoveredId !== characterId) {
-            hoveredId = characterId;
-            syncFloatingPanel();
-          }
-        });
-
-        qs("#characterGrid").addEventListener("mouseout", (event) => {
-          if (pinnedId) return;
-          const card = event.target.closest("[data-character-id]");
-          if (!card) return;
-          const relatedTarget = event.relatedTarget;
-          if (relatedTarget && card.contains(relatedTarget)) return;
-          if (relatedTarget?.closest?.("[data-floating-panel]")) return;
-          if (hoveredId === card.dataset.characterId) {
-            hoveredId = null;
-            syncFloatingPanel();
-          }
-        });
-
-        document.addEventListener("click", (event) => {
-          if (!pinnedId) return;
-          if (event.target.closest("[data-floating-panel]")) return;
-          pinnedId = null;
-          hoveredId = null;
-          syncFloatingPanel();
-        });
-
-        window.addEventListener("scroll", () => {
-          if (hoveredId || pinnedId) syncFloatingPanel();
-        }, { passive: true });
-
-        window.addEventListener("resize", () => {
-          if (hoveredId || pinnedId) syncFloatingPanel();
-        });
       }
 
-      function applyTranslations() {
-        document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
-        document.title = t("documentTitle");
-        qsa("[data-i18n]").forEach((element) => {
-          element.textContent = t(element.dataset.i18n);
-        });
-        qsa("[data-placeholder-key]").forEach((element) => {
-          element.placeholder = t(element.dataset.placeholderKey);
-        });
-        qsa("[data-title-key]").forEach((element) => {
-          element.title = t(element.dataset.titleKey);
-        });
-        const fileName = qs("[data-file-name]");
-        if (fileName) {
-          fileName.textContent = fileName.dataset.loadedFileName ? uiText("fileLoaded") : t("fileHint");
-        }
-        const status = qs("[data-status]");
-        if (status && !state.data.nodes.length) {
-          status.textContent = uiText("importPrompt");
-        }
+      function bindEvents() {
+        app.dom.lang.value = state.lang;
+        app.dom.lang.addEventListener("change", onLanguageChange);
+        app.dom.search.addEventListener("input", onSearchChange);
+        app.dom.sort.addEventListener("change", onSortChange);
+        app.dom.grid.addEventListener("mouseover", onCardHover);
+        app.dom.grid.addEventListener("mouseout", onCardLeave);
+        app.dom.panel.addEventListener("click", onPanelClick);
+        app.dom.panel.addEventListener("mouseleave", onPanelLeave);
+        document.addEventListener("click", onDocumentClick);
+        window.addEventListener("scroll", syncFloatingPanel, { passive: true });
+        window.addEventListener("resize", syncFloatingPanel);
       }
 
-      function buildDegreeMap(data) {
-        const map = new Map(data.nodes.map((node) => [node.id, 0]));
-        data.edges.forEach((edge) => {
-          map.set(edge.source_id, (map.get(edge.source_id) || 0) + 1);
-          map.set(edge.target_id, (map.get(edge.target_id) || 0) + 1);
-        });
-        return map;
+      function onLanguageChange(event) {
+        state.lang = event.target.value;
+        localStorage.setItem("genshin-demo-lang", state.lang);
+        applyTranslations();
+        renderPage();
       }
 
-      function buildRelationMap(data) {
-        const nodeMap = new Map(data.nodes.map((node) => [node.id, node]));
-        const map = new Map(data.nodes.map((node) => [node.id, []]));
-
-        data.edges.forEach((edge) => {
-          const sourceNode = nodeMap.get(edge.source_id);
-          const targetNode = nodeMap.get(edge.target_id);
-          if (sourceNode && targetNode) {
-            map.get(sourceNode.id).push({ node: targetNode, edge, direction: "out" });
-            map.get(targetNode.id).push({ node: sourceNode, edge, direction: "in" });
-          }
-        });
-
-        return map;
+      function onSearchChange(event) {
+        app.filters.query = event.target.value.trim().toLowerCase();
+        renderPage();
       }
 
-      function render() {
-        const nodes = state.data.nodes || [];
-        const visible = nodes
-          .filter((node) => {
-            if (!filters.query) return true;
-            const haystack = [node.id, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
-            return haystack.includes(filters.query);
-          })
-          .sort((a, b) => {
-            if (filters.sort === "degree") return (degreeMap.get(b.id) || 0) - (degreeMap.get(a.id) || 0);
-            return getName(a).localeCompare(getName(b), state.lang === "zh" ? "zh-Hans-CN" : "en");
-          });
+      function onSortChange(event) {
+        app.filters.sort = event.target.value;
+        renderPage();
+      }
 
-        if (pinnedId && !nodes.some((node) => node.id === pinnedId)) pinnedId = null;
-        if (hoveredId && !nodes.some((node) => node.id === hoveredId)) hoveredId = null;
+      function onCardHover(event) {
+        if (app.panel.pinnedId) return;
+        const card = event.target.closest("[data-character-id]");
+        if (!card) return;
+        showFloatingPanel(card.dataset.characterId);
+      }
 
-        qs("[data-total]").textContent = nodes.length;
-        qs("[data-visible]").textContent = visible.length;
-        qs("[data-edges]").textContent = state.data.edges?.length || 0;
+      function onCardLeave(event) {
+        if (app.panel.pinnedId) return;
+        const card = event.target.closest("[data-character-id]");
+        if (!card) return;
+        if (card.contains(event.relatedTarget)) return;
+        if (event.relatedTarget?.closest?.("[data-floating-panel]")) return;
+        hideFloatingPanel();
+      }
 
-        const status = qs("[data-status]");
-        if (status) {
-          status.textContent = nodes.length
-            ? formatText(t("loadedStatus"), { nodes: nodes.length, edges: state.data.edges?.length || 0 })
-            : uiText("importPrompt");
-        }
-
-        const grid = qs("#characterGrid");
-        if (!visible.length) {
-          grid.innerHTML = `<div class="empty">${escapeHtml(t("empty"))}</div>`;
-          hideFloatingPanel();
+      function onPanelClick(event) {
+        const jumpButton = event.target.closest("[data-related-jump]");
+        if (jumpButton) {
+          openCharacterPanel(jumpButton.dataset.targetId);
           return;
         }
-
-        grid.innerHTML = visible
-          .map((node) => {
-            const degree = degreeMap.get(node.id) || 0;
-            const image = node.properties.photo || "";
-            return `
-              <article class="character-card" data-character-id="${escapeHtml(node.id)}">
-                <div class="portrait">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(getName(node))}" loading="lazy">` : ""}</div>
-                <div class="card-body">
-                  <h3>${escapeHtml(getName(node))}</h3>
-                  ${renderCardMeta(node)}
-                  <div class="chips">
-                    <span class="chip">${escapeHtml(t("idLabel"))}: ${escapeHtml(node.id)}</span>
-                    <span class="chip">${escapeHtml(t("connections"))} ${degree}</span>
-                  </div>
-                </div>
-              </article>
-            `;
-          })
-          .join("");
-
-        if (!panelBound) {
-          panelBound = true;
-          bindFloatingPanel();
+        if (app.panel.hoveredId) {
+          app.panel.pinnedId = app.panel.hoveredId;
+          syncFloatingPanel();
         }
+      }
+
+      function onPanelLeave() {
+        if (app.panel.pinnedId) return;
+        hideFloatingPanel();
+      }
+
+      function onDocumentClick(event) {
+        if (!app.panel.pinnedId) return;
+        if (event.target.closest("[data-floating-panel]")) return;
+        closePinnedPanel();
+      }
+
+      function rebuildIndex(data) {
+        app.index.degreeById = buildDegreeIndex(data);
+        app.index.relatedById = buildRelationIndex(data);
+        keepPanelStateValid();
+      }
+
+      function buildDegreeIndex(data) {
+        const result = new Map(data.nodes.map((node) => [node.id, 0]));
+        data.edges.forEach((edge) => {
+          result.set(edge.source_id, (result.get(edge.source_id) || 0) + 1);
+          result.set(edge.target_id, (result.get(edge.target_id) || 0) + 1);
+        });
+        return result;
+      }
+
+      function buildRelationIndex(data) {
+        const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
+        const result = new Map(data.nodes.map((node) => [node.id, []]));
+
+        data.edges.forEach((edge) => {
+          const sourceNode = nodeById.get(edge.source_id);
+          const targetNode = nodeById.get(edge.target_id);
+          if (!sourceNode || !targetNode) return;
+
+          result.get(sourceNode.id).push({ node: targetNode, edge, direction: "out" });
+          result.get(targetNode.id).push({ node: sourceNode, edge, direction: "in" });
+        });
+
+        return result;
+      }
+
+      function renderPage() {
+        const nodes = state.data.nodes || [];
+        const visibleNodes = getVisibleNodes(nodes);
+
+        keepPanelStateValid();
+        renderStats(nodes, visibleNodes);
+        renderGrid(visibleNodes);
         syncFloatingPanel();
       }
 
-      function renderRelatedList(related) {
-        if (!related.length) {
-          return `<div class="related-empty">${escapeHtml(t("noRelated"))}</div>`;
+      function getVisibleNodes(nodes) {
+        return [...nodes]
+          .filter(matchesFilters)
+          .sort(compareNodes);
+      }
+
+      function matchesFilters(node) {
+        if (!app.filters.query) return true;
+        const haystack = [node.id, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
+        return haystack.includes(app.filters.query);
+      }
+
+      function compareNodes(a, b) {
+        if (app.filters.sort === "degree") {
+          return (app.index.degreeById.get(b.id) || 0) - (app.index.degreeById.get(a.id) || 0);
+        }
+        const locale = state.lang === "zh" ? "zh-Hans-CN" : "en";
+        return getName(a).localeCompare(getName(b), locale);
+      }
+
+      function renderStats(allNodes, visibleNodes) {
+        app.dom.total.textContent = allNodes.length;
+        app.dom.visible.textContent = visibleNodes.length;
+        app.dom.edges.textContent = state.data.edges?.length || 0;
+        app.dom.status.textContent = allNodes.length
+          ? formatText(t("loadedStatus"), { nodes: allNodes.length, edges: state.data.edges?.length || 0 })
+          : uiText("importPrompt");
+      }
+
+      function renderGrid(nodes) {
+        if (!nodes.length) {
+          app.dom.grid.innerHTML = `<div class="empty">${escapeHtml(t("empty"))}</div>`;
+          return;
         }
 
+        app.dom.grid.innerHTML = nodes.map(renderCharacterCard).join("");
+      }
+
+      function renderCharacterCard(node) {
+        const image = node.properties.photo || "";
+        const degree = app.index.degreeById.get(node.id) || 0;
         return `
-          <div class="related-list">
-            ${related
-              .map(({ node, edge, direction }) => {
-                const label = direction === "out" ? edgeEndpoint(edge, "target") : edgeEndpoint(edge, "source");
-                const relation = getStrictRelationText(edge);
-                return `
-                  <button class="related-item" type="button" data-related-jump data-target-id="${escapeHtml(node.id)}">
-                    <strong>${escapeHtml(label || getName(node))}</strong>
-                    <span>${escapeHtml(relation || `${t("idLabel")}: ${node.id}`)}</span>
-                  </button>
-                `;
-              })
-              .join("")}
-          </div>
+          <article class="character-card" data-character-id="${escapeHtml(node.id)}">
+            <div class="portrait">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(getName(node))}" loading="lazy">` : ""}</div>
+            <div class="card-body">
+              <h3>${escapeHtml(getName(node))}</h3>
+              <div class="chips">
+                <span class="chip">${escapeHtml(t("idLabel"))}: ${escapeHtml(node.id)}</span>
+                <span class="chip">${escapeHtml(t("connections"))} ${degree}</span>
+              </div>
+            </div>
+          </article>
         `;
       }
 
-      function t(key) {
-        return PAGE_TEXT[state.lang]?.[key] || PAGE_TEXT.en[key] || key;
-      }
-
-      function renderCardMeta(node) {
-        return "";
-      }
-
-      function bindFloatingPanel() {
-        const panel = qs("[data-floating-panel]");
-        panel?.addEventListener("click", (event) => {
-          const item = event.target.closest("[data-related-jump]");
-          if (item) {
-            const { targetId } = item.dataset;
-            pinnedId = targetId;
-            hoveredId = targetId;
-            const targetCard = document.querySelector(`[data-character-id="${cssEscape(targetId)}"]`);
-            targetCard?.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-            requestAnimationFrame(() => syncFloatingPanel());
-            return;
-          }
-
-          if (hoveredId) {
-            pinnedId = hoveredId;
-            syncFloatingPanel();
-          }
-        });
-
-        panel?.addEventListener("mouseleave", () => {
-          if (pinnedId) return;
-          hoveredId = null;
-          syncFloatingPanel();
-        });
-      }
-
       function syncFloatingPanel() {
-        const activeId = pinnedId || hoveredId;
+        const activeId = app.panel.pinnedId || app.panel.hoveredId;
         if (!activeId) {
-          hideFloatingPanel();
+          updatePanelVisibility(false);
           return;
         }
 
         const anchor = document.querySelector(`[data-character-id="${cssEscape(activeId)}"]`);
         if (!anchor) {
-          hideFloatingPanel();
+          updatePanelVisibility(false);
           return;
         }
 
-        const panel = qs("[data-floating-panel]");
-        const title = qs("[data-floating-title]");
-        const content = qs("[data-floating-content]");
-        if (!panel || !title || !content) return;
+        app.dom.panelTitle.textContent = t("relatedTitle");
+        app.dom.panelContent.innerHTML = renderRelatedList(activeId);
+        updatePanelVisibility(true);
+        app.dom.panel.classList.toggle("is-pinned", app.panel.pinnedId === activeId);
+        positionFloatingPanel(anchor, app.dom.panel);
+      }
 
-        title.textContent = t("relatedTitle");
-        content.innerHTML = renderRelatedList(relationMap.get(activeId) || []);
-        panel.classList.add("is-open");
-        panel.classList.toggle("is-pinned", pinnedId === activeId);
-        positionFloatingPanel(anchor, panel);
+      function renderRelatedList(characterId) {
+        const relatedList = app.index.relatedById.get(characterId) || [];
+        if (!relatedList.length) {
+          return `<div class="related-empty">${escapeHtml(t("noRelated"))}</div>`;
+        }
+
+        return `
+          <div class="related-list">
+            ${relatedList.map(renderRelatedItem).join("")}
+          </div>
+        `;
+      }
+
+      function renderRelatedItem({ node, edge, direction }) {
+        const label = direction === "out" ? edgeEndpoint(edge, "target") : edgeEndpoint(edge, "source");
+        const relation = getRelationText(edge);
+        const fallback = `${t("idLabel")}: ${node.id}`;
+        return `
+          <button class="related-item" type="button" data-related-jump data-target-id="${escapeHtml(node.id)}">
+            <strong>${escapeHtml(label || getName(node))}</strong>
+            <span>${escapeHtml(relation || fallback)}</span>
+          </button>
+        `;
       }
 
       function positionFloatingPanel(anchor, panel) {
         const anchorRect = anchor.getBoundingClientRect();
+        const panelRect = panel.getBoundingClientRect();
         const gap = 12;
         const margin = 16;
-        const panelRect = panel.getBoundingClientRect();
         let left = anchorRect.right + gap;
         let top = anchorRect.top;
 
@@ -436,7 +410,6 @@
         if (left < margin) {
           left = Math.max(margin, window.innerWidth - panelRect.width - margin);
         }
-
         if (top + panelRect.height > window.innerHeight - margin) {
           top = window.innerHeight - panelRect.height - margin;
         }
@@ -448,15 +421,75 @@
         panel.style.top = `${top}px`;
       }
 
-      function hideFloatingPanel() {
-        const panel = qs("[data-floating-panel]");
-        if (!panel) return;
-        panel.classList.remove("is-open", "is-pinned");
+      function showFloatingPanel(characterId) {
+        app.panel.hoveredId = characterId;
+        syncFloatingPanel();
       }
 
-      function getStrictRelationText(edge) {
+      function hideFloatingPanel() {
+        app.panel.hoveredId = null;
+        updatePanelVisibility(false);
+      }
+
+      function openCharacterPanel(characterId) {
+        app.panel.hoveredId = characterId;
+        app.panel.pinnedId = characterId;
+        document.querySelector(`[data-character-id="${cssEscape(characterId)}"]`)?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        requestAnimationFrame(syncFloatingPanel);
+      }
+
+      function closePinnedPanel() {
+        app.panel.hoveredId = null;
+        app.panel.pinnedId = null;
+        updatePanelVisibility(false);
+      }
+
+      function updatePanelVisibility(visible) {
+        app.dom.panel.classList.toggle("is-open", visible);
+        if (!visible) {
+          app.dom.panel.classList.remove("is-pinned");
+        }
+      }
+
+      function keepPanelStateValid() {
+        const nodeIds = new Set((state.data.nodes || []).map((node) => node.id));
+        if (app.panel.hoveredId && !nodeIds.has(app.panel.hoveredId)) {
+          app.panel.hoveredId = null;
+        }
+        if (app.panel.pinnedId && !nodeIds.has(app.panel.pinnedId)) {
+          app.panel.pinnedId = null;
+        }
+      }
+
+      function applyTranslations() {
+        document.documentElement.lang = state.lang === "zh" ? "zh-CN" : "en";
+        document.title = t("documentTitle");
+
+        qsa("[data-i18n]").forEach((element) => {
+          element.textContent = t(element.dataset.i18n);
+        });
+        qsa("[data-placeholder-key]").forEach((element) => {
+          element.placeholder = t(element.dataset.placeholderKey);
+        });
+        qsa("[data-title-key]").forEach((element) => {
+          element.title = t(element.dataset.titleKey);
+        });
+
+        if (app.dom.fileName) {
+          app.dom.fileName.textContent = app.dom.fileName.dataset.loadedFileName ? uiText("fileLoaded") : t("fileHint");
+        }
+      }
+
+      function getRelationText(edge) {
         const props = edge?.properties || {};
         return props[`content_${state.lang}`] || props[`title_${state.lang}`] || "";
+      }
+
+      function t(key) {
+        return PAGE_TEXT[state.lang]?.[key] || PAGE_TEXT.en[key] || key;
       }
 
       function cssEscape(value) {
