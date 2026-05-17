@@ -1,10 +1,11 @@
 __pycache__
 *.pyc
 
+.cursor
+
 logs
 *.log
 
 myvenv
 
-.cursor
 .env
