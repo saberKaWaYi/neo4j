@@ -1,12 +1,14 @@
 __pycache__
 *.pyc
 
+.cursor
+
 logs
 *.log
 
 myvenv
 
-.cursor
+.env
 .env.example
 .gitignore
 *.md
