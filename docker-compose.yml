@@ -1,30 +1,13 @@
 services:
-  rabbitmq:
-    image: rabbitmq:management
-    container_name: rabbit
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME:-guest}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD:-guest}
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-    restart: unless-stopped
-
   init-db:
     build:
       context: .
       target: initdb
     command: python scripts/init_business_dbs.py
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      - NEBULA_HOST=${NEBULA_HOST}
+      - NEBULA_HOST=${NEBULA_HOST:?Set NEBULA_HOST to the external Nebula Graph host}
       - NEBULA_PORT=${NEBULA_PORT:-9669}
       - NEBULA_USERNAME=${NEBULA_USERNAME:-root}
       - NEBULA_PASSWORD=${NEBULA_PASSWORD:-nebula}
@@ -36,20 +19,19 @@ services:
       context: .
       target: web
     command: python main.py web --host 0.0.0.0 --port 8000 --no-reload
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
-      - "8000:8000"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+      - "${WEB_PORT:-8000}:8000"
     environment:
-      - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+      - RABBITMQ_HOST=${RABBITMQ_HOST:?Set RABBITMQ_HOST to the external RabbitMQ host}
       - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
       - RABBITMQ_USERNAME=${RABBITMQ_USERNAME:-guest}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
       - RABBITMQ_QUEUE_NEBULA=${RABBITMQ_QUEUE_NEBULA:-nebula_operations}
       - RABBITMQ_QUEUE_MONGO=${RABBITMQ_QUEUE_MONGO:-mongo_operations}
       - DEBUG=${DEBUG:-false}
-      - WEB_DEBUG=${WEB_DEBUG}
+      - WEB_DEBUG=${WEB_DEBUG:-}
       - WEB_NAME=${WEB_NAME:-Web Service}
       - WEB_VERSION=${WEB_VERSION:-1.0}
     healthcheck:
@@ -70,11 +52,12 @@ services:
         condition: service_healthy
     environment:
       - DEBUG=${DEBUG:-false}
-      - CRAWLER_DEBUG=${CRAWLER_DEBUG}
-      - CRAWLER_COOKIES=${CRAWLER_COOKIES}
-      - CRAWLER_HEADERS=${CRAWLER_HEADERS}
+      - CRAWLER_DEBUG=${CRAWLER_DEBUG:-}
+      - CRAWLER_COOKIES=${CRAWLER_COOKIES:-}
+      - CRAWLER_HEADERS=${CRAWLER_HEADERS:-}
       - CRAWLER_TIME_SLEEP=${CRAWLER_TIME_SLEEP:-3}
       - CRAWLER_MAX_RETRIES=${CRAWLER_MAX_RETRIES:-15}
+      - CRAWLER_PRODUCER_URL=${CRAWLER_PRODUCER_URL:-http://web:8000/api/v1/messages/send_nebula}
     restart: unless-stopped
 
   worker:
@@ -82,26 +65,23 @@ services:
       context: .
       target: worker
     command: python main.py worker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
-      rabbitmq:
-        condition: service_healthy
       init-db:
         condition: service_completed_successfully
     environment:
-      - NEBULA_HOST=${NEBULA_HOST}
+      - NEBULA_HOST=${NEBULA_HOST:?Set NEBULA_HOST to the external Nebula Graph host}
       - NEBULA_PORT=${NEBULA_PORT:-9669}
       - NEBULA_USERNAME=${NEBULA_USERNAME:-root}
       - NEBULA_PASSWORD=${NEBULA_PASSWORD:-nebula}
       - BUSINESSES=${BUSINESSES:-genshin}
-      - RABBITMQ_HOST=${RABBITMQ_HOST:-rabbitmq}
+      - RABBITMQ_HOST=${RABBITMQ_HOST:?Set RABBITMQ_HOST to the external RabbitMQ host}
       - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
       - RABBITMQ_USERNAME=${RABBITMQ_USERNAME:-guest}
       - RABBITMQ_PASSWORD=${RABBITMQ_PASSWORD:-guest}
       - RABBITMQ_QUEUE_NEBULA=${RABBITMQ_QUEUE_NEBULA:-nebula_operations}
       - RABBITMQ_QUEUE_MONGO=${RABBITMQ_QUEUE_MONGO:-mongo_operations}
       - DEBUG=${DEBUG:-false}
-      - WORKER_DEBUG=${WORKER_DEBUG}
+      - WORKER_DEBUG=${WORKER_DEBUG:-}
     restart: unless-stopped
-
-volumes:
-  rabbitmq_data:
