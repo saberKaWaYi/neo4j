@@ -22,7 +22,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "${WEB_PORT:-8000}:8000"
+      - "8000:8000"
     environment:
       - RABBITMQ_HOST=${RABBITMQ_HOST:?Set RABBITMQ_HOST to the external RabbitMQ host}
       - RABBITMQ_PORT=${RABBITMQ_PORT:-5672}
@@ -53,8 +53,8 @@ services:
     environment:
       - DEBUG=${DEBUG:-false}
       - CRAWLER_DEBUG=${CRAWLER_DEBUG:-}
-      - CRAWLER_COOKIES=${CRAWLER_COOKIES:-}
-      - CRAWLER_HEADERS=${CRAWLER_HEADERS:-}
+      - CRAWLER_COOKIES=${CRAWLER_COOKIES:?请配置爬虫 Cookies CRAWLER_COOKIES}
+      - CRAWLER_HEADERS=${CRAWLER_HEADERS:?请配置爬虫请求头 CRAWLER_HEADERS}
       - CRAWLER_TIME_SLEEP=${CRAWLER_TIME_SLEEP:-3}
       - CRAWLER_MAX_RETRIES=${CRAWLER_MAX_RETRIES:-15}
       - CRAWLER_PRODUCER_URL=${CRAWLER_PRODUCER_URL:-http://web:8000/api/v1/messages/send_nebula}
