@@ -293,10 +293,22 @@ class NebulaService:
             self.connect()
         result = self._session.execute(query)
         if not result.is_succeeded():
+            error_msg = self._safe_error_msg(result)
             raise RuntimeError(
-                f"Nebula query failed: {result.error_msg()} (code={result.error_code()}), query={query}"
+                f"Nebula query failed: {error_msg} (code={result.error_code()}), query={query}"
             )
         return result
+
+    @staticmethod
+    def _safe_error_msg(result) -> str:
+        try:
+            return result.error_msg()
+        except UnicodeDecodeError:
+            resp = getattr(result, "_resp", None)
+            raw = getattr(resp, "error_msg", b"")
+            if isinstance(raw, bytes):
+                return raw.decode("utf-8", errors="replace")
+            return str(raw)
 
     def _to_ngql_literal(self, value) -> str:
         """将 Python 值转换为 nGQL 字面量。"""
@@ -313,4 +325,10 @@ class NebulaService:
 
     @staticmethod
     def _escape_string(value: str) -> str:
-        return value.replace("\\", "\\\\").replace('"', '\\"')
+        return (
+            value.replace("\\", "\\\\")
+            .replace('"', '\\"')
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+        )
