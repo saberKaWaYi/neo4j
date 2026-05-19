@@ -58,6 +58,7 @@ services:
       - CRAWLER_TIME_SLEEP=${CRAWLER_TIME_SLEEP:-3}
       - CRAWLER_MAX_RETRIES=${CRAWLER_MAX_RETRIES:-15}
       - CRAWLER_PRODUCER_URL=${CRAWLER_PRODUCER_URL:-http://web:8000/api/v1/messages/send_nebula}
+      - BUSINESSES=${BUSINESSES:-genshin}
     restart: unless-stopped
 
   worker:

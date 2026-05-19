@@ -14,7 +14,7 @@ class CommonSettings(EnvSettings):
     nebula_port: int = Field(default=9669, alias="NEBULA_PORT")
     nebula_username: str = Field(default="root", alias="NEBULA_USERNAME")
     nebula_password: str = Field(default="nebula", alias="NEBULA_PASSWORD")
-    businesses: list[str] = Field(default="genshin", alias="BUSINESSES")
+    businesses: list[str] = Field(default_factory=lambda: ["genshin"], alias="BUSINESSES")
 
     rabbitmq_host: str = Field(default="127.0.0.1", alias="RABBITMQ_HOST")
     rabbitmq_port: int = Field(default=5672, alias="RABBITMQ_PORT")
