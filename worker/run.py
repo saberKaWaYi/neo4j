@@ -4,7 +4,7 @@ from logging_config import setup_logging
 setup_logging("worker")
 logger = logging.getLogger("worker")
 
-from settings import common_settings
+from settings.common import common_settings
 
 from services.rabbitmq_service import RabbitMQService
 from services.nebula_service import NebulaService

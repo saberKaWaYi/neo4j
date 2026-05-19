@@ -11,7 +11,7 @@ from logging_config import setup_logging
 setup_logging("crawler")
 logger = logging.getLogger("crawler")
 
-from settings import crawler_settings
+from settings.crawler import crawler_settings
 import json
 from urllib.parse import quote
 import requests

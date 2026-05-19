@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 import json
 import requests
 
-from settings import crawler_settings
+from settings.crawler import crawler_settings
 
 SPACE_NAME = "genshin"
 TAG_NAME = "Character"

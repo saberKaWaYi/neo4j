@@ -27,7 +27,7 @@ def _setup_script_logging() -> None:
 _setup_script_logging()
 logger = logging.getLogger(__name__)
 
-from settings import crawler_settings
+from settings.crawler import crawler_settings
 import json
 from urllib.parse import quote
 import requests

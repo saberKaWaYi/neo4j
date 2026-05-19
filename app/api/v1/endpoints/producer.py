@@ -4,7 +4,7 @@ router = APIRouter()
 import logging
 logger = logging.getLogger(__name__)
 
-from settings import common_settings
+from settings.common import common_settings
 
 from services.rabbitmq_service import RabbitMQService
 from models.schemas_message import NebulaOperationMessage, MessageResponse

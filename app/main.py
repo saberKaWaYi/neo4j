@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from settings import common_settings, web_settings
+from settings.common import common_settings
+from settings.web import web_settings
 from logging_config import setup_logging
 
 setup_logging("web")

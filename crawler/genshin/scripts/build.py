@@ -28,7 +28,7 @@ _setup_script_logging()
 logger = logging.getLogger(__name__)
 
 from services.nebula_service import NebulaService
-from settings import common_settings
+from settings.common import common_settings
 
 import time
 
