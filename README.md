@@ -12,5 +12,5 @@ The application stack is split into these runtime roles:
 Start the stack:
 
 ```bash
-sudo docker compose up -d --build
+sudo docker compose down -v && sudo docker compose up -d --build
 ```
