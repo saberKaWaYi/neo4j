@@ -8,7 +8,6 @@ logs
 
 myvenv
 
-.env
 .env.example
 .gitignore
 *.md
