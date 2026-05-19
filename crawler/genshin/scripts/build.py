@@ -28,17 +28,17 @@ _setup_script_logging()
 logger = logging.getLogger(__name__)
 
 from services.nebula_service import NebulaService
-from settings_config import settings
+from settings import common_settings
 
 import time
 
 def build() -> None:
     logger.info("Ensuring Nebula space exists: %s", "genshin")
     svc = NebulaService(
-        host=settings.nebula_host,
-        port=settings.nebula_port,
-        username=settings.nebula_username,
-        password=settings.nebula_password,
+        host=common_settings.nebula_host,
+        port=common_settings.nebula_port,
+        username=common_settings.nebula_username,
+        password=common_settings.nebula_password,
     )
     svc.connect()
     try:

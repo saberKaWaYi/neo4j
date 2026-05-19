@@ -11,7 +11,7 @@ from logging_config import setup_logging
 setup_logging("crawler")
 logger = logging.getLogger("crawler")
 
-from settings_config import settings
+from settings import crawler_settings
 import json
 from urllib.parse import quote
 import requests
@@ -24,10 +24,10 @@ class GenshinCrawler:
     def __init__(self):
         self.characters = []
         self.social_network = []
-        self.cookies = json.loads(settings.crawler_cookies)
-        self.headers = json.loads(settings.crawler_headers)
-        self.time_sleep = settings.crawler_time_sleep
-        self.max_retries = settings.crawler_max_retries
+        self.cookies = json.loads(crawler_settings.crawler_cookies)
+        self.headers = json.loads(crawler_settings.crawler_headers)
+        self.time_sleep = crawler_settings.crawler_time_sleep
+        self.max_retries = crawler_settings.crawler_max_retries
 
     def run(self):
         self._fetch_character_names_zh_and_photos()
@@ -204,7 +204,7 @@ class GenshinCrawler:
             "operation": "add_edges",
             "data": {"label": "Character_to_Character", "edges": edges},
         }
-        send_url = settings.crawler_producer_url
+        send_url = crawler_settings.crawler_producer_url
         response_nodes = requests.post(
             send_url,
             json=payload_nodes,

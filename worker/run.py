@@ -4,7 +4,7 @@ from logging_config import setup_logging
 setup_logging("worker")
 logger = logging.getLogger("worker")
 
-from settings_config import settings
+from settings import common_settings
 
 from services.rabbitmq_service import RabbitMQService
 from services.nebula_service import NebulaService
@@ -15,25 +15,25 @@ class QueueWorker:
 
     def __init__(self):
         self.rabbitmq = RabbitMQService(
-            host=settings.rabbitmq_host,
-            port=settings.rabbitmq_port,
-            username=settings.rabbitmq_username,
-            password=settings.rabbitmq_password,
+            host=common_settings.rabbitmq_host,
+            port=common_settings.rabbitmq_port,
+            username=common_settings.rabbitmq_username,
+            password=common_settings.rabbitmq_password,
             queue_names=[
-                settings.rabbitmq_queue_nebula
+                common_settings.rabbitmq_queue_nebula
             ]
         )
         self.nebula = NebulaService(
-            host=settings.nebula_host,
-            port=settings.nebula_port,
-            username=settings.nebula_username,
-            password=settings.nebula_password
+            host=common_settings.nebula_host,
+            port=common_settings.nebula_port,
+            username=common_settings.nebula_username,
+            password=common_settings.nebula_password
         )
         self.queue_poll_order = [
-            settings.rabbitmq_queue_nebula
+            common_settings.rabbitmq_queue_nebula
         ]
         self.queue_handlers = {
-            settings.rabbitmq_queue_nebula: self._handle_nebula_message
+            common_settings.rabbitmq_queue_nebula: self._handle_nebula_message
         }
 
     def run_forever(self) -> None:

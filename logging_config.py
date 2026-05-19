@@ -5,7 +5,7 @@ from pathlib import Path
 
 from typing import Literal
 
-from settings_config import settings
+from settings import LogServiceName, common_settings, crawler_settings, web_settings, worker_settings
 
 BASE_DIR = Path(__file__).resolve().parent
 LOG_DIR = BASE_DIR / "logs"
@@ -148,8 +148,20 @@ def _logging_dict_worker(debug: bool) -> dict:
     }
 
 
+def _get_service_debug(service: LogServiceName) -> bool:
+    service_debug_map = {
+        "web": web_settings.web_debug,
+        "crawler": crawler_settings.crawler_debug,
+        "worker": worker_settings.worker_debug,
+    }
+    service_debug = service_debug_map[service]
+    if service_debug is None:
+        return common_settings.debug
+    return service_debug
+
+
 def setup_logging(service: LogService, *, debug: bool | None = None) -> None:
-    effective_debug = settings.get_service_debug(service) if debug is None else debug
+    effective_debug = _get_service_debug(service) if debug is None else debug
     builders = {
         "web": _logging_dict_web,
         "crawler": _logging_dict_crawler,

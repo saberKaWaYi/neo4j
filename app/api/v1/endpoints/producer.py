@@ -4,7 +4,7 @@ router = APIRouter()
 import logging
 logger = logging.getLogger(__name__)
 
-from settings_config import settings
+from settings import common_settings
 
 from services.rabbitmq_service import RabbitMQService
 from models.schemas_message import NebulaOperationMessage, MessageResponse
@@ -22,7 +22,7 @@ def get_rabbitmq_service() -> RabbitMQService:
 @router.post("/send_nebula", response_model=MessageResponse)
 async def send_nebula_message(request: NebulaOperationMessage):
     """发送消息到 Nebula 队列"""
-    return await _send_to_queue(request, settings.rabbitmq_queue_nebula)
+    return await _send_to_queue(request, common_settings.rabbitmq_queue_nebula)
 
 
 async def _send_to_queue(request: Union[NebulaOperationMessage], queue_name: str) -> MessageResponse:

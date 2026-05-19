@@ -27,13 +27,13 @@ def _setup_script_logging() -> None:
 _setup_script_logging()
 logger = logging.getLogger(__name__)
 
-from settings_config import settings
+from settings import common_settings
 
 import subprocess
 
 
 def run_all() -> None:
-    for business in settings.businesses:
+    for business in common_settings.businesses:
         build_script = _REPO_ROOT / "crawler" / business / "scripts" / "build.py"
         if not build_script.exists():
             raise FileNotFoundError(

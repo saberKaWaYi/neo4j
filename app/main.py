@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from settings_config import settings
+from settings import common_settings, web_settings
 from logging_config import setup_logging
 
 setup_logging("web")
@@ -21,11 +21,11 @@ async def lifespan(app: FastAPI):
     global rabbitmq_service
 
     rabbitmq_service = RabbitMQService(
-        host=settings.rabbitmq_host,
-        port=settings.rabbitmq_port,
-        username=settings.rabbitmq_username,
-        password=settings.rabbitmq_password,
-        queue_names=[settings.rabbitmq_queue_nebula, settings.rabbitmq_queue_mongo],
+        host=common_settings.rabbitmq_host,
+        port=common_settings.rabbitmq_port,
+        username=common_settings.rabbitmq_username,
+        password=common_settings.rabbitmq_password,
+        queue_names=[common_settings.rabbitmq_queue_nebula, common_settings.rabbitmq_queue_mongo],
     )
     rabbitmq_service.connect()
 
@@ -37,9 +37,9 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """创建FastAPI应用"""
     app = FastAPI(
-        title=settings.web_name,
-        version=settings.web_version,
-        debug=settings.web_debug,
+        title=web_settings.web_name,
+        version=web_settings.web_version,
+        debug=web_settings.web_debug,
         lifespan=lifespan,
     )
 
