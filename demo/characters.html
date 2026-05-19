@@ -262,25 +262,25 @@
       }
 
       function buildDegreeIndex(data) {
-        const result = new Map(data.nodes.map((node) => [node.id, 0]));
+        const result = new Map(data.nodes.map((node) => [node.vid, 0]));
         data.edges.forEach((edge) => {
-          result.set(edge.source_id, (result.get(edge.source_id) || 0) + 1);
-          result.set(edge.target_id, (result.get(edge.target_id) || 0) + 1);
+          result.set(edge.source_vid, (result.get(edge.source_vid) || 0) + 1);
+          result.set(edge.target_vid, (result.get(edge.target_vid) || 0) + 1);
         });
         return result;
       }
 
       function buildRelationIndex(data) {
-        const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
-        const result = new Map(data.nodes.map((node) => [node.id, []]));
+        const nodeById = new Map(data.nodes.map((node) => [node.vid, node]));
+        const result = new Map(data.nodes.map((node) => [node.vid, []]));
 
         data.edges.forEach((edge) => {
-          const sourceNode = nodeById.get(edge.source_id);
-          const targetNode = nodeById.get(edge.target_id);
+          const sourceNode = nodeById.get(edge.source_vid);
+          const targetNode = nodeById.get(edge.target_vid);
           if (!sourceNode || !targetNode) return;
 
-          result.get(sourceNode.id).push({ node: targetNode, edge, direction: "out" });
-          result.get(targetNode.id).push({ node: sourceNode, edge, direction: "in" });
+          result.get(sourceNode.vid).push({ node: targetNode, edge, direction: "out" });
+          result.get(targetNode.vid).push({ node: sourceNode, edge, direction: "in" });
         });
 
         return result;
@@ -304,13 +304,13 @@
 
       function matchesFilters(node) {
         if (!app.filters.query) return true;
-        const haystack = [node.id, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
+        const haystack = [node.vid, node.properties.name_zh, node.properties.name_en].join(" ").toLowerCase();
         return haystack.includes(app.filters.query);
       }
 
       function compareNodes(a, b) {
         if (app.filters.sort === "degree") {
-          return (app.index.degreeById.get(b.id) || 0) - (app.index.degreeById.get(a.id) || 0);
+          return (app.index.degreeById.get(b.vid) || 0) - (app.index.degreeById.get(a.vid) || 0);
         }
         const locale = state.lang === "zh" ? "zh-Hans-CN" : "en";
         return getName(a).localeCompare(getName(b), locale);
@@ -336,14 +336,14 @@
 
       function renderCharacterCard(node) {
         const image = node.properties.photo || "";
-        const degree = app.index.degreeById.get(node.id) || 0;
+        const degree = app.index.degreeById.get(node.vid) || 0;
         return `
-          <article class="character-card" data-character-id="${escapeHtml(node.id)}">
+          <article class="character-card" data-character-id="${escapeHtml(node.vid)}">
             <div class="portrait">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(getName(node))}" loading="lazy">` : ""}</div>
             <div class="card-body">
               <h3>${escapeHtml(getName(node))}</h3>
               <div class="chips">
-                <span class="chip">${escapeHtml(t("idLabel"))}: ${escapeHtml(node.id)}</span>
+                <span class="chip">${escapeHtml(t("idLabel"))}: ${escapeHtml(node.vid)}</span>
                 <span class="chip">${escapeHtml(t("connections"))} ${degree}</span>
               </div>
             </div>
@@ -387,9 +387,9 @@
       function renderRelatedItem({ node, edge, direction }) {
         const label = direction === "out" ? edgeEndpoint(edge, "target") : edgeEndpoint(edge, "source");
         const relation = getRelationText(edge);
-        const fallback = `${t("idLabel")}: ${node.id}`;
+        const fallback = `${t("idLabel")}: ${node.vid}`;
         return `
-          <button class="related-item" type="button" data-related-jump data-target-id="${escapeHtml(node.id)}">
+          <button class="related-item" type="button" data-related-jump data-target-id="${escapeHtml(node.vid)}">
             <strong>${escapeHtml(label || getName(node))}</strong>
             <span>${escapeHtml(relation || fallback)}</span>
           </button>
@@ -455,7 +455,7 @@
       }
 
       function keepPanelStateValid() {
-        const nodeIds = new Set((state.data.nodes || []).map((node) => node.id));
+        const nodeIds = new Set((state.data.nodes || []).map((node) => node.vid));
         if (app.panel.hoveredId && !nodeIds.has(app.panel.hoveredId)) {
           app.panel.hoveredId = null;
         }

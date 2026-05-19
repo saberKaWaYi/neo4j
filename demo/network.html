@@ -360,25 +360,25 @@
       }
 
       function rebuildIndexes(data) {
-        const nodeById = new Map((data.nodes || []).map((node) => [node.id, node]));
-        const degreeById = new Map((data.nodes || []).map((node) => [node.id, { in: 0, out: 0, total: 0 }]));
-        const undirectedById = new Map((data.nodes || []).map((node) => [node.id, []]));
-        const outgoingById = new Map((data.nodes || []).map((node) => [node.id, []]));
+        const nodeById = new Map((data.nodes || []).map((node) => [node.vid, node]));
+        const degreeById = new Map((data.nodes || []).map((node) => [node.vid, { in: 0, out: 0, total: 0 }]));
+        const undirectedById = new Map((data.nodes || []).map((node) => [node.vid, []]));
+        const outgoingById = new Map((data.nodes || []).map((node) => [node.vid, []]));
 
         (data.edges || []).forEach((edge) => {
-          const sourceDegree = degreeById.get(edge.source_id) || { in: 0, out: 0, total: 0 };
-          const targetDegree = degreeById.get(edge.target_id) || { in: 0, out: 0, total: 0 };
+          const sourceDegree = degreeById.get(edge.source_vid) || { in: 0, out: 0, total: 0 };
+          const targetDegree = degreeById.get(edge.target_vid) || { in: 0, out: 0, total: 0 };
 
           sourceDegree.out += 1;
           sourceDegree.total += 1;
           targetDegree.in += 1;
           targetDegree.total += 1;
 
-          degreeById.set(edge.source_id, sourceDegree);
-          degreeById.set(edge.target_id, targetDegree);
-          undirectedById.get(edge.source_id)?.push({ nodeId: edge.target_id, edge });
-          undirectedById.get(edge.target_id)?.push({ nodeId: edge.source_id, edge });
-          outgoingById.get(edge.source_id)?.push({ nodeId: edge.target_id, edge });
+          degreeById.set(edge.source_vid, sourceDegree);
+          degreeById.set(edge.target_vid, targetDegree);
+          undirectedById.get(edge.source_vid)?.push({ nodeId: edge.target_vid, edge });
+          undirectedById.get(edge.target_vid)?.push({ nodeId: edge.source_vid, edge });
+          outgoingById.get(edge.source_vid)?.push({ nodeId: edge.target_vid, edge });
         });
 
         app.index.nodeById = nodeById;
@@ -402,7 +402,7 @@
       function renderCharacterSelect(select, selectedValue, nodes) {
         const options = [
           `<option value="">${escapeHtml(t("selectAll"))}</option>`,
-          ...nodes.map((node) => `<option value="${escapeHtml(node.id)}">${escapeHtml(getName(node))} (${escapeHtml(node.id)})</option>`),
+          ...nodes.map((node) => `<option value="${escapeHtml(node.vid)}">${escapeHtml(getName(node))} (${escapeHtml(node.vid)})</option>`),
         ];
         select.innerHTML = options.join("");
         select.value = selectedValue;
@@ -433,7 +433,7 @@
         const visibleEdgeKeys = app.view.path.active ? app.view.path.edgeKeys : null;
 
         app.graph.nodes = buildGraphNodes(visibleNodeIds);
-        app.graph.nodeMap = new Map(app.graph.nodes.map((node) => [node.id, node]));
+        app.graph.nodeMap = new Map(app.graph.nodes.map((node) => [node.vid, node]));
         app.graph.edges = buildGraphEdges(visibleEdgeKeys);
 
         updateStats();
@@ -531,7 +531,7 @@
       }
 
       function buildVisibleNodeIds() {
-        let nodeIds = new Set((state.data.nodes || []).map((node) => node.id));
+        let nodeIds = new Set((state.data.nodes || []).map((node) => node.vid));
         if (app.view.focus.active) nodeIds = intersectSets(nodeIds, app.view.focus.nodeIds);
         if (app.view.path.active) nodeIds = intersectSets(nodeIds, app.view.path.nodeIds);
         return nodeIds;
@@ -539,10 +539,10 @@
 
       function buildGraphNodes(visibleNodeIds) {
         return (state.data.nodes || [])
-          .filter((node) => visibleNodeIds.has(node.id))
+          .filter((node) => visibleNodeIds.has(node.vid))
           .map((node, index) => {
-            const seed = seededPosition(index, node.id);
-            const degree = app.index.degreeById.get(node.id) || { in: 0, out: 0, total: 0 };
+            const seed = seededPosition(index, node.vid);
+            const degree = app.index.degreeById.get(node.vid) || { in: 0, out: 0, total: 0 };
             const radius = app.filters.sizeMode === "same" ? 18 : Math.max(16, Math.min(34, 14 + Math.sqrt(degree.total) * 2.4));
             const graphNode = {
               ...node,
@@ -552,8 +552,8 @@
               vy: 0,
               r: radius,
               degree,
-              isFocusCenter: node.id === app.filters.focusNodeId,
-              isPathNode: app.view.path.nodeIds.has(node.id),
+              isFocusCenter: node.vid === app.filters.focusNodeId,
+              isPathNode: app.view.path.nodeIds.has(node.vid),
             };
             preloadNodeImage(graphNode);
             return graphNode;
@@ -562,7 +562,7 @@
 
       function buildGraphEdges(visibleEdgeKeys) {
         return (state.data.edges || [])
-          .filter((edge) => app.graph.nodeMap.has(edge.source_id) && app.graph.nodeMap.has(edge.target_id))
+          .filter((edge) => app.graph.nodeMap.has(edge.source_vid) && app.graph.nodeMap.has(edge.target_vid))
           .filter((edge) => !visibleEdgeKeys || visibleEdgeKeys.has(edgeKey(edge)))
           .map((edge) => ({
             ...edge,
@@ -666,12 +666,12 @@
       function placeColumnNode(node, index, width, height) {
         const balance = node.degree.out - node.degree.in;
         const column = balance > 3 ? 0.25 : balance < -3 ? 0.75 : 0.5;
-        node.x = width * column + (seededPosition(index, node.id).x - 0.5) * 50;
+        node.x = width * column + (seededPosition(index, node.vid).x - 0.5) * 50;
         node.y = 56 + (index % Math.max(1, Math.floor(height / 42))) * 42;
       }
 
       function placeSeedNode(node, index, centerX, centerY, width, height) {
-        const seed = seededPosition(index, node.id);
+        const seed = seededPosition(index, node.vid);
         const angle = Math.PI * 2 * seed.x;
         const radius = Math.min(width, height) * (0.1 + seed.y * 0.28);
         node.x = centerX + Math.cos(angle) * radius;
@@ -713,8 +713,8 @@
 
       function applyEdgeTension() {
         app.graph.edges.forEach((edge) => {
-          const source = app.graph.nodeMap.get(edge.source_id);
-          const target = app.graph.nodeMap.get(edge.target_id);
+          const source = app.graph.nodeMap.get(edge.source_vid);
+          const target = app.graph.nodeMap.get(edge.target_vid);
           if (!source || !target) return;
           const dx = target.x - source.x;
           const dy = target.y - source.y;
@@ -772,8 +772,8 @@
       }
 
       function drawEdge(edge) {
-        const source = app.graph.nodeMap.get(edge.source_id);
-        const target = app.graph.nodeMap.get(edge.target_id);
+        const source = app.graph.nodeMap.get(edge.source_vid);
+        const target = app.graph.nodeMap.get(edge.target_vid);
         if (!source || !target) return;
 
         const points = edgeLine(source, target);
@@ -861,7 +861,7 @@
         ctx.font = `700 ${Math.max(12, node.r * 0.75)}px Segoe UI, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(String(getName(node) || node.id).slice(0, 1).toUpperCase(), node.x, node.y + 1);
+        ctx.fillText(String(getName(node) || node.vid).slice(0, 1).toUpperCase(), node.x, node.y + 1);
         ctx.restore();
       }
 
@@ -966,8 +966,8 @@
         let bestDistance = 7;
 
         app.graph.edges.forEach((edge) => {
-          const source = app.graph.nodeMap.get(edge.source_id);
-          const target = app.graph.nodeMap.get(edge.target_id);
+          const source = app.graph.nodeMap.get(edge.source_vid);
+          const target = app.graph.nodeMap.get(edge.target_vid);
           if (!source || !target) return;
           const points = edgeLine(source, target);
           const distance = pointToSegmentDistance(x, y, points.startX, points.startY, points.endX, points.endY);
@@ -984,7 +984,7 @@
         tooltip.innerHTML = `
           ${node.properties.photo ? `<img src="${escapeHtml(node.properties.photo)}" alt="">` : ""}
           <h3>${escapeHtml(getName(node))}</h3>
-          <p>ID: ${escapeHtml(node.id)}</p>
+          <p>ID: ${escapeHtml(node.vid)}</p>
           <div class="chips">
             <span class="chip">${escapeHtml(t("inDegree"))} ${node.degree.in}</span>
             <span class="chip">${escapeHtml(t("outDegree"))} ${node.degree.out}</span>
@@ -1007,9 +1007,9 @@
           <p>${escapeHtml(getRelationText(edge))}</p>
           ${extraFields}
           <div class="chips">
-            <span class="chip">${escapeHtml(edge.source_id)}</span>
+            <span class="chip">${escapeHtml(edge.source_vid)}</span>
             <span class="chip">${escapeHtml(t("relationLabel"))}</span>
-            <span class="chip">${escapeHtml(edge.target_id)}</span>
+            <span class="chip">${escapeHtml(edge.target_vid)}</span>
           </div>
         `;
         moveTooltip(event);
@@ -1061,7 +1061,7 @@
       }
 
       function edgeKey(edge) {
-        return `${edge.source_id}->${edge.target_id}::${edge.id || edgeTitle(edge, "en") || ""}`;
+        return `${edge.source_vid}->${edge.target_vid}::${edge.id || edgeTitle(edge, "en") || ""}`;
       }
 
       function intersectSets(a, b) {

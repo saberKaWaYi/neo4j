@@ -167,7 +167,10 @@ class GenshinCrawler:
     def _save_results(self):
         logger.info("开始执行步骤4：将内存中的结果发送到 FastAPI Producer")
         nodes = [
-            {"id": c["name_en"], "properties": {"photo": c["photo"],"name_zh": c["name_zh"], "name_en": c["name_en"]}}
+            {
+                "vid": c["name_en"],
+                "properties": {"photo": c["photo"], "name_zh": c["name_zh"], "name_en": c["name_en"]},
+            }
             for c in self.characters
         ]
         edges = []
@@ -183,8 +186,7 @@ class GenshinCrawler:
             content_zh = row["content_zh"]
             edges.append({
                 "id": edge_id,
-                "source_id": source_id,
-                "target_id": target_id,
+                "source_vid": source_id, "target_vid": target_id,
                 "properties": {
                     "source_name_en": source_name_en,
                     "target_name_en": target_name_en,
@@ -197,12 +199,12 @@ class GenshinCrawler:
         payload_nodes = {
             "space_name": "genshin",
             "operation": "add_nodes",
-            "data": {"label": "Character", "nodes": nodes},
+            "data": {"tag": "Character", "nodes": nodes},
         }
         payload_edges = {
             "space_name": "genshin",
             "operation": "add_edges",
-            "data": {"label": "Character_to_Character", "edges": edges},
+            "data": {"edge_type": "Character_to_Character", "edges": edges},
         }
         send_url = crawler_settings.crawler_producer_url
         response_nodes = requests.post(

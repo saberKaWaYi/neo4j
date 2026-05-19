@@ -189,7 +189,10 @@ class GenshinCrawler:
         logger.info("开始执行步骤4：保存结果到 JSON 文件")
         output_path = Path(__file__).resolve().parent / "genshin_network.json"
         nodes = [
-            {"id": c["name_en"], "properties": {"photo": c["photo"],"name_zh": c["name_zh"], "name_en": c["name_en"]}}
+            {
+                "vid": c["name_en"],
+                "properties": {"photo": c["photo"], "name_zh": c["name_zh"], "name_en": c["name_en"]},
+            }
             for c in self.characters
         ]
         edges = []
@@ -205,8 +208,7 @@ class GenshinCrawler:
             content_zh = row["content_zh"]
             edges.append({
                 "id": edge_id,
-                "source_id": source_id,
-                "target_id": target_id,
+                "source_vid": source_id, "target_vid": target_id,
                 "properties": {
                     "source_name_en": source_name_en,
                     "target_name_en": target_name_en,
