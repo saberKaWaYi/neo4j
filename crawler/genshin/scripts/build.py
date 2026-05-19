@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 from services.nebula_service import NebulaService
 from settings_config import settings
 
+import time
 
 def build() -> None:
     logger.info("Ensuring Nebula space exists: %s", "genshin")
@@ -42,6 +43,7 @@ def build() -> None:
     svc.connect()
     try:
         svc.create_space(space_name="genshin", partition_num=5, replica_factor=1, vid_type="FIXED_STRING(128)")
+        time.sleep(5)
         svc.create_tag("genshin", "Character", {"photo": "string", "name_zh": "string", "name_en": "string"})
         svc.create_edge_type(
             "genshin",
