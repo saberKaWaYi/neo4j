@@ -7,4 +7,5 @@ class EnvSettings(BaseSettings):
         env_file_encoding="utf-8",
         enable_decoding=False,
         env_ignore_empty=True,
+        extra="ignore",
     )
