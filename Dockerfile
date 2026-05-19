@@ -17,6 +17,9 @@ FROM base AS worker
 CMD ["python", "main.py", "worker"]
 
 FROM base AS cron
-RUN apt-get update && apt-get install -y --no-install-recommends cron && rm -rf /var/lib/apt/lists/*
+RUN sed -i "s@deb.debian.org@mirrors.tuna.tsinghua.edu.cn@g" /etc/apt/sources.list.d/debian.sources && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends cron && \
+    rm -rf /var/lib/apt/lists/*
 RUN chmod +x /app/crontab_list.sh
 CMD ["/app/crontab_list.sh"]
