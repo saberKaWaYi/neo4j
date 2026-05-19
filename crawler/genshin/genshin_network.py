@@ -204,7 +204,7 @@ class GenshinCrawler:
             "operation": "add_edges",
             "data": {"label": "Character_to_Character", "edges": edges},
         }
-        send_url = "http://web:8000/api/v1/messages/send_nebula"
+        send_url = settings.crawler_producer_url
         response_nodes = requests.post(
             send_url,
             json=payload_nodes,
