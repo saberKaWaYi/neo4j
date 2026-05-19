@@ -6,7 +6,7 @@ from settings.base import EnvSettings
 
 
 class CrawlerSettings(EnvSettings):
-    crawler_debug: Optional[bool] = Field(alias="CRAWLER_DEBUG")
+    crawler_debug: Optional[bool] = Field(default=None, alias="CRAWLER_DEBUG")
     crawler_cookies: str = Field(..., alias="CRAWLER_COOKIES")
     crawler_headers: str = Field(..., alias="CRAWLER_HEADERS")
     crawler_time_sleep: int = Field(default=3, alias="CRAWLER_TIME_SLEEP")
