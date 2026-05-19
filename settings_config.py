@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     crawler_headers: str = Field(..., alias="CRAWLER_HEADERS")
     crawler_time_sleep: int = Field(default=3, alias="CRAWLER_TIME_SLEEP")
     crawler_max_retries: int = Field(default=15, alias="CRAWLER_MAX_RETRIES")
+    crawler_producer_url: str = Field(default="http://web:8000/api/v1/messages/send_nebula", alias="CRAWLER_PRODUCER_URL")
 
     """web服务配置"""
     web_debug: Optional[bool] = Field(alias="WEB_DEBUG")
